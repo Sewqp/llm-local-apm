@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CollectionServer/CollectionServer.csproj" />
+    <Project Path="src/TargetServer/TargetServer.csproj" />
+  </Folder>
+</Solution>

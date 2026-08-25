@@ -1,0 +1,15 @@
+bin/
+obj/
+*.db
+*.db-shm
+*.db-wal
+node_modules/
+dist/
+*.log
+.vs/
+/publish/
+src/CollectionServer/wwwroot/
+managed-servers.json
+server-logs/
+appsettings.Local.json
+.claude/
