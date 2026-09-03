@@ -77,6 +77,17 @@ public class MetricsController(ApmDbContext db) : ControllerBase
         return Ok(items);
     }
 
+    // 데모/테스트 반복용 초기화 — 메트릭·분석 이력을 전부 비움(서버 등록 목록 등 설정은 안 건드림).
+    // 대상은 지금 CollectionServer가 실제로 쓰고 있는 DB 파일 하나뿐이라(dotnet run 기준
+    // bin/.../apm.db), src/CollectionServer/apm.db에 쌓인 과거 실측 데이터와는 무관함.
+    [HttpPost("reset")]
+    public async Task<IActionResult> Reset(CancellationToken ct)
+    {
+        await db.Metrics.ExecuteDeleteAsync(ct);
+        await db.Analyses.ExecuteDeleteAsync(ct);
+        return NoContent();
+    }
+
     // 대시보드 상단 요약 카드 / 경로별 통계용
     [HttpGet("summary")]
     public async Task<IActionResult> Summary(

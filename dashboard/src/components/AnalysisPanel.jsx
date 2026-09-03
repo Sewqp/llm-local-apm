@@ -26,6 +26,37 @@ export default function AnalysisPanel({ analyses, onRun, running }) {
               {a.reason} — 관측 {a.observedDurationMs.toFixed(0)}ms / 기준선 {a.baselineDurationMs.toFixed(0)}ms
             </div>
             <p className="analysis-text">{a.llmAnalysis}</p>
+            {a.suspectedCodeSnippets && a.suspectedCodeSnippets.length > 0 && (
+              <div className="suspect-candidates">
+                {a.suspectedCodeSnippets.map((s) => (
+                  <div key={s.index} className="suspect-candidate">
+                    <div className="suspect-candidate-header">
+                      <span className="suspect-index">{s.index}</span>
+                      <span className="suspect-reason">{s.reason}</span>
+                    </div>
+                    {s.lines ? (
+                      <pre className="code-snippet">
+                        {s.lines.map((l) => (
+                          <div
+                            key={l.lineNumber}
+                            className={`code-line${l.isSuspect ? " code-line-suspect" : ""}`}
+                          >
+                            <span className="code-line-no">{l.lineNumber}</span>
+                            <span className="code-line-text">{l.text}</span>
+                          </div>
+                        ))}
+                      </pre>
+                    ) : (
+                      <div className="code-snippet-missing">
+                        {s.filePath
+                          ? `${s.filePath}:${s.lineNumber} — 소스 파일을 찾지 못했습니다`
+                          : "코드 위치를 특정하지 못했습니다"}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </li>
         ))}
       </ul>

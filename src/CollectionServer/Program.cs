@@ -22,6 +22,8 @@ builder.Services.AddDbContext<ApmDbContext>(options =>
 
 builder.Services.Configure<LmStudioOptions>(builder.Configuration.GetSection(LmStudioOptions.SectionName));
 builder.Services.Configure<AnomalyDetectionOptions>(builder.Configuration.GetSection(AnomalyDetectionOptions.SectionName));
+builder.Services.Configure<GraphifyOptions>(builder.Configuration.GetSection(GraphifyOptions.SectionName));
+builder.Services.AddSingleton<IGraphifyService, GraphifyService>();
 
 builder.Services.AddHttpClient<ILmStudioClient, LmStudioClient>((sp, http) =>
 {
@@ -53,6 +55,13 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApmDbContext>();
     db.Database.EnsureCreated();
+
+    // EnsureCreated()는 스키마 버전 관리가 없어 기존 apm.db엔 새 컬럼이 안 생긴다(누적된 실측 데이터라
+    // db를 지우고 새로 만들 수 없음) — Analyses 테이블에 SuspectedCode 컬럼이 없으면 여기서만 추가한다.
+    var hasSuspectedCode = db.Database.SqlQueryRaw<int>(
+        "SELECT COUNT(*) AS Value FROM pragma_table_info('Analyses') WHERE name = 'SuspectedCode'").AsEnumerable().First() > 0;
+    if (!hasSuspectedCode)
+        db.Database.ExecuteSqlRaw("ALTER TABLE Analyses ADD COLUMN SuspectedCode TEXT NULL");
 }
 
 if (app.Environment.IsDevelopment())

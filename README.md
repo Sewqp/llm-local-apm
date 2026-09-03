@@ -15,14 +15,14 @@
 [수집 서버 (CollectionServer, ASP.NET Core Web API)]  ──▶  [SQLite]
       │
       ▼
-[이상탐지 룰 (임계값 기반)]  ──▶  [LM Studio (로컬 LLM, OpenAI 호환 API)]  ──▶  [대시보드 (React)]
+[이상탐지 룰 (임계값 기반)] ──▶ [Graphify (로컬 코드 지식그래프)] ──▶ [LM Studio (로컬 LLM)] ──▶ [대시보드 (React)]
 ```
 
 - **TargetServer**: 계측 미들웨어가 적용된 데모 대상 서버. 실제 프로젝트에서는 기존 보유 서버에
   `InstrumentationMiddleware` 한 줄만 추가하면 동일하게 적용 가능하도록 설계했습니다.
-- **CollectionServer**: 메트릭 수집(`POST /api/metrics`), 조회, 임계값 기반 이상탐지,
+- **CollectionServer**: 메트릭 수집(`POST /api/metrics`), 조회, 임계값 기반 이상탐지, Graphify 조회,
   LM Studio 호출을 담당하는 API 서버.
-- **dashboard**: 응답시간/에러율 시계열 그래프와 LLM 분석 결과를 보여주는 React 대시보드.
+- **dashboard**: 응답시간/에러율 시계열 그래프와 LLM 분석·의심 코드 결과를 보여주는 React 대시보드.
 
 ## 기술 스택
 
@@ -31,6 +31,7 @@
 | 대상 서버 | ASP.NET Core (계측 미들웨어) |
 | 수집 서버 | ASP.NET Core Web API + EF Core + SQLite |
 | 이상탐지 | 임계값 기반 룰 (기준선 평균 대비 N배 초과 / HTTP 5xx) |
+| 코드 분석 | [Graphify](https://github.com/Graphify-Labs/graphify) CLI — tree-sitter AST로 로컬에서 만든 코드 지식그래프를 이상탐지 엔드포인트 기준으로 스코핑해서 LLM에 전달 |
 | LLM 추론 | LM Studio 로컬 서버 (OpenAI 호환 `/v1/chat/completions`), Gemma |
 | 대시보드 | React (Vite) + Recharts |
 
@@ -42,6 +43,13 @@
    - 모델 다운로드 (예: Gemma 계열)
    - LM Studio 앱에서 **Local Server** 실행 (기본 포트 `1234`)
    - 또는 CLI: `lms server start` 후 `lms load <model>`
+4. [Graphify](https://github.com/Graphify-Labs/graphify) CLI 설치 (원인 코드 위치 지목 기능에 필요, 없어도 나머지 기능은 그대로 동작):
+   ```powershell
+   winget install astral-sh.uv   # uv가 없다면
+   uv tool install graphifyy
+   ```
+   설치 후 `graphify` 명령이 PATH에 안 잡히면(`uv tool update-shell` 후에도) `appsettings.Local.json`의
+   `Graphify:CliPath`에 전체 경로(`C:\Users\<사용자>\.local\bin\graphify.exe`)를 넣으면 된다.
 
 ## 실행 방법
 
@@ -152,7 +160,7 @@ LM Studio(Gemma)가 생성한 분석도 "로그인 요청 집중으로 인한 �
 | GET | `/api/metrics?minutes=` | 대시보드 시계열용 원본 메트릭 조회 |
 | GET | `/api/metrics/summary?minutes=` | 경로별 평균/응답시간(p95)/에러율 요약 |
 | GET | `/api/anomalies?minutes=` | 이상탐지 결과만 조회 (LLM 호출 없음) |
-| POST | `/api/analysis/run?minutes=` | 이상탐지 + LM Studio 원인분석 실행 및 저장 |
+| POST | `/api/analysis/run?minutes=` | 이상탐지 + Graphify 코드 스코핑 + LM Studio 원인분석·의심 코드 지목 실행 및 저장 |
 | GET | `/api/analysis?limit=` | 저장된 분석 이력 조회 |
 
 ## 이상탐지 룰
@@ -163,6 +171,33 @@ LM Studio(Gemma)가 생성한 분석도 "로그인 요청 집중으로 인한 �
    - `/api/products/{id}`처럼 ID가 섞인 경로는 미들웨어에서 정규화하여 동일 경로로 집계
 
 LLM이 생성하는 분석/추천 텍스트는 대시보드에 **"참고용 추천"**으로 표기되어, 과신하지 않도록 안내합니다.
+
+## 원인 코드 위치 지목 (Graphify)
+
+이상탐지까지는 "언제·어디서·얼마나" 벗어났는지만 알려준다. 그 다음 질문("정확히 어느 코드가 원인일
+가능성이 높은가")에 답하기 위해, `/api/analysis/run`은 LLM을 부르기 전에
+[Graphify](https://github.com/Graphify-Labs/graphify) CLI로 원시 소스 전체 대신 압축된 코드
+지식그래프 조각 하나만 잘라와 프롬프트에 얹는다.
+
+1. **그래프 빌드(최초 1회, 서버당)**: `graphify extract <소스 디렉터리> --code-only --no-viz` —
+   tree-sitter AST 로컬 파싱만 쓰고 LLM 호출이 없어 API 키 없이도 몇 초 안에 끝난다.
+   결과(`graphify-out/graph.json`)는 디스크에 캐시되고, `appsettings.json`의
+   `Graphify:ServerSourceDirs`(메트릭의 `ServerName` -> 소스 디렉터리 매핑)에 등록된 서버에만 동작한다.
+2. **스코핑**: 이상탐지된 엔드포인트 경로(예: `/packet/MatchRequest`, `/api/products/{id}`)에서 마지막
+   세그먼트를 뽑아 `MatchHandler`/`ProductsController` 같은 처리 클래스 이름 후보를 만들고,
+   `graphify explain "<후보>"`로 그 클래스와 바로 연결된 노드(소스 위치, 상속·호출 관계)만 가져온다.
+   못 찾으면 `graphify query "<원본 세그먼트>"`로 한 번 더 넓게 훑는다.
+3. **LLM에 위임**: 이 스코핑된 그래프 텍스트를 프롬프트에 포함시켜, LLM에게 "이 그래프 안에서
+   원인일 가능성이 가장 높은 파일/함수 하나를 정확히 골라 마지막 줄에 `의심 코드: <파일:라인>` 형식으로
+   답하라"고 지시한다. 응답에서 그 줄을 정규식으로 분리해 `SuspectedCode`로 따로 저장 — 대시보드에서
+   분석 텍스트와 별개의 배지로 표시된다.
+
+**"완전 간소화"는 Graphify(결정론적 로컬 그래프 스코핑)가 담당하고, "특정 코드를 고르는 판단"은 그
+축약된 컨텍스트를 받은 LLM이 한다** — LLM이 직접 여러 차례 그래프 명령을 골라 호출하는 완전 에이전틱
+방식은 쓰지 않았다(로컬 소형 모델 신뢰성·안전성 트레이드오프).
+
+Graphify가 설치되어 있지 않거나 해당 서버가 `ServerSourceDirs`에 없으면 이 단계는 조용히 건너뛰고
+기존처럼 지표만으로 분석한다 — 필수 의존성이 아니다.
 
 ## Out of Scope (향후 확장)
 

@@ -54,6 +54,7 @@ export const api = {
     getJson(`/api/analysis?${withServer(new URLSearchParams({ limit }), server)}`),
   runAnalysis: (minutes = 30, server = null) =>
     postJson(`/api/analysis/run?${withServer(new URLSearchParams({ minutes }), server)}`),
+  resetData: () => postAction("/api/metrics/reset"),
 
   getManagedServers: () => getJson("/api/servers"),
   startManagedServer: (name) => postAction(`/api/servers/${encodeURIComponent(name)}/start`),

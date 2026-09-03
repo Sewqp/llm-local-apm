@@ -65,6 +65,16 @@ function App() {
     }
   };
 
+  const handleReset = async () => {
+    if (!window.confirm("메트릭·분석 이력을 전부 지웁니다(서버 등록 목록은 그대로 유지). 계속할까요?")) return;
+    try {
+      await api.resetData();
+      await Promise.all([refresh(), loadAnalysisHistory()]);
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
   return (
     <div className="app">
       <header className="app-header">
@@ -73,7 +83,10 @@ function App() {
             <h1>LLM 기반 로컬 APM 대시보드</h1>
             <p className="subtitle">최근 {WINDOW_MINUTES}분 · 5초마다 자동 갱신 · LLM 분석은 로컬(LM Studio)에서 수행</p>
           </div>
-          <ServerSelector serverNames={serverNames} selected={selectedServer} onChange={setSelectedServer} />
+          <div className="header-actions">
+            <ServerSelector serverNames={serverNames} selected={selectedServer} onChange={setSelectedServer} />
+            <button className="reset-button" onClick={handleReset}>초기화</button>
+          </div>
         </div>
       </header>
 

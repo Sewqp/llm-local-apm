@@ -10,4 +10,5 @@ public class AnalysisResult
     public double ObservedDurationMs { get; set; }
     public double BaselineDurationMs { get; set; }
     public string LlmAnalysis { get; set; } = string.Empty;
+    public string? SuspectedCode { get; set; }
 }
