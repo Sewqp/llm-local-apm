@@ -339,6 +339,23 @@
   border: 1px solid rgba(234, 179, 8, 0.4);
 }
 
+.badge-mode-quick {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.badge-mode-full {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+.analysis-run-buttons {
+  display: flex;
+  gap: 8px;
+}
+
 .analysis-path {
   font-weight: 600;
   color: var(--text-h);

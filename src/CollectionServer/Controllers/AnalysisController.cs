@@ -42,10 +42,14 @@ public partial class AnalysisController(
     }
 
     // 이상탐지 + LM Studio 원인분석/추천 생성 (최근 이상탐지 결과 중 경로별 최신 1건씩, 최대 MaxLlmCallsPerRun건)
+    // mode=quick(기본, 백신의 "빠른 검사"에 대응)은 co-occurrence 신호가 있을 때만 배경 서비스 쪽을
+    // 넌지시 유도하고, mode=full("전체 검사")은 신호가 없어도 배경 서비스를 강제로 넓게 훑게 한다.
     [HttpPost("analysis/run")]
     public async Task<IActionResult> RunAnalysis(
-        [FromQuery] int minutes = 30, [FromQuery] string? server = null, CancellationToken ct = default)
+        [FromQuery] int minutes = 30, [FromQuery] string? server = null,
+        [FromQuery] string mode = "quick", CancellationToken ct = default)
     {
+        var thorough = mode == "full";
         var anomalies = await anomalyDetection.DetectAsync(TimeSpan.FromMinutes(minutes), server, ct);
 
         var targets = anomalies
@@ -100,7 +104,7 @@ public partial class AnalysisController(
                  위 지표를 바탕으로 가능한 원인과 개선 방향을 설명해줘.
                  """;
 
-            var analysisText = await lmStudio.AnalyzeAsync(prompt, a.ServerName, ct);
+            var analysisText = await lmStudio.AnalyzeAsync(prompt, a.ServerName, thorough, ct);
 
             var candidateLines = SuspectedCodeRegex().Matches(analysisText)
                 .Select(m => m.Groups[1].Value.Trim())
@@ -121,13 +125,14 @@ public partial class AnalysisController(
                 ObservedDurationMs = a.ObservedDurationMs,
                 BaselineDurationMs = a.BaselineDurationMs,
                 LlmAnalysis = analysisText,
-                SuspectedCode = suspectedCode
+                SuspectedCode = suspectedCode,
+                Mode = mode
             };
             db.Analyses.Add(result);
 
             responses.Add(new AnalysisResponseDto(
                 a.ServerName, a.Path, a.Timestamp, a.ObservedDurationMs, a.BaselineDurationMs,
-                a.Reason, analysisText, suspectedCode, SuspectedCodeSnippets: snippets));
+                a.Reason, analysisText, suspectedCode, SuspectedCodeSnippets: snippets, Mode: mode));
         }
 
         if (responses.Count > 0)
@@ -155,7 +160,8 @@ public partial class AnalysisController(
         var items = rows.Select(a => new AnalysisResponseDto(
             a.ServerName, a.Path, a.CreatedAt, a.ObservedDurationMs, a.BaselineDurationMs,
             a.AnomalyReason, a.LlmAnalysis, a.SuspectedCode,
-            SuspectedCodeSnippets: BuildSnippets(a.ServerName, SplitStoredCandidates(a.SuspectedCode))))
+            SuspectedCodeSnippets: BuildSnippets(a.ServerName, SplitStoredCandidates(a.SuspectedCode)),
+            Mode: a.Mode))
             .ToList();
 
         return Ok(items);

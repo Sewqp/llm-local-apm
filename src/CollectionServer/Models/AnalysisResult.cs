@@ -11,4 +11,7 @@ public class AnalysisResult
     public double BaselineDurationMs { get; set; }
     public string LlmAnalysis { get; set; } = string.Empty;
     public string? SuspectedCode { get; set; }
+
+    // "빠른 분석"(quick) / "전체 분석"(full) — 어떤 모드로 나온 결과인지 이력에 남겨서 대시보드에 배지로 표시
+    public string Mode { get; set; } = "quick";
 }

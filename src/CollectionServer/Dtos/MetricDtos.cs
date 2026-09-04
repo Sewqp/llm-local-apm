@@ -34,7 +34,8 @@ public record AnalysisResponseDto(
     string LlmAnalysis,
     string? SuspectedCode = null,
     bool IsAdvisoryOnly = true,
-    List<CodeSnippetDto>? SuspectedCodeSnippets = null);
+    List<CodeSnippetDto>? SuspectedCodeSnippets = null,
+    string Mode = "quick");
 
 // LLM이 "의심 코드 N: ..." 형식으로 지목한 후보 하나. 실제 소스 파일에서 라인을 못 찾으면
 // Lines가 null(그래도 이유 텍스트는 번호와 함께 보여줌).

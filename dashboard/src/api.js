@@ -52,8 +52,8 @@ export const api = {
     getJson(`/api/anomalies?${withServer(new URLSearchParams({ minutes }), server)}`),
   getAnalysisHistory: (limit = 20, server = null) =>
     getJson(`/api/analysis?${withServer(new URLSearchParams({ limit }), server)}`),
-  runAnalysis: (minutes = 30, server = null) =>
-    postJson(`/api/analysis/run?${withServer(new URLSearchParams({ minutes }), server)}`),
+  runAnalysis: (minutes = 30, server = null, mode = "quick") =>
+    postJson(`/api/analysis/run?${withServer(new URLSearchParams({ minutes, mode }), server)}`),
   resetData: () => postAction("/api/metrics/reset"),
 
   getManagedServers: () => getJson("/api/servers"),

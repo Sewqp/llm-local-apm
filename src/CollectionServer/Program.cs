@@ -62,6 +62,11 @@ using (var scope = app.Services.CreateScope())
         "SELECT COUNT(*) AS Value FROM pragma_table_info('Analyses') WHERE name = 'SuspectedCode'").AsEnumerable().First() > 0;
     if (!hasSuspectedCode)
         db.Database.ExecuteSqlRaw("ALTER TABLE Analyses ADD COLUMN SuspectedCode TEXT NULL");
+
+    var hasMode = db.Database.SqlQueryRaw<int>(
+        "SELECT COUNT(*) AS Value FROM pragma_table_info('Analyses') WHERE name = 'Mode'").AsEnumerable().First() > 0;
+    if (!hasMode)
+        db.Database.ExecuteSqlRaw("ALTER TABLE Analyses ADD COLUMN Mode TEXT NOT NULL DEFAULT 'quick'");
 }
 
 if (app.Environment.IsDevelopment())

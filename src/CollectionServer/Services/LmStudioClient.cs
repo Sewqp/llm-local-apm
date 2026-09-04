@@ -12,8 +12,10 @@ public interface ILmStudioClient
     /// serverName을 주면 "정밀탐색"(tool-calling) 모드로 동작 — LLM이 직접 graphify_explain/
     /// graphify_query 도구를 호출해가며 코드를 훑어본 뒤 결론을 낸다. serverName이 없거나 해당
     /// 서버에 Graphify 소스 디렉터리가 등록 안 돼 있으면 도구 없이 일반 응답만 받는다.
+    /// thorough=true("전체 분석")면 이상탐지된 엔드포인트와 직접 연관이 없어 보여도 백그라운드
+    /// 서비스/매니저 클래스까지 강제로 넓게 훑게 하고, 도구 호출 라운드도 늘린다.
     /// </summary>
-    Task<string> AnalyzeAsync(string prompt, string? serverName = null, CancellationToken ct = default);
+    Task<string> AnalyzeAsync(string prompt, string? serverName = null, bool thorough = false, CancellationToken ct = default);
 }
 
 /// <summary>
@@ -28,21 +30,24 @@ public class LmStudioClient(
 
     // 도구 호출을 무한히 허용하면 모델이 계속 캐고 들어가거나(느린 로컬 모델이라 체감 지연 큼),
     // 이상한 이름으로 반복 호출하며 맴돌 수 있어서 라운드를 제한 — 다 쓰면 그때까지 본 정보로 결론 강제.
-    private const int MaxToolRounds = 4;
+    // "전체 분석"(thorough)은 배경 서비스까지 일부러 넓게 훑게 시키는 거라 라운드를 더 준다.
+    private const int MaxToolRoundsQuick = 4;
+    private const int MaxToolRoundsFull = 8;
 
-    public async Task<string> AnalyzeAsync(string prompt, string? serverName = null, CancellationToken ct = default)
+    public async Task<string> AnalyzeAsync(string prompt, string? serverName = null, bool thorough = false, CancellationToken ct = default)
     {
         var tools = serverName is not null && graphify.GetSourceDir(serverName) is not null ? BuildTools() : null;
+        var maxToolRounds = thorough ? MaxToolRoundsFull : MaxToolRoundsQuick;
 
         var messages = new List<ChatMessage>
         {
-            new("system", BuildSystemPrompt(tools is not null)),
+            new("system", BuildSystemPrompt(tools is not null, thorough)),
             new("user", prompt),
         };
 
         for (int round = 0; ; round++)
         {
-            var forceNoTools = round >= MaxToolRounds;
+            var forceNoTools = round >= maxToolRounds;
             var request = new ChatCompletionRequest
             {
                 Model = _options.Model,
@@ -102,7 +107,7 @@ public class LmStudioClient(
         return new ChatMessage("tool", result) { ToolCallId = call.Id };
     }
 
-    private static string BuildSystemPrompt(bool toolsEnabled) =>
+    private static string BuildSystemPrompt(bool toolsEnabled, bool thorough) =>
         "너는 APM(애플리케이션 성능 모니터링) 전문가야. 주어진 이상탐지 지표를 근거로 " +
         "발생 가능한 원인을 한국어로 2~4문장으로 간결하게 설명하고, 실행 가능한 개선 방향을 1~2가지 제안해. " +
         "추측일 경우 단정하지 말고 가능성으로 표현해. " +
@@ -113,7 +118,14 @@ public class LmStudioClient(
               "이상탐지된 엔드포인트 하나에만 시야를 좁히지 말고, 같은 시간대에 다른 엔드포인트도 같이 " +
               "이상탐지됐다면 백그라운드 서비스나 공유 인프라처럼 여러 엔드포인트에 공통으로 영향을 줄 만한 " +
               "코드도 이름을 추측해서 찾아봐(예: XxxManager, XxxService 같은 이름). 확신이 설 때까지 " +
-              "도구를 반복 호출해도 되지만, 결론이 서면 더 호출하지 말고 바로 답해."
+              "도구를 반복 호출해도 되지만, 결론이 서면 더 호출하지 말고 바로 답해." +
+              (thorough
+                  ? " 지금은 \"전체 분석\" 모드야 — 다른 엔드포인트가 같이 이상탐지되지 않았어도, " +
+                    "이상탐지된 엔드포인트의 핸들러 코드만 보고 끝내지 마. graphify_query로 \"Manager\", " +
+                    "\"Service\", \"Background\", \"Loop\" 같은 넓은 검색어를 최소 한 번 이상 시도해서 " +
+                    "프로젝트에 어떤 백그라운드/주기적 처리 클래스가 있는지 먼저 확인하고, 그중 이 엔드포인트에 " +
+                    "영향을 줄 만한 게 있는지 판단해. 눈에 보이는 핸들러 코드만 보고 성급히 결론 내지 마."
+                  : "")
             : "");
 
     private static List<ToolDefinition> BuildTools() =>

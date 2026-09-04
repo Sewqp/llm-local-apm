@@ -1,11 +1,16 @@
-export default function AnalysisPanel({ analyses, onRun, running }) {
+export default function AnalysisPanel({ analyses, onRun, running, runningMode }) {
   return (
     <div className="panel">
       <div className="panel-header">
         <h3>이상탐지 원인 분석 (로컬 LLM)</h3>
-        <button onClick={onRun} disabled={running}>
-          {running ? "분석 중..." : "이상탐지 + LLM 분석 실행"}
-        </button>
+        <div className="analysis-run-buttons">
+          <button onClick={() => onRun("quick")} disabled={running} title="이상탐지된 엔드포인트 위주로 빠르게 분석">
+            {runningMode === "quick" ? "빠른 분석 중..." : "빠른 분석"}
+          </button>
+          <button onClick={() => onRun("full")} disabled={running} title="co-occurrence 신호가 없어도 배경 서비스까지 강제로 넓게 탐색">
+            {runningMode === "full" ? "전체 분석 중..." : "전체 분석"}
+          </button>
+        </div>
       </div>
 
       {analyses.length === 0 && (
@@ -19,6 +24,7 @@ export default function AnalysisPanel({ analyses, onRun, running }) {
           <li key={i} className="analysis-item">
             <div className="analysis-item-header">
               <span className="badge badge-advisory">참고용 추천</span>
+              <span className={`badge badge-mode-${a.mode}`}>{a.mode === "full" ? "전체 분석" : "빠른 분석"}</span>
               <span className="analysis-path">{a.serverName} · {a.path}</span>
               <span className="analysis-time">{new Date(a.timestamp).toLocaleString()}</span>
             </div>

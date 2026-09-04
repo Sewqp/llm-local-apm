@@ -16,7 +16,7 @@ function App() {
   const [chartData, setChartData] = useState([]);
   const [summary, setSummary] = useState([]);
   const [analyses, setAnalyses] = useState([]);
-  const [running, setRunning] = useState(false);
+  const [running, setRunning] = useState(null); // null | "quick" | "full" — 어느 모드가 도는 중인지
   const [error, setError] = useState(null);
   const [serverNames, setServerNames] = useState([]);
   const [selectedServer, setSelectedServer] = useState(null);
@@ -53,15 +53,15 @@ function App() {
     return () => clearInterval(id);
   }, [refresh, loadAnalysisHistory]);
 
-  const handleRunAnalysis = async () => {
-    setRunning(true);
+  const handleRunAnalysis = async (mode) => {
+    setRunning(mode);
     try {
-      await api.runAnalysis(WINDOW_MINUTES, selectedServer);
+      await api.runAnalysis(WINDOW_MINUTES, selectedServer, mode);
       await loadAnalysisHistory();
     } catch (e) {
       setError(e.message);
     } finally {
-      setRunning(false);
+      setRunning(null);
     }
   };
 
@@ -101,7 +101,7 @@ function App() {
         <ErrorRateChart data={chartData} />
       </div>
 
-      <AnalysisPanel analyses={analyses} onRun={handleRunAnalysis} running={running} />
+      <AnalysisPanel analyses={analyses} onRun={handleRunAnalysis} running={running !== null} runningMode={running} />
     </div>
   );
 }
