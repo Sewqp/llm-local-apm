@@ -1,0 +1,415 @@
+{
+  "schema_version": 1,
+  "created_on": "2026-10-26",
+  "evidence_bundle": ".local-evidence/2026-10-26",
+  "purpose": "Historical evidence and future evaluation specification, not model scores or ready-to-train labels.",
+  "split_policy": "Keep all variants of one incident/run together; split_group is a minimum association, not proof of independence. Review before assigning train/validation/test.",
+  "cases": [
+    {
+      "id": "VAL-001",
+      "title": "3만 클라이언트 접속 및 지표 수집",
+      "category": "observed_load",
+      "split_group": "initial-load",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "screenshots/trickcal-30000-client.png"
+        },
+        {
+          "path": "screenshots/initial-dashboard-66866.png"
+        },
+        {
+          "path": "databases/initial.db"
+        }
+      ],
+      "expected_interpretation": [
+        "화면의 connected/loginOk 30000과 실패 0을 보존한다.",
+        "initial DB 66866행은 접속자 수와 구분한다."
+      ],
+      "unsupported_claims": [
+        "모든 화면과 DB가 같은 run이라는 연결",
+        "실제 운영 환경 또는 무한 규모의 안정성"
+      ],
+      "next_evaluation": "클라이언트 요약·서버 지표·계측 오버헤드를 같은 run_id로 저장하고 접속 조건을 고정한다."
+    },
+    {
+      "id": "VAL-002",
+      "title": "HeartbeatManager 전체 세션 순차 Grain 호출",
+      "category": "structural_risk",
+      "split_group": "heartbeat-sweep",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "database-exports/later-analyses.json",
+          "database": "later",
+          "analysis_ids": [
+            19,
+            33,
+            34
+          ]
+        },
+        {
+          "path": "screenshots/heartbeat-candidate-success.png"
+        },
+        {
+          "path": "screenshots/login-candidate-success.png"
+        },
+        {
+          "path": "sources/trickcal/src/GameServer/Network/HeartbeatManager.cs"
+        },
+        {
+          "path": "sources/trickcal/src/GameServer/Network/SessionManager.cs"
+        }
+      ],
+      "expected_interpretation": [
+        "실제 순차 await 구조를 코드로 확인한다.",
+        "성공 화면은 quick ID 33/34이며 함수 후보는 L18이다.",
+        "관련 후보 제시와 지연 원인 확정을 분리한다."
+      ],
+      "unsupported_claims": [
+        "루프 L46~51을 모델이 직접 입증함",
+        "특정 지연의 인과관계 또는 Task.WhenAll 성능 개선"
+      ],
+      "next_evaluation": "동일 부하에서 스윕·Grain 대기와 요청 trace를 연결하고 관련 파일 Top-3 및 근거 정확도를 평가한다."
+    },
+    {
+      "id": "VAL-003",
+      "title": "근접 0 기준선과 배수·절대 증가량",
+      "category": "detector_interpretation",
+      "split_group": "near-zero-baseline",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "database-exports/initial-analyses.json",
+          "database": "initial",
+          "analysis_ids": [
+            2,
+            4
+          ]
+        },
+        {
+          "path": "sources/apm/src/CollectionServer/Services/AnomalyDetectionService.cs"
+        },
+        {
+          "path": "sources/apm/src/CollectionServer/Options/AnomalyDetectionOptions.cs"
+        },
+        {
+          "path": "history/apm-excerpts.json"
+        }
+      ],
+      "expected_interpretation": [
+        "배수와 절대 ms를 함께 해석한다.",
+        "과거 기준선과 현재 창 fallback을 구분한다.",
+        "5ms 조건은 28ms 증가를 제거하지 않는다."
+      ],
+      "unsupported_claims": [
+        "실측된 오탐률 개선",
+        "직전 500명 데이터가 자동으로 과거 기준선임"
+      ],
+      "next_evaluation": "시간 경계·최소 표본·정상 지터·절대 증가량 경계를 명시한 고정 지표로 비교한다."
+    },
+    {
+      "id": "VAL-004",
+      "title": "의도적으로 넣은 DebugHandler 오류와 스니펫",
+      "category": "injected_fault",
+      "split_group": "debug-handler",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "history/apm-excerpts.json"
+        },
+        {
+          "path": "history/debug-handler-user-confirmation.json"
+        },
+        {
+          "path": "sources/trickcal/src/GameServer/Packet/Handler/DebugHandler.cs"
+        },
+        {
+          "path": "memory-original/project_apm_graphify_todo.md"
+        }
+      ],
+      "expected_interpretation": [
+        "비관리자 재화 지급 후 예외는 주입한 테스트 오류다.",
+        "당시 사용자 확인과 코드가 있지만 해당 분석 DB 행은 없다."
+      ],
+      "unsupported_claims": [
+        "자연 발생 운영 사고",
+        "현재 복구한 DB에서 DebugHandler 정답 행을 확보함"
+      ],
+      "next_evaluation": "별도 테스트 계정·DB에서 주입 시나리오를 재현하고 요청/오류/도구 호출/후보/스니펫을 함께 저장한다."
+    },
+    {
+      "id": "VAL-005",
+      "title": "오래된 Graphify 그래프에 새 파일이 없음",
+      "category": "retrieval_issue",
+      "split_group": "graph-staleness",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "history/apm-excerpts.json"
+        },
+        {
+          "path": "sources/apm/src/CollectionServer/Services/GraphifyService.cs"
+        },
+        {
+          "path": "graph-current/graph.json"
+        }
+      ],
+      "expected_interpretation": [
+        "현재 그래프는 과거 실행 당시 그래프와 동일하다고 가정하지 않는다.",
+        "소스 변경과 그래프 버전을 연결해야 한다."
+      ],
+      "unsupported_claims": [
+        "현재 자동 리비전 무효화가 구현됨"
+      ],
+      "next_evaluation": "그래프 생성 후 새 클래스 추가/이름 변경을 하고 갱신 또는 오래된 상태 표시를 확인한다."
+    },
+    {
+      "id": "VAL-006",
+      "title": "다중 단어 패킷 이름과 배경 서비스 탐색 누락",
+      "category": "retrieval_issue",
+      "split_group": "candidate-discovery",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "history/apm-excerpts.json"
+        },
+        {
+          "path": "memory-original/project_apm_graphify_todo.md"
+        },
+        {
+          "path": "sources/apm/src/CollectionServer/Services/GraphifyService.cs"
+        },
+        {
+          "path": "sources/apm/src/CollectionServer/Services/LmStudioClient.cs"
+        }
+      ],
+      "expected_interpretation": [
+        "과거 첫 Pascal 단어 보정과 현재 도구 호출 구현을 구분한다.",
+        "핸들러 외 배경 서비스도 조사 대상으로 포함한다."
+      ],
+      "unsupported_claims": [
+        "제거된 BuildClassCandidates 보정이 현재 탐색 흐름임"
+      ],
+      "next_evaluation": "Debug/Theater/Character 이름과 배경 Manager 검색을 독립 사례로 만들고 실제 도구 호출 근거를 평가한다."
+    },
+    {
+      "id": "VAL-007",
+      "title": "대괄호·줄 번호 누락 등 응답 형식 실패",
+      "category": "output_parsing_issue",
+      "split_group": "format-variants",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "database-exports/later-analyses.json",
+          "database": "later",
+          "analysis_ids": [
+            29,
+            30
+          ]
+        },
+        {
+          "path": "sources/apm/src/CollectionServer/Controllers/AnalysisController.cs"
+        },
+        {
+          "path": "git/analysis-controller-working.patch"
+        }
+      ],
+      "expected_interpretation": [
+        "과거 행의 후보 파싱 실패와 현재 수정본을 구분한다.",
+        "파일·줄·스니펫 검증에 실패하면 누락 사실을 반환한다."
+      ],
+      "unsupported_claims": [
+        "모델이 제공하지 않은 줄 번호를 정답으로 생성"
+      ],
+      "next_evaluation": "원본 형식 실패 입력과 구조화 응답을 비교해 유효성/근거 연결률을 측정한다."
+    },
+    {
+      "id": "VAL-008",
+      "title": "quick/full의 후보 누락과 반복 실행 변동",
+      "category": "model_inconsistency",
+      "split_group": "candidate-discovery",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "database-exports/later-analyses.json",
+          "database": "later",
+          "analysis_ids": [
+            27,
+            28,
+            31,
+            32,
+            33,
+            34
+          ]
+        },
+        {
+          "path": "screenshots/login-no-code-candidate.png"
+        },
+        {
+          "path": "screenshots/login-shallow-code-candidates.png"
+        },
+        {
+          "path": "history/apm-excerpts.json"
+        }
+      ],
+      "expected_interpretation": [
+        "full ID 28/32는 후보가 없고 quick ID 33/34는 관련 후보가 있다.",
+        "500명 실행 불일치의 단일 원인은 확정하지 않는다."
+      ],
+      "unsupported_claims": [
+        "full이면 반드시 찾음",
+        "동시 엔드포인트 이상이 필수조건임",
+        "16행으로 전체 성공률을 산출"
+      ],
+      "next_evaluation": "같은 근거·모델·프롬프트로 반복 평가하고 도구 미사용/근거 부족/추측을 분리 기록한다."
+    },
+    {
+      "id": "VAL-009",
+      "title": "LM Studio 연결 실패와 60초 시간 초과",
+      "category": "runtime_failure",
+      "split_group": "model-availability",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "database-exports/later-analyses.json",
+          "database": "later",
+          "analysis_ids": [
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "path": "sources/apm/src/CollectionServer/Services/LmStudioClient.cs"
+        }
+      ],
+      "expected_interpretation": [
+        "ID 21/22 연결 실패, 23~26 시간 초과를 정상 분석과 구분한다."
+      ],
+      "unsupported_claims": [
+        "분석 실패 문장을 원인 분석 정답으로 학습",
+        "이 6건이 전체 장애율을 대표"
+      ],
+      "next_evaluation": "모델 미기동·지연·취소 조건에서 결과 상태, 대기 시간, 복구 동작을 검증한다."
+    },
+    {
+      "id": "VAL-010",
+      "title": "Task.WhenAll 변경의 효과 미입증 및 원복",
+      "category": "inconclusive_optimization",
+      "split_group": "heartbeat-sweep",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "history/apm-excerpts.json"
+        },
+        {
+          "path": "sources/trickcal/src/GameServer/Network/HeartbeatManager.cs"
+        },
+        {
+          "path": "database-exports/later-analyses.json",
+          "database": "later",
+          "analysis_ids": [
+            19,
+            20
+          ]
+        }
+      ],
+      "expected_interpretation": [
+        "사용자 결정 line 4402와 원복 line 4420을 유지한다.",
+        "현재 소스는 순차 버전이다."
+      ],
+      "unsupported_claims": [
+        "성능 개선 완료",
+        "동시 요청 폭증이 악화 원인으로 확정됨"
+      ],
+      "next_evaluation": "후속 변경 시 서버/클라이언트/빌드/기간을 통제하고 스윕 지연·오류·자원 사용을 비교한다."
+    },
+    {
+      "id": "VAL-011",
+      "title": "초기 로그인 이상 탐지와 일반 원인 후보",
+      "category": "observed_analysis",
+      "split_group": "initial-load",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "database-exports/initial-analyses.json",
+          "database": "initial",
+          "analysis_ids": [
+            1,
+            3
+          ]
+        },
+        {
+          "path": "sources/apm/README.md"
+        },
+        {
+          "path": "memory-original/project_llm_local_apm.md"
+        }
+      ],
+      "expected_interpretation": [
+        "초기 연동의 지연 탐지와 LLM 개선안 제안 성과를 보존한다.",
+        "DB/인증 제안은 확인이 필요한 가설이다."
+      ],
+      "unsupported_claims": [
+        "저장된 답변만으로 PostgreSQL 풀 경합을 확정",
+        "다른 프로젝트의 DB 한도 사건과 동일시"
+      ],
+      "next_evaluation": "DB 연결 획득·쿼리·인증 구간의 근거를 제공하고 원인 후보와 확정을 구분하는지 평가한다."
+    },
+    {
+      "id": "VAL-012",
+      "title": "양수 기준선이 0ms로 해석되는 정밀도 문제",
+      "category": "numeric_grounding_issue",
+      "split_group": "near-zero-baseline",
+      "status": "historical_evidence_catalogued",
+      "evaluation_status": "not_run",
+      "training_eligible": false,
+      "evidence": [
+        {
+          "path": "database-exports/initial-analyses.json",
+          "database": "initial",
+          "analysis_ids": [
+            2
+          ]
+        },
+        {
+          "path": "sources/apm/src/CollectionServer/Controllers/AnalysisController.cs"
+        }
+      ],
+      "expected_interpretation": [
+        "0.018916ms는 0이 아니다.",
+        "원본 전체 프롬프트가 없으므로 포맷만을 단일 원인으로 확정하지 않는다."
+      ],
+      "unsupported_claims": [
+        "양수 기준선을 0이라며 비교 불가능하다고 단정"
+      ],
+      "next_evaluation": "원래 단위·정밀도를 보존한 프롬프트로 0/양수 근접값/결측을 구분하는지 평가한다."
+    }
+  ]
+}

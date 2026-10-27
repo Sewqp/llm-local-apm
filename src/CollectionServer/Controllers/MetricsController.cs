@@ -8,123 +8,119 @@ namespace CollectionServer.Controllers;
 
 [ApiController]
 [Route("api/metrics")]
-public class MetricsController(ApmDbContext db) : ControllerBase
+public class MetricsController(ApmDbContext db, IConfiguration configuration) : ControllerBase
 {
-    // 대상 서버의 계측 미들웨어가 요청 1건마다 호출
     [HttpPost]
+    [RequestSizeLimit(16384)]
     public async Task<IActionResult> Ingest([FromBody] MetricIngestDto dto, CancellationToken ct)
     {
-        var record = new MetricRecord
+        if (string.IsNullOrWhiteSpace(dto.ServerName) || dto.ServerName.Length > 100 ||
+            string.IsNullOrWhiteSpace(dto.Path) || dto.Path.Length > 250 ||
+            string.IsNullOrWhiteSpace(dto.Method) || dto.Method.Length > 20 ||
+            !double.IsFinite(dto.DurationMs) || dto.DurationMs is < 0 or > 86400000 ||
+            dto.StatusCode is < 100 or > 599 || dto.Timestamp > DateTime.UtcNow.AddMinutes(5)) return BadRequest();
+        db.Metrics.Add(new MetricRecord
         {
-            Timestamp = dto.Timestamp,
-            ServerName = dto.ServerName,
-            Method = dto.Method,
-            Path = dto.Path,
-            StatusCode = dto.StatusCode,
-            DurationMs = dto.DurationMs
-        };
-
-        db.Metrics.Add(record);
+            Timestamp = dto.Timestamp, ServerName = dto.ServerName, Method = dto.Method,
+            Path = dto.Path, StatusCode = dto.StatusCode, DurationMs = dto.DurationMs
+        });
         await db.SaveChangesAsync(ct);
-
         return Accepted();
     }
 
-    // 대시보드 서버 선택 드롭다운용 — 최근 구간에 데이터가 있는 서버 이름 목록
     [HttpGet("server-names")]
-    public async Task<IActionResult> ServerNames([FromQuery] int minutes = 30, CancellationToken ct = default)
+    public async Task<IActionResult> ServerNames(int minutes = 30, CancellationToken ct = default)
     {
-        var since = DateTime.UtcNow.AddMinutes(-minutes);
-        var names = await db.Metrics
-            .Where(m => m.Timestamp >= since)
-            .Select(m => m.ServerName)
-            .Distinct()
-            .OrderBy(n => n)
-            .ToListAsync(ct);
-
-        return Ok(names);
+        var since = DateTime.UtcNow.AddMinutes(-Math.Clamp(minutes, 1, 1440));
+        return Ok(await db.Metrics.Where(m => m.Timestamp >= since).Select(m => m.ServerName)
+            .Distinct().OrderBy(n => n).Take(100).ToListAsync(ct));
     }
 
-    // 대시보드 시계열 그래프용 원본 데이터 조회
     [HttpGet]
-    public async Task<IActionResult> Query(
-        [FromQuery] int minutes = 30,
-        [FromQuery] string? path = null,
-        [FromQuery] string? server = null,
-        CancellationToken ct = default)
+    public async Task<IActionResult> Query(int minutes = 30, string? path = null, string? server = null,
+        int limit = 2000, CancellationToken ct = default)
     {
+        if (minutes is < 1 or > 1440 || limit is < 1 or > 10000) return BadRequest();
         var since = DateTime.UtcNow.AddMinutes(-minutes);
-        var query = db.Metrics.Where(m => m.Timestamp >= since);
-        if (!string.IsNullOrWhiteSpace(path))
-            query = query.Where(m => m.Path == path);
-        if (!string.IsNullOrWhiteSpace(server))
-            query = query.Where(m => m.ServerName == server);
-
-        var items = await query
-            .OrderBy(m => m.Timestamp)
-            .Select(m => new
-            {
-                m.Id,
-                m.Timestamp,
-                m.ServerName,
-                m.Method,
-                m.Path,
-                m.StatusCode,
-                m.DurationMs
-            })
-            .ToListAsync(ct);
-
-        return Ok(items);
+        var query = db.Metrics.AsNoTracking().Where(m => m.Timestamp >= since);
+        if (!string.IsNullOrWhiteSpace(path)) query = query.Where(m => m.Path == path);
+        if (!string.IsNullOrWhiteSpace(server)) query = query.Where(m => m.ServerName == server);
+        var items = await query.OrderByDescending(m => m.Timestamp).ThenByDescending(m => m.Id).Take(limit + 1).ToListAsync(ct);
+        Response.Headers["X-APM-Truncated"] = items.Count > limit ? "true" : "false";
+        return Ok(items.Take(limit).OrderBy(m => m.Timestamp));
     }
 
-    // 데모/테스트 반복용 초기화 — 메트릭·분석 이력을 전부 비움(서버 등록 목록 등 설정은 안 건드림).
-    // 대상은 지금 CollectionServer가 실제로 쓰고 있는 DB 파일 하나뿐이라(dotnet run 기준
-    // bin/.../apm.db), src/CollectionServer/apm.db에 쌓인 과거 실측 데이터와는 무관함.
     [HttpPost("reset")]
     public async Task<IActionResult> Reset(CancellationToken ct)
     {
+        if (!configuration.GetValue<bool>("Telemetry:AllowDestructiveReset"))
+            return StatusCode(403, new { error = "원본 보호를 위해 초기화가 비활성화되어 있습니다. 별도 테스트 DB를 사용하세요." });
+        await using var transaction = await db.Database.BeginTransactionAsync(ct);
         await db.Metrics.ExecuteDeleteAsync(ct);
         await db.Analyses.ExecuteDeleteAsync(ct);
+        await transaction.CommitAsync(ct);
         return NoContent();
     }
 
-    // 대시보드 상단 요약 카드 / 경로별 통계용
     [HttpGet("summary")]
-    public async Task<IActionResult> Summary(
-        [FromQuery] int minutes = 30, [FromQuery] string? server = null, CancellationToken ct = default)
+    public async Task<IActionResult> Summary(int minutes = 30, string? server = null, CancellationToken ct = default)
     {
+        if (minutes is < 1 or > 1440) return BadRequest();
         var since = DateTime.UtcNow.AddMinutes(-minutes);
+        var selected = server ?? "";
+        // SQLite computes exact nearest-rank percentiles; no full duration list is materialized in the API process.
+        var rows = await db.Database.SqlQuery<SummaryRow>($"""
+            WITH ranked AS (
+                SELECT Path, DurationMs, StatusCode, Outcome,
+                    ROW_NUMBER() OVER(PARTITION BY Path ORDER BY DurationMs) AS rn,
+                    COUNT(*) OVER(PARTITION BY Path) AS n
+                FROM Metrics WHERE Method <> 'BACKGROUND' AND Timestamp >= {since} AND ({selected} = '' OR ServerName = {selected})
+            )
+            SELECT Path, COUNT(*) AS Count, AVG(DurationMs) AS AvgDurationMs,
+                MAX(CASE WHEN rn = (n * 50 + 99) / 100 THEN DurationMs END) AS P50DurationMs,
+                MAX(CASE WHEN rn = (n * 95 + 99) / 100 THEN DurationMs END) AS P95DurationMs,
+                MAX(CASE WHEN rn = (n * 99 + 99) / 100 THEN DurationMs END) AS P99DurationMs,
+                1.0 * SUM(CASE WHEN StatusCode >= 500 THEN 1 ELSE 0 END) / COUNT(*) AS ErrorRate,
+                1.0 * SUM(CASE WHEN Outcome = 'rejected' THEN 1 ELSE 0 END) / COUNT(*) AS RejectedRate,
+                1.0 * COUNT(*) / ({minutes} * 60) AS RequestsPerSecond
+            FROM ranked GROUP BY Path ORDER BY AvgDurationMs DESC
+            """).ToListAsync(ct);
+        return Ok(rows);
+    }
 
-        var scoped = db.Metrics.Where(m => m.Timestamp >= since);
-        if (!string.IsNullOrWhiteSpace(server))
-            scoped = scoped.Where(m => m.ServerName == server);
+    [HttpGet("timeseries")]
+    public async Task<IActionResult> Timeseries(int minutes = 30, string? server = null, CancellationToken ct = default)
+    {
+        if (minutes is < 1 or > 1440) return BadRequest();
+        var since = DateTime.UtcNow.AddMinutes(-minutes);
+        var selected = server ?? "";
+        return Ok(await db.Database.SqlQuery<TimeseriesRow>($"""
+            SELECT (CAST(strftime('%s', Timestamp) AS INTEGER) / 60) * 60000 AS Time,
+                AVG(DurationMs) AS AvgDurationMs, COUNT(*) AS RequestCount,
+                1.0 * SUM(CASE WHEN StatusCode >= 500 THEN 1 ELSE 0 END) / COUNT(*) AS ErrorRate
+            FROM Metrics WHERE Method <> 'BACKGROUND' AND Timestamp >= {since} AND ({selected} = '' OR ServerName = {selected})
+            GROUP BY Time ORDER BY Time
+            """).ToListAsync(ct));
+    }
 
-        var rows = await scoped
-            .GroupBy(m => m.Path)
-            .Select(g => new
-            {
-                Path = g.Key,
-                Count = g.LongCount(),
-                AvgDurationMs = g.Average(m => m.DurationMs),
-                ErrorCount = g.Count(m => m.StatusCode >= 400),
-                Durations = g.Select(m => m.DurationMs).ToList()
-            })
-            .ToListAsync(ct);
+    public sealed class SummaryRow
+    {
+        public string Path { get; set; } = "";
+        public long Count { get; set; }
+        public double AvgDurationMs { get; set; }
+        public double P50DurationMs { get; set; }
+        public double P95DurationMs { get; set; }
+        public double P99DurationMs { get; set; }
+        public double ErrorRate { get; set; }
+        public double RejectedRate { get; set; }
+        public double RequestsPerSecond { get; set; }
+    }
 
-        var summaries = rows.Select(r =>
-        {
-            var sorted = r.Durations.OrderBy(d => d).ToList();
-            var p95Index = Math.Min(sorted.Count - 1, (int)Math.Ceiling(sorted.Count * 0.95) - 1);
-            var p95 = sorted.Count > 0 ? sorted[Math.Max(0, p95Index)] : 0;
-
-            return new MetricSummaryDto(
-                r.Path,
-                r.Count,
-                Math.Round(r.AvgDurationMs, 1),
-                Math.Round(p95, 1),
-                r.Count > 0 ? Math.Round((double)r.ErrorCount / r.Count, 4) : 0);
-        }).OrderByDescending(s => s.AvgDurationMs);
-
-        return Ok(summaries);
+    public sealed class TimeseriesRow
+    {
+        public long Time { get; set; }
+        public double AvgDurationMs { get; set; }
+        public long RequestCount { get; set; }
+        public double ErrorRate { get; set; }
     }
 }

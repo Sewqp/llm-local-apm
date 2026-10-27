@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { api } from "./api";
 import SummaryCards from "./components/SummaryCards";
-import ResponseTimeChart from "./components/ResponseTimeChart";
-import ErrorRateChart from "./components/ErrorRateChart";
 import AnalysisPanel from "./components/AnalysisPanel";
 import ServerSelector from "./components/ServerSelector";
 import ServerManagerPanel from "./components/ServerManagerPanel";
-import { bucketMetrics } from "./utils/bucket";
+import TraceExplorer from "./components/TraceExplorer";
 
 const WINDOW_MINUTES = 15;
 const POLL_INTERVAL_MS = 5000;
+const ResponseTimeChart = lazy(() => import("./components/ResponseTimeChart"));
+const ErrorRateChart = lazy(() => import("./components/ErrorRateChart"));
 
 function App() {
   const [chartData, setChartData] = useState([]);
@@ -24,11 +24,11 @@ function App() {
   const refresh = useCallback(async () => {
     try {
       const [metrics, summaryData, names] = await Promise.all([
-        api.getMetrics(WINDOW_MINUTES, selectedServer),
+        api.getTimeseries(WINDOW_MINUTES, selectedServer),
         api.getSummary(WINDOW_MINUTES, selectedServer),
         api.getServerNames(WINDOW_MINUTES),
       ]);
-      setChartData(bucketMetrics(metrics));
+      setChartData(metrics.map(m => ({ ...m, label: new Date(m.time).toLocaleTimeString(), errorRate: m.errorRate * 100 })));
       setSummary(summaryData);
       setServerNames(names);
       setError(null);
@@ -65,15 +65,6 @@ function App() {
     }
   };
 
-  const handleReset = async () => {
-    if (!window.confirm("메트릭·분석 이력을 전부 지웁니다(서버 등록 목록은 그대로 유지). 계속할까요?")) return;
-    try {
-      await api.resetData();
-      await Promise.all([refresh(), loadAnalysisHistory()]);
-    } catch (e) {
-      setError(e.message);
-    }
-  };
 
   return (
     <div className="app">
@@ -85,7 +76,7 @@ function App() {
           </div>
           <div className="header-actions">
             <ServerSelector serverNames={serverNames} selected={selectedServer} onChange={setSelectedServer} />
-            <button className="reset-button" onClick={handleReset}>초기화</button>
+
           </div>
         </div>
       </header>
@@ -95,11 +86,12 @@ function App() {
       <ServerManagerPanel />
 
       <SummaryCards summary={summary} />
+      <TraceExplorer key={selectedServer ?? "all"} server={selectedServer} />
 
-      <div className="chart-grid">
+      <Suspense fallback={<div className="panel">차트를 불러오는 중입니다…</div>}><div className="chart-grid">
         <ResponseTimeChart data={chartData} />
         <ErrorRateChart data={chartData} />
-      </div>
+      </div></Suspense>
 
       <AnalysisPanel analyses={analyses} onRun={handleRunAnalysis} running={running !== null} runningMode={running} />
     </div>

@@ -4,6 +4,7 @@ using CollectionServer.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+if (string.IsNullOrWhiteSpace(builder.Configuration["urls"])) builder.WebHost.UseUrls("http://127.0.0.1:5219");
 
 // 개인 환경의 실제 경로(ManagedServers 등)는 git에 커밋되는 appsettings.json 대신
 // 이 파일에 넣는다 — .gitignore 처리되어 저장소에는 예시 값만 남는다.
@@ -28,9 +29,12 @@ builder.Services.AddSingleton<IGraphifyService, GraphifyService>();
 builder.Services.AddHttpClient<ILmStudioClient, LmStudioClient>((sp, http) =>
 {
     var opts = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<LmStudioOptions>>().Value;
-    http.BaseAddress = new Uri(opts.BaseUrl);
+    var endpoint = new Uri(opts.BaseUrl);
+    if (!endpoint.IsLoopback || endpoint.Scheme is not ("http" or "https"))
+        throw new InvalidOperationException("LM Studio endpoint must be local; remote fallback is disabled.");
+    http.BaseAddress = endpoint;
     http.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
-});
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 
 builder.Services.AddScoped<IAnomalyDetectionService, AnomalyDetectionService>();
 
@@ -49,12 +53,14 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHostedService<TelemetryRetentionService>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApmDbContext>();
     db.Database.EnsureCreated();
+    TelemetrySchema.Ensure(db);
 
     // EnsureCreated()는 스키마 버전 관리가 없어 기존 apm.db엔 새 컬럼이 안 생긴다(누적된 실측 데이터라
     // db를 지우고 새로 만들 수 없음) — Analyses 테이블에 SuspectedCode 컬럼이 없으면 여기서만 추가한다.
@@ -74,7 +80,29 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.Use(async (context, next) =>
+{
+    var address = context.Connection.RemoteIpAddress;
+    var host = context.Request.Host.Host;
+    if (address is not null && !System.Net.IPAddress.IsLoopback(address) ||
+        !(host.Equals("localhost", StringComparison.OrdinalIgnoreCase) ||
+          System.Net.IPAddress.TryParse(host.Trim('[', ']'), out var hostAddress) && System.Net.IPAddress.IsLoopback(hostAddress)))
+    {
+        context.Response.StatusCode = 403;
+        return;
+    }
+    if (context.Request.Headers.TryGetValue("Origin", out var origin) &&
+        !string.Equals(origin, $"{context.Request.Scheme}://{context.Request.Host}", StringComparison.OrdinalIgnoreCase) &&
+        !(builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? ["http://localhost:5173"])
+            .Contains(origin.ToString(), StringComparer.OrdinalIgnoreCase))
+    {
+        context.Response.StatusCode = 403;
+        return;
+    }
+    await next();
+});
 app.UseCors(DashboardCorsPolicy);
+app.MapGet("/api/health", () => Results.Ok(new { status = "ok", version = "local-apm-v2", access = "loopback-only" }));
 
 app.UseAuthorization();
 

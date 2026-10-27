@@ -43,6 +43,12 @@ async function sendAction(path, method, body) {
 }
 
 export const api = {
+  getTimeseries: (minutes = 30, server = null) => getJson(`/api/metrics/timeseries?${withServer(new URLSearchParams({ minutes }), server)}`),
+  getTraces: (filters) => getJson(`/api/traces?${new URLSearchParams(Object.entries(filters).filter(([, v]) => v !== null && v !== undefined && v !== ""))}`),
+  getTrace: (id) => getJson(`/api/traces/${encodeURIComponent(id)}`),
+  getRuntime: (server) => getJson(`/api/traces/runtime?${withServer(new URLSearchParams(), server)}`),
+  investigateTrace: (id) => postJson(`/api/traces/${encodeURIComponent(id)}/investigate`),
+  getInvestigations: (id) => getJson(`/api/traces/${encodeURIComponent(id)}/investigations`),
   getMetrics: (minutes = 30, server = null) =>
     getJson(`/api/metrics?${withServer(new URLSearchParams({ minutes }), server)}`),
   getSummary: (minutes = 30, server = null) =>

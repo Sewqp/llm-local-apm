@@ -21,7 +21,9 @@ public partial class AnalysisController(
     private const int SnippetContextLines = 5; // 의심 라인 앞뒤로 보여줄 줄 수
 
     // "의심 코드 N: ..." 형식의 줄을 전부 뽑아낸다(N번째 후보, 후보마다 별도 코드 스니펫으로 보여주기 위함).
-    [GeneratedRegex(@"^\s*의심\s*코드\s*\d+\s*[:：]\s*(.+)$", RegexOptions.Multiline)]
+    // 로컬 모델이 가끔 줄 전체를 "[...]" 대괄호로 감싸서 낼 때가 있어(실측 확인됨) 맨 앞 대괄호를 허용하고,
+    // 캡처된 텍스트 끝에 남는 짝 대괄호(])도 같이 제거한다.
+    [GeneratedRegex(@"^\s*\[?\s*의심\s*코드\s*\d+\s*[:：]\s*(.+?)\s*\]?$", RegexOptions.Multiline)]
     private static partial Regex SuspectedCodeRegex();
 
     // 후보 한 줄 텍스트에서 "무슨 파일의 몇 번째 줄"을 최대한 관대하게 뽑아낸다. Graphify CLI의 출력
@@ -37,7 +39,7 @@ public partial class AnalysisController(
     public async Task<IActionResult> GetAnomalies(
         [FromQuery] int minutes = 30, [FromQuery] string? server = null, CancellationToken ct = default)
     {
-        var anomalies = await anomalyDetection.DetectAsync(TimeSpan.FromMinutes(minutes), server, ct);
+        var anomalies = await anomalyDetection.DetectAsync(TimeSpan.FromMinutes(Math.Clamp(minutes, 1, 1440)), server, ct);
         return Ok(anomalies);
     }
 
@@ -50,10 +52,10 @@ public partial class AnalysisController(
         [FromQuery] string mode = "quick", CancellationToken ct = default)
     {
         var thorough = mode == "full";
-        var anomalies = await anomalyDetection.DetectAsync(TimeSpan.FromMinutes(minutes), server, ct);
+        var anomalies = await anomalyDetection.DetectAsync(TimeSpan.FromMinutes(Math.Clamp(minutes, 1, 1440)), server, ct);
 
         var targets = anomalies
-            .GroupBy(a => a.Path)
+            .GroupBy(a => new { a.ServerName, a.Path })
             .Select(g => g.OrderByDescending(a => a.Timestamp).First())
             .OrderByDescending(a => a.ObservedDurationMs)
             .Take(MaxLlmCallsPerRun)
@@ -66,7 +68,7 @@ public partial class AnalysisController(
             // 같은 실행(run)에서 다른 엔드포인트도 같이 이상탐지됐으면 알려줌 — 여러 엔드포인트가
             // 동시에 느려졌다면 각 핸들러 코드 자체보다 공유 인프라(백그라운드 서비스 등)가 원인일
             // 가능성이 높다는 신호라, LLM이 정밀탐색으로 그쪽도 찾아보게 유도하기 위함.
-            var others = targets.Where(t => t.Path != a.Path).Select(t => t.Path).Distinct().ToList();
+            var others = targets.Where(t => t.ServerName == a.ServerName && t.Path != a.Path).Select(t => t.Path).Distinct().ToList();
             var coOccurrenceSection = others.Count == 0
                 ? ""
                 : $"""
@@ -96,8 +98,8 @@ public partial class AnalysisController(
                  - 엔드포인트: {a.Path}
                  - 발생 시각(UTC): {a.Timestamp:yyyy-MM-dd HH:mm:ss}
                  - HTTP 상태코드: {a.StatusCode}
-                 - 관측 응답시간: {a.ObservedDurationMs:F0} ms
-                 - 기준선 평균 응답시간: {a.BaselineDurationMs:F0} ms
+                 - 관측 응답시간: {a.ObservedDurationMs:F4} ms
+                 - 기준선 평균 응답시간: {a.BaselineDurationMs:F4} ms
                  - 탐지 사유: {a.Reason}
                  {coOccurrenceSection}
                  {suspectSection}
@@ -152,7 +154,7 @@ public partial class AnalysisController(
 
         var rows = await scoped
             .OrderByDescending(a => a.CreatedAt)
-            .Take(limit)
+            .Take(Math.Clamp(limit, 1, 100))
             .ToListAsync(ct);
 
         // 스니펫은 저장해두지 않고 매번 실제 소스에서 다시 읽음(코드가 바뀌었을 수도 있고, 애초에
@@ -192,7 +194,7 @@ public partial class AnalysisController(
             }
 
             var rawFilePath = fileMatch.Groups[1].Value;
-            var lineNumber = int.Parse(fileMatch.Groups[2].Value);
+            var lineNumber = int.TryParse(fileMatch.Groups[2].Value, out var parsedLine) ? parsedLine : 0;
             var resolvedPath = ResolveSourceFile(sourceDir, rawFilePath);
 
             snippets.Add(new CodeSnippetDto(i + 1, line, rawFilePath, lineNumber,
@@ -207,12 +209,7 @@ public partial class AnalysisController(
     // 먼저 그대로 결합해보고, 없으면 파일명만으로 소스 트리 전체를 뒤진다.
     private static string? ResolveSourceFile(string sourceDir, string rawFilePath)
     {
-        var normalized = rawFilePath.Replace('\\', '/');
-        var direct = Path.Combine(sourceDir, normalized);
-        if (System.IO.File.Exists(direct)) return direct;
-
-        var fileName = Path.GetFileName(normalized);
-        return Directory.EnumerateFiles(sourceDir, fileName, SearchOption.AllDirectories).FirstOrDefault();
+        return SafeSourcePath.Resolve(sourceDir, rawFilePath);
     }
 
     private List<CodeSnippetLineDto>? ReadSnippet(string filePath, int lineNumber)

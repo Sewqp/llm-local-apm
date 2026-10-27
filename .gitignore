@@ -15,3 +15,9 @@ appsettings.Local.json
 .claude/
 src/TargetServer/graphify-out/
 
+# Private validation snapshots: databases, logs, media, and local paths
+/.local-evidence/
+
+# Python generated cache
+__pycache__/
+*.py[cod]

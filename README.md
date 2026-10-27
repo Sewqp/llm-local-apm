@@ -1,5 +1,13 @@
 # LLM 기반 로컬 APM 시스템
 
+> **다른 구조 적용 검증:** [HTTP·분산 호출·큐 워커 실행 예제](examples/ArchitectureDemo/README.md)와 [실측 결과](docs/apm-architectures-20261026.md). HTTP 동시 호출 32개, 기본 기록 1,406건 대조 및 비동기 실패 연결을 확인했습니다. 아래 3만 게임 동접과 구분하는 합성 예제입니다.
+
+> **남은 한계:** 같은 최종 코드에서도 긴 런타임 정체가 발생한 별도 실행은 기본 기록 3,154건이 유실됐습니다. 성공 실행과 함께 보존했으며, 영속 재전송과 장애 내성은 아직 남은 과제입니다.
+
+> **최신 수집 신뢰성 검증:** [3만 동접·60초 유지 및 기본 요청 100% 수집](docs/apm-reliability-20261026.md). 로그인 30,000건과 Heartbeat 414,969건을 전량 대조했습니다. 상세는 정상 1% 및 오류·느린 요청을 선택하며 상한 생략을 별도 기록합니다. [앞선 수집 실패](docs/concurrency-validation-20261026.md)도 보존합니다.
+
+> **2026-10-26 v2 구현:** 요청별 waterfall, DB·Redis·Grain 추적, 가명 유저별 조회, 오류·자원·수집 상태, 근거를 보존하는 로컬 LLM 조사를 추가했습니다. [상용 APM 비교·실측 결과](docs/apm-v2-20261026.md), [실행 안내](docs/apm-v2-runbook.md), [기존 실검증·실패 기록](docs/validation-baseline.md), [후속 강화·파인튜닝 계획](docs/apm-upgrade-plan.md), [작업 상태](docs/continuity.md)를 확인하세요. 아래는 초기 HTTP 데모 설명이며 최신 게임 서버 계측·검증 범위는 v2 문서를 기준으로 합니다.
+
 전통적인 APM(Application Performance Monitoring) 파이프라인에 **로컬에서 구동되는 LLM**을 결합해,
 수집된 메트릭에서 임계값 기반으로 이상을 탐지하고 그 원인/개선 방향을 자연어로 설명하는 시스템입니다.
 
