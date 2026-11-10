@@ -54,6 +54,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddHostedService<TelemetryRetentionService>();
+builder.Services.AddSingleton<TelemetryBatchWriter>();
+builder.Services.AddHostedService<TelemetryCheckpointService>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

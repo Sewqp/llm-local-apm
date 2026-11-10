@@ -206,7 +206,10 @@ function RuntimeCard({ sample }) {
     </div>
     <div className="collector-health">
       정상 상세 표본 {((sample.detailSampleRate ?? 0) * 100).toFixed(1)}% · 표본 제외 {(sample.sampledOutTraces ?? 0).toLocaleString()}건 · 상한 적용 {(sample.limitedTraces ?? 0).toLocaleString()}건 · 상세 유실 {(sample.detailsDropped ?? 0).toLocaleString()}개
-    </div><small className="runtime-instance">인스턴스 {short(sample.instanceId)} · 누적 수치는 해당 프로세스 기준입니다. 구 버전에는 항목별 카운터가 없습니다.</small>
+    </div>
+    <div className={`collector-health ${sample.spoolErrors > 0 || sample.spoolPendingBatches > 0 ? "degraded" : ""}`}>
+      디스크 재전송 대기 {(sample.spoolPendingRequests ?? 0).toLocaleString()}건 / {(sample.spoolPendingBatches ?? 0).toLocaleString()}배치 · {((sample.spoolBytes ?? 0) / 1048576).toFixed(1)} MB · 복구 {(sample.replayedRequests ?? 0).toLocaleString()}건 · 보관 실패 {(sample.spoolErrors ?? 0).toLocaleString()}회
+    </div><small className="runtime-instance">인스턴스 {short(sample.instanceId)} · 누적 수치는 해당 프로세스 기준입니다. 복구 수에는 이전 인스턴스의 보관 요청도 포함됩니다.</small>
   </div>;
 }
 

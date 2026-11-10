@@ -124,3 +124,18 @@ dotnet run --project tools/verification/SourcePathChecks -- '.local-evidence/new
 `check_game.py`의 상세 연결 회귀 검사는 게임 서버를 `APM_DETAIL_SAMPLE_RATE=1`로 실행해야 한다. 부하 검사는 기본 0.01을 사용하며 비교 조건에 남긴다. `sampled_out`은 정책상 제외, `truncated`/`buffer_limit`는 상한, `queue_dropped`는 상세 전송 큐 유실, `pending`은 상세 도착 대기다. pending이 지속되면 유실/HTTP 실패 카운터도 확인한다. 상세 유실과 기본 요청 유실을 혼동하지 않는다.
 
 에이전트 기본 상한: 요청 큐 32,768개, 상세 큐 32,768 span, 추적 버퍼 4,096개, trace당 내부 64개. 선택한 상세는 약 1초 기다린 후 묶는다. batch는 256개까지다. 저장기는 FULL 동기화, 32MiB cache, 16,384페이지 WAL checkpoint를 쓰며 디스크 공간과 긴 읽기 트랜잭션을 감시해야 한다. 해당 정책과 단기 실험 통과는 무제한·영속 무손실 보장을 뜻하지 않는다.
+
+
+## 2026-11-10 배치·디스크 재전송
+
+수집기를 먼저 재시작한 뒤 새 Agent를 배포한다. 새 Agent는 최대 1024 spans/metrics를 보내며 구 수집기의 256개 제한과 호환되지 않는다. HTTP 2MB와 logs 1024개 제한은 그대로 적용되며 큰 배치는 나눈다.
+
+Trickcal의 `ApmReporter`는 실행 파일 아래 `.apm-spool`을 기본 사용한다. 실행 디렉터리가 배포 때 교체된다면 `APM_SPOOL_DIRECTORY`를 별도의 쓰기 가능한 영구 경로로 지정한다. 같은 서비스·collector 주소에 대해 한 프로세스만 해당 디렉터리를 소유할 수 있다. 다중 인스턴스에는 별도 경로를 사용하고 재시작 때 각 경로를 유지한다. 공용 Agent 자체는 `AgentOptions.SpoolDirectory`를 지정해야 디스크 보관을 사용한다.
+
+기본 메모리 큐는 32,768개다. 포화 시 큐의 기본 요청을 최대 1024개씩 묶어 디스크에 보관한다. HTTP 재시도 후 실패한 배치도 동일한 BatchId로 보관한다. 파일 flush 및 원자적 rename 후 보관으로 집계하며, collector가 커밋을 확인한 뒤 파일을 삭제한다. 재시작 시 남은 파일을 같은 BatchId로 전송하므로 응답 유실로 중복 전송되어도 metrics를 중복 저장하지 않는다.
+
+스풀 한도는 기본 256MiB / 8192배치다. 디스크 오류·한도 초과는 SpoolErrors와 RequestsDropped/DetailsDropped에 드러난다. 프로세스 종료 시 아직 메모리에만 있던 항목의 강제 종료 복구, 무제한 수집기 장애, 7일보다 오래된 기록의 재수집을 보장하지 않는다. 수집기 장애 동안 runtime 자체가 도착하지 않을 수 있으므로 수신 시각도 함께 본다.
+
+대시보드 자원 카드에서 디스크 대기 요청/배치/용량, 복구 요청, 보관 실패를 확인한다. RequestsSent는 현재 Agent 인스턴스의 기본 요청 전송이고 ReplayedRequests에는 이전 인스턴스의 재전송도 포함된다. 스풀은 내부 추적 메타데이터를 포함하므로 공개 저장소에 올리지 않는다.
+
+검증: `dotnet run --project tools/verification/SenderRecoveryChecks -c Release`, `dotnet run --project tools/verification/CollectorWriterChecks -c Release`, `python tools/verification/check_api.py <분리된 수집기 URL>`.

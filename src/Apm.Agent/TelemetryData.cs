@@ -86,6 +86,12 @@ public sealed class RuntimeData
     public long LimitedTraces { get; set; }
     public long UncorrelatedSpansSkipped { get; set; }
     public double DetailSampleRate { get; set; }
+    public long SpoolPendingBatches { get; set; }
+    public long SpoolPendingRequests { get; set; }
+    public long SpoolBytes { get; set; }
+    public long RequestsSpooled { get; set; }
+    public long ReplayedRequests { get; set; }
+    public long SpoolErrors { get; set; }
 }
 
 public sealed record TelemetryBatch(string BatchId, List<SpanData> Spans, List<MetricData> Metrics,
@@ -93,7 +99,9 @@ public sealed record TelemetryBatch(string BatchId, List<SpanData> Spans, List<M
 
 public sealed record AgentHealth(long QueueDepth, long Dropped, long FailedBatches, long Sent,
     long RequestQueueDepth, long RequestsObserved, long RequestsSent, long RequestsDropped,
-    long DetailsDropped, long SampledOutTraces, long LimitedTraces, long UncorrelatedSpansSkipped);
+    long DetailsDropped, long SampledOutTraces, long LimitedTraces, long UncorrelatedSpansSkipped,
+    long SpoolPendingBatches = 0, long SpoolPendingRequests = 0, long SpoolBytes = 0,
+    long RequestsSpooled = 0, long ReplayedRequests = 0, long SpoolErrors = 0);
 
 public sealed class AgentOptions
 {
@@ -104,7 +112,11 @@ public sealed class AgentOptions
     // A bounded burst reserve for selected slow-login traces; independent of request statistics.
     public int QueueCapacity { get; init; } = 32768;
     public int RequestQueueCapacity { get; init; } = 32768;
-    public int BatchSize { get; init; } = 256;
+    public int BatchSize { get; init; } = 1024;
+    // Stable, exclusively owned directory enables bounded overflow/retry recovery across restarts.
+    public string? SpoolDirectory { get; init; }
+    public long MaxSpoolBytes { get; init; } = 256 * 1024 * 1024;
+    public int MaxSpoolBatches { get; init; } = 8192;
     public TimeSpan FlushInterval { get; init; } = TimeSpan.FromMilliseconds(250);
     public TimeSpan RequestTimeout { get; init; } = TimeSpan.FromSeconds(2);
     public int MaxAttempts { get; init; } = 2;

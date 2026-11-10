@@ -60,6 +60,9 @@ public static class TelemetrySchema
             "DetailsDropped", "SampledOutTraces", "LimitedTraces", "UncorrelatedSpansSkipped" })
             AddColumn(db, "RuntimeSamples", column, "INTEGER NOT NULL DEFAULT 0");
         AddColumn(db, "RuntimeSamples", "DetailSampleRate", "REAL NOT NULL DEFAULT 0");
+        foreach (var column in new[] { "SpoolPendingBatches", "SpoolPendingRequests", "SpoolBytes",
+            "RequestsSpooled", "ReplayedRequests", "SpoolErrors" })
+            AddColumn(db, "RuntimeSamples", column, "INTEGER NOT NULL DEFAULT 0");
         RemoveDuplicateIndex(db, "IX_Spans_Service_Start", "ServiceName", "StartTime");
         RemoveDuplicateIndex(db, "IX_Spans_Entry_Start", "IsEntry", "StartTime");
     }

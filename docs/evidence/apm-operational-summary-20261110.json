@@ -1,0 +1,387 @@
+{
+  "date": "2026-11-10",
+  "scope": "Local portfolio server; login and Heartbeat, six APM-enabled runs, 30,000 concurrent clients held for 60 seconds. Each packet ledger includes 1,000-client warmup. Not full-content capacity or a server speedup claim.",
+  "packetCount": 2659080,
+  "normalDetailSampleRate": 0.01,
+  "matchingPilot": {
+    "run": "trickcal-matchfix-final-20261109-224543",
+    "players": 20,
+    "unknownBefore": 20,
+    "unknownAfter": 0,
+    "resultTraces": 20,
+    "linkedResults": 20
+  },
+  "runs": [
+    {
+      "run": "ab-clean-02-after-on",
+      "condition": "after-on",
+      "mainConcurrentClients": 30000,
+      "warmupClients": 1000,
+      "holdSeconds": 60.0110901,
+      "packetLedger": {
+        "LoginRequest": {
+          "expected": 31000,
+          "entryCount": 31000,
+          "metricCount": 31000,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        },
+        "Heartbeat": {
+          "expected": 436806,
+          "entryCount": 436806,
+          "metricCount": 436806,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        }
+      },
+      "sqliteQuickCheck": [
+        "ok"
+      ],
+      "requestQueueObservedPeak": 5052,
+      "finalCounters": {
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "spoolPendingBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolErrors": 0
+      }
+    },
+    {
+      "run": "ab-clean-04-before-on",
+      "condition": "before-on",
+      "mainConcurrentClients": 30000,
+      "warmupClients": 1000,
+      "holdSeconds": 60.013221599999994,
+      "packetLedger": {
+        "LoginRequest": {
+          "expected": 31000,
+          "entryCount": 31000,
+          "metricCount": 31000,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        },
+        "Heartbeat": {
+          "expected": 434955,
+          "entryCount": 434955,
+          "metricCount": 434955,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        }
+      },
+      "sqliteQuickCheck": [
+        "ok"
+      ],
+      "requestQueueObservedPeak": 2311,
+      "finalCounters": {
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "spoolPendingBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolErrors": 0
+      }
+    },
+    {
+      "run": "ab-clean-06-before-on",
+      "condition": "before-on",
+      "mainConcurrentClients": 30000,
+      "warmupClients": 1000,
+      "holdSeconds": 60.0107005,
+      "packetLedger": {
+        "LoginRequest": {
+          "expected": 31000,
+          "entryCount": 31000,
+          "metricCount": 31000,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        },
+        "Heartbeat": {
+          "expected": 417814,
+          "entryCount": 417814,
+          "metricCount": 417814,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        }
+      },
+      "sqliteQuickCheck": [
+        "ok"
+      ],
+      "requestQueueObservedPeak": 1586,
+      "finalCounters": {
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 1,
+        "spoolPendingBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolErrors": 0
+      }
+    },
+    {
+      "run": "ab-clean-08-after-on",
+      "condition": "after-on",
+      "mainConcurrentClients": 30000,
+      "warmupClients": 1000,
+      "holdSeconds": 60.0029474,
+      "packetLedger": {
+        "LoginRequest": {
+          "expected": 31000,
+          "entryCount": 31000,
+          "metricCount": 31000,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        },
+        "Heartbeat": {
+          "expected": 421136,
+          "entryCount": 421136,
+          "metricCount": 421136,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        }
+      },
+      "sqliteQuickCheck": [
+        "ok"
+      ],
+      "requestQueueObservedPeak": 10619,
+      "finalCounters": {
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 1,
+        "spoolPendingBatches": 0,
+        "requestsSpooled": 3072,
+        "replayedRequests": 3072,
+        "spoolErrors": 0
+      }
+    },
+    {
+      "run": "ab-clean-09-before-on",
+      "condition": "before-on",
+      "mainConcurrentClients": 30000,
+      "warmupClients": 1000,
+      "holdSeconds": 60.004773300000004,
+      "packetLedger": {
+        "LoginRequest": {
+          "expected": 31000,
+          "entryCount": 31000,
+          "metricCount": 31000,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        },
+        "Heartbeat": {
+          "expected": 369781,
+          "entryCount": 369781,
+          "metricCount": 369781,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        }
+      },
+      "sqliteQuickCheck": [
+        "ok"
+      ],
+      "requestQueueObservedPeak": 1676,
+      "finalCounters": {
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 1,
+        "spoolPendingBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolErrors": 0
+      }
+    },
+    {
+      "run": "ab-clean-11-after-on",
+      "condition": "after-on",
+      "mainConcurrentClients": 30000,
+      "warmupClients": 1000,
+      "holdSeconds": 60.000637100000006,
+      "packetLedger": {
+        "LoginRequest": {
+          "expected": 31000,
+          "entryCount": 31000,
+          "metricCount": 31000,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        },
+        "Heartbeat": {
+          "expected": 392588,
+          "entryCount": 392588,
+          "metricCount": 392588,
+          "duplicateEntryTraceIds": 0,
+          "duplicateMetricTraceIds": 0,
+          "metricsWithoutEntry": 0,
+          "entriesWithoutMetric": 0
+        }
+      },
+      "sqliteQuickCheck": [
+        "ok"
+      ],
+      "requestQueueObservedPeak": 24880,
+      "finalCounters": {
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 1,
+        "spoolPendingBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolErrors": 0
+      }
+    }
+  ],
+  "apmServerTimingMediansAndRangesMs": {
+    "before-on": {
+      "serverHeartbeatMs": {
+        "mean": {
+          "median": 0.03516478458332137,
+          "min": 0.03239564898015477,
+          "max": 0.03982575335097875
+        },
+        "p50": {
+          "median": 0.0205,
+          "min": 0.0201,
+          "max": 0.0213
+        },
+        "p95": {
+          "median": 0.0502,
+          "min": 0.0488,
+          "max": 0.0523
+        },
+        "p99": {
+          "median": 0.0993,
+          "min": 0.0962,
+          "max": 0.1044
+        },
+        "max": {
+          "median": 84.0786,
+          "min": 80.4759,
+          "max": 131.4194
+        }
+      },
+      "serverLoginMs": {
+        "mean": {
+          "median": 1.9397398533333334,
+          "min": 1.6130421933333334,
+          "max": 2.083762963333333
+        },
+        "p50": {
+          "median": 1.6825,
+          "min": 1.407,
+          "max": 1.7125
+        },
+        "p95": {
+          "median": 2.508,
+          "min": 2.1791,
+          "max": 3.0974
+        },
+        "p99": {
+          "median": 5.145,
+          "min": 4.1214,
+          "max": 7.6606
+        },
+        "max": {
+          "median": 146.9816,
+          "min": 97.6178,
+          "max": 162.5278
+        }
+      }
+    },
+    "after-on": {
+      "serverHeartbeatMs": {
+        "mean": {
+          "median": 0.07553623274476434,
+          "min": 0.0709112857937833,
+          "max": 0.07789576246789856
+        },
+        "p50": {
+          "median": 0.0481,
+          "min": 0.0472,
+          "max": 0.0488
+        },
+        "p95": {
+          "median": 0.0992,
+          "min": 0.0975,
+          "max": 0.1083
+        },
+        "p99": {
+          "median": 0.177,
+          "min": 0.1727,
+          "max": 0.209
+        },
+        "max": {
+          "median": 88.9065,
+          "min": 35.038,
+          "max": 167.8358
+        }
+      },
+      "serverLoginMs": {
+        "mean": {
+          "median": 3.0685495733333332,
+          "min": 2.7505775066666667,
+          "max": 8.055041053333333
+        },
+        "p50": {
+          "median": 2.3047,
+          "min": 2.0839,
+          "max": 2.3069
+        },
+        "p95": {
+          "median": 4.0144,
+          "min": 3.5623,
+          "max": 6.4495
+        },
+        "p99": {
+          "median": 17.3829,
+          "min": 11.4705,
+          "max": 241.2945
+        },
+        "max": {
+          "median": 172.7504,
+          "min": 137.8373,
+          "max": 478.6228
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Private raw databases and full traces are not published. This is a sanitized aggregate, not independent proof of raw measurements.",
+    "Normal detailed spans use sampling and limits; zero packet loss is not a claim that every internal span was retained.",
+    "Runtime stalls remain unexplained; maximum TPS, mixed content load and LLM accuracy are unverified."
+  ]
+}

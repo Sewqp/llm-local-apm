@@ -21,3 +21,6 @@ src/TargetServer/graphify-out/
 # Python generated cache
 __pycache__/
 *.py[cod]
+
+# Private durable telemetry retry files
+.apm-spool/

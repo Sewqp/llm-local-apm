@@ -26,6 +26,9 @@ sealed record LoadOptions(int Count, int Rate, int HoldSeconds, int HeartbeatSec
 sealed class LoadRun(LoadOptions options)
 {
     private const ushort LoginRequest = 1000, LoginResult = 1001, Heartbeat = 9000;
+    private readonly ConcurrentQueue<double> _holdHeartbeatMs = new();
+    private int _holdSent, _holdAck;
+    private DateTime _holdStartedUtc, _holdEndedUtc;
     private readonly ConcurrentQueue<double> _connectMs = new(), _loginMs = new(), _heartbeatMs = new();
     private readonly ConcurrentDictionary<string, int> _errors = new();
     private readonly CancellationTokenSource _stopScheduling = new(), _abort = new(), _stopReporting = new();
@@ -56,10 +59,12 @@ sealed class LoadRun(LoadOptions options)
             _phase = "awaiting_logins";
             while (Volatile.Read(ref _ready) < options.Count) await Task.Delay(100, _abort.Token);
             _holdStartedAt = _watch.Elapsed.TotalSeconds;
+            _holdStartedUtc = DateTime.UtcNow;
             _holdMinimumLogged = Volatile.Read(ref _activeLogged);
             _phase = "hold";
             await Task.Delay(TimeSpan.FromSeconds(options.HoldSeconds), _abort.Token);
             _holdEndedAt = _watch.Elapsed.TotalSeconds;
+            _holdEndedUtc = DateTime.UtcNow;
         }
         catch (OperationCanceledException) { _errors.AddOrUpdate("run_aborted", 1, (_, n) => n + 1); }
         finally
@@ -143,13 +148,18 @@ sealed class LoadRun(LoadOptions options)
             try { await Task.Delay(TimeSpan.FromSeconds(options.HeartbeatSeconds), scheduling.Token); }
             catch (OperationCanceledException) when (_stopScheduling.IsCancellationRequested && !_abort.IsCancellationRequested) { break; }
             using var timeout = RequestTimeout(15);
+            var startedInHold = _phase == "hold";
             var start = Stopwatch.GetTimestamp();
             await stream.WriteAsync(Packet(Heartbeat, []), timeout.Token);
+            if (startedInHold) Interlocked.Increment(ref _holdSent);
             Interlocked.Increment(ref _heartbeatSent);
             var response = await ReadAsync(stream, timeout.Token);
             if (response.Id != Heartbeat) throw new InvalidDataException("Unexpected heartbeat response.");
             Interlocked.Increment(ref _heartbeatAck);
-            _heartbeatMs.Enqueue(Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+            var elapsed = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
+            _heartbeatMs.Enqueue(elapsed);
+            if (startedInHold) _holdHeartbeatMs.Enqueue(elapsed);
+            if (_phase == "hold") Interlocked.Increment(ref _holdAck);
         }
     }
 
@@ -204,6 +214,8 @@ sealed class LoadRun(LoadOptions options)
             _loginFailed == 0 && _unexpectedDisconnects == 0 && _holdMinimumLogged == options.Count &&
             _heartbeatSent == _heartbeatAck && _holdEndedAt - _holdStartedAt >= options.HoldSeconds && !_abort.IsCancellationRequested;
         var result = new { type = "summary", options, passed, completedAt = DateTime.UtcNow,
+            holdStartedUtc = _holdStartedUtc, holdEndedUtc = _holdEndedUtc, holdSent = _holdSent, holdAck = _holdAck,
+            holdHeartbeatRttMs = Distribution(_holdHeartbeatMs),
             totalSeconds = _watch.Elapsed.TotalSeconds, holdStartedSeconds = _holdStartedAt,
             holdEndedSeconds = _holdEndedAt, observedHoldSeconds = _holdEndedAt - _holdStartedAt,
             connected = _connected, connectFailed = _connectFailed, loginOk = _loginOk, loginFailed = _loginFailed,

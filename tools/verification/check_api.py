@@ -75,4 +75,18 @@ for field,value in [('httpStatusCode',600),('linkedTraceId','0'*32),('requestMet
 invalid = copy.deepcopy(batch); invalid['batchId']=uuid.uuid4().hex
 invalid['spans'][0]['linkedTraceId']=uuid.uuid4().hex
 check(call('/api/telemetry/batch',invalid)[0]==400,'partial causal link rejected')
+large = copy.deepcopy(batch)
+large['batchId'] = uuid.uuid4().hex
+large['metrics'] = []
+large['spans'] = [dict(spans[0],traceId=uuid.uuid4().hex,spanId=uuid.uuid4().hex[:16]) for _ in range(1025)]
+check(call('/api/telemetry/batch',large)[0] == 400, '1025 distinct spans exceed the new item limit')
+large['spans'].pop()
+check(call('/api/telemetry/batch',large)[0] == 202, '1024 distinct spans accepted atomically')
+check(call('/api/telemetry/batch',large)[1].get('duplicate') is True, 'large batch retry remains idempotent')
+resource = dict(id=uuid.uuid4().hex,timestamp=now,serviceName=service,instanceId=run,runId=run,spoolPendingBatches=2,spoolPendingRequests=1024,spoolBytes=1200000,requestsSpooled=1024,replayedRequests=10,spoolErrors=0)
+resource_batch = dict(batchId=uuid.uuid4().hex,spans=[],metrics=[],logs=[],runtime=[resource])
+check(call('/api/telemetry/batch',resource_batch)[0] == 202, 'spool state is accepted and stored')
+check(call('/api/traces/runtime?server='+service)[1][0]['spoolPendingRequests'] == 1024, 'runtime endpoint exposes disk backlog')
+resource_batch['batchId'] = uuid.uuid4().hex; resource['spoolErrors'] = -1
+check(call('/api/telemetry/batch',resource_batch)[0] == 400, 'negative spool health rejected')
 print(json.dumps({'service':service,'runId':run,'results':results}, indent=2))

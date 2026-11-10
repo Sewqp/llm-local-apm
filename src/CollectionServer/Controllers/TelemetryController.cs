@@ -9,14 +9,14 @@ namespace CollectionServer.Controllers;
 
 [ApiController]
 [Route("api/telemetry")]
-public class TelemetryController(ApmDbContext db) : ControllerBase
+public class TelemetryController(TelemetryBatchWriter writer) : ControllerBase
 {
     [HttpPost("batch")]
     [RequestSizeLimit(2_000_000)]
     public async Task<IActionResult> Ingest(TelemetryBatch batch, CancellationToken ct)
     {
-        if (!Valid(batch)) return BadRequest(new { error = "Invalid telemetry batch; maximum 256 spans/metrics, 1024 logs, 256 runtime samples." });
-        if (!await TelemetryBatchWriter.WriteAsync(db, batch, ct)) return Ok(new { duplicate = true });
+        if (!Valid(batch)) return BadRequest(new { error = "Invalid telemetry batch; maximum 1024 spans/metrics, 1024 logs, 256 runtime samples." });
+        if (!await writer.WriteAsync(batch, ct)) return Ok(new { duplicate = true });
         return Accepted(new { spans = batch.Spans.Count, metrics = batch.Metrics.Count });
     }
 
@@ -32,7 +32,7 @@ public class TelemetryController(ApmDbContext db) : ControllerBase
     private static bool Valid(TelemetryBatch batch)
     {
         if (!Hex(batch.BatchId, 32) || batch.Spans is null || batch.Metrics is null || batch.Logs is null || batch.Runtime is null ||
-            batch.Spans.Count > 256 || batch.Metrics.Count > 256 || batch.Logs.Count > 1024 || batch.Runtime.Count > 256) return false;
+            batch.Spans.Count > 1024 || batch.Metrics.Count > 1024 || batch.Logs.Count > 1024 || batch.Runtime.Count > 256) return false;
         if (batch.Spans.Select(s => (s?.TraceId, s?.SpanId)).Distinct().Count() != batch.Spans.Count ||
             batch.Logs.Select(l => l?.Id).Distinct().Count() != batch.Logs.Count ||
             batch.Runtime.Select(r => r?.Id).Distinct().Count() != batch.Runtime.Count) return false;
@@ -58,6 +58,8 @@ public class TelemetryController(ApmDbContext db) : ControllerBase
                 r.Dropped >= 0 && r.FailedBatches >= 0 && r.Sent >= 0 && r.RequestQueueDepth >= 0 &&
                 r.RequestsObserved >= 0 && r.RequestsSent >= 0 && r.RequestsDropped >= 0 && r.DetailsDropped >= 0 &&
                 r.SampledOutTraces >= 0 && r.LimitedTraces >= 0 && r.UncorrelatedSpansSkipped >= 0 &&
-                double.IsFinite(r.DetailSampleRate) && r.DetailSampleRate is >= 0 and <= 1);
+                double.IsFinite(r.DetailSampleRate) && r.DetailSampleRate is >= 0 and <= 1 &&
+                r.SpoolPendingBatches >= 0 && r.SpoolPendingRequests >= 0 && r.SpoolBytes >= 0 &&
+                r.RequestsSpooled >= 0 && r.ReplayedRequests >= 0 && r.SpoolErrors >= 0);
     }
 }
