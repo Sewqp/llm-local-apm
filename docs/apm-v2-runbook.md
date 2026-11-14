@@ -1,8 +1,12 @@
 # Local APM v2 실행·검증 안내
 
+현재 동작 기준: 2026-11-10 구현, 문서 대조: 2026-11-15. 날짜가 붙은 실측 문서는 당시 결과를 보존한다. 이 안내의 기본 설정과 아래의 2026-10-26 재현 예제를 구분한다.
+
+최신 근거: [운영 관측·검증 기여](apm-operational-impact-20261110.md), [배치·디스크 복구](apm-queue-recovery-20261110.md), [APM ON/OFF 비용 측정](apm-ab-comparison-20261110.md).
+
 ## 기본 실행
 
-필요 환경: .NET 10 SDK, Node/npm, 선택적으로 LM Studio의 로컬 OpenAI 호환 서버. 대시보드·수집·조회는 LLM 없이도 동작한다.
+필요 환경: .NET 10 SDK, Node.js 20.19 이상인 20.x 또는 22.12 이상과 npm(Vite 잠금 파일의 요구사항), 선택적으로 LM Studio의 로컬 OpenAI 호환 서버. 대시보드·수집·조회는 LLM 없이도 동작한다.
 
 APM 저장소에서 한 번 `npm --prefix dashboard ci`로 패키지를 설치한다. 이후:
 
@@ -27,13 +31,15 @@ APM 저장소에서 한 번 `npm --prefix dashboard ci`로 패키지를 설치�
 게임 서버 실행 환경:
 
 ```powershell
+$env:APM_ENABLED = '1'
+$env:TRICKCAL_ENABLE_DEBUG_COMMANDS = '0'
 $env:APM_COLLECTOR_ENDPOINT = 'http://127.0.0.1:5219'
 $env:APM_RUN_ID = 'my-validation-run'
 $env:APM_CODE_VERSION = '검증할-commit-또는-작업트리-식별자'
 dotnet run --project src/GameServer
 ```
 
-`APM_RUN_ID`는 실행마다 구분해 지정한다. 코드 버전은 자동 Git 검증값이 아니라 사용자가 지정하는 라벨이다. 연결할 PostgreSQL/Redis는 `TRICKCAL_POSTGRES_CONN`, `TRICKCAL_REDIS_CONN`을 명시해 다른 프로젝트 DB와 혼동하지 않도록 한다. 이번 변경은 `DebugHandler`에 있던 의도적 오류를 유지하므로 이 시험용 서버를 운영 배포 대상으로 취급하지 않는다.
+`APM_RUN_ID`는 실행마다 구분해 지정한다. 코드 버전은 자동 Git 검증값이 아니라 사용자가 지정하는 라벨이다. 연결할 PostgreSQL/Redis는 `TRICKCAL_POSTGRES_CONN`, `TRICKCAL_REDIS_CONN`을 명시해 다른 프로젝트 DB와 혼동하지 않도록 한다. `DebugHandler`의 의도적 오류 사례는 남아 있지만 기본 비활성이다. 격리된 오류 시연에서만 `TRICKCAL_ENABLE_DEBUG_COMMANDS=1`로 켠다. 게임 APM을 끄려면 `APM_ENABLED=0`을 사용한다(`false` 문자열은 비활성화 값이 아니다). 이 시험용 서버를 운영 배포 대상으로 취급하지 않는다.
 
 유저별 흐름은 로그인 후 생성되는 가명 키로 조회한다. 실행을 넘어서 동일 유저를 추적해야 할 때만 `APM_USER_HASH_KEY`에 32바이트 이상 비밀 키를 설정한다. 기본값은 실행마다 새 키이므로 과거 실행과 연결되지 않는다. 화면의 유저 키를 클릭하거나 유저·세션 필터에 복사한다.
 
@@ -54,7 +60,7 @@ $env:LmStudio__TimeoutSeconds = '150'
 
 요청을 선택하고 **이 요청 분석**을 누른다. 스냅샷의 span/log/code가 근거이며 답변은 검증할 후보이다. 코드가 연결되지 않은 요청은 관측 정보만으로 분석한다. 코드 이름 추론은 모든 패킷의 정확한 핸들러 매핑을 보장하지 않는다. 기존 Graphify 도구 호출은 별도 로컬 실행 환경이 필요하다.
 
-## 이번 검증 환경
+## 과거 재현 예제: 2026-10-26 검증 환경
 
 | 용도 | 포트/이름 |
 |---|---|
@@ -66,7 +72,7 @@ $env:LmStudio__TimeoutSeconds = '150'
 | 서비스 / Run | `Trickcal-APM-Verification` / `game-integration-20261026` |
 | LM Studio | localhost:1234 |
 
-당일에는 작업용 디렉터리에 별도 PostgreSQL 클러스터와 Redis 설정을 만들어 사용했다. 이 표는 테스트 fixture용이다. 원래 PostgreSQL 5432, Redis 6379, 기존 게임 DB를 지우거나 대체하지 않는다. 재현할 때 새 PostgreSQL DB에 게임 저장소의 `DB/schema.sql`, `DB/seed_characters.sql`을 적용하고 별도 Redis 인스턴스를 준비한다.
+2026-10-26에는 작업용 디렉터리에 별도 PostgreSQL 클러스터와 Redis 설정을 만들어 사용했다. 이 표는 당시 테스트 fixture이며 현재 프로세스가 실행 중이라는 뜻이 아니다. 원래 PostgreSQL 5432, Redis 6379, 기존 게임 DB를 지우거나 대체하지 않는다. 재현할 때 새 PostgreSQL DB에 게임 저장소의 `DB/schema.sql`, `DB/seed_characters.sql`을 적용하고 별도 Redis 인스턴스를 준비한다.
 
 게임 검증 프로세스에 추가로 지정한 설정:
 
@@ -105,36 +111,48 @@ dotnet run --project tools/verification/SourcePathChecks -- '.local-evidence/new
 
 ## 운영 중 확인
 
-- `/api/health`가 `ok`인지 확인한다. LLM 연결 상태를 의미하지는 않는다.
+- `/api/health`는 API 응답 여부를 확인하는 고정 응답이다. DB 쓰기 가능 여부나 LLM 준비 상태를 검사하는 readiness는 아니다. 실제 수집 시각·최근 요청 조회와 LLM 분석 결과를 별도로 확인한다.
 - 자원 카드의 마지막 수신 시각, 전송 대기, 유실, 실패 시도를 확인한다. 누적 수치는 프로세스 인스턴스별이다.
-- 수집기 재시작/연결 장애 중 유실이 발생할 수 있다. 디스크 영속 재전송 큐는 구현하지 않았다.
+- 디스크에 보관된 배치는 수집기 재시작·연결 복구 후 재전송한다. 게임 서버의 기본 스풀과 공용 Agent의 선택 설정은 아래를 따른다. 메모리에만 남은 자료, 디스크 오류·한도 초과까지 무손실로 보장하지 않는다.
 - `Telemetry__RetentionDays`는 새 추적 자료에만 적용되며 기본은 비활성이다. Metrics/Analyses 보존·정리는 별도 정책이 필요하다.
-- 대시보드 API는 단일 로컬 사용자용이다. 공용 네트워크에 노출하지 않는다.
+- 대시보드 API는 loopback 접근을 검사하는 단일 로컬 사용자용이며 사용자별 인증·권한 관리 기능은 없다. 공용 네트워크에 노출하지 않는다.
+- 자원 수신이 끊기면 과거의 정상 값만 남을 수 있다. 별도 외부 경보는 아직 없으므로 마지막 수신 시각과 대기·유실 카운터를 함께 확인한다.
+- Agent CPU 지표는 CPU 누적값과 경과 시간의 기준 갱신 시점 불일치가 남아 있다. CPU 비용 비교는 외부 Win32 누적값으로 측정한 [11월 10일 기록](apm-ab-comparison-20261110.md)을 기준으로 한다.
 
-당일 검증용 프로세스의 PID/경로/포트는 비공개 증거 폴더의 `processes.json`에 기록한다. PID는 재사용될 수 있으므로 종료 전 해당 실행 경로와 포트를 대조한다. 정상 종료 순서는 게임 → 수집기 → 시험 PostgreSQL/Redis다. LM Studio는 앱에서 서버 중지/모델 언로드할 수 있다. 기존 사용자 서비스나 Docker를 전체 종료·초기화하지 않는다.
+검증 실행마다 해당 프로세스의 PID/경로/포트는 비공개 증거 폴더의 `processes.json`에 기록한다. PID는 재사용될 수 있으므로 종료 전 해당 실행 경로와 포트를 대조한다. 정상 종료 순서는 게임 → 수집기 → 시험 PostgreSQL/Redis다. LM Studio는 앱에서 서버 중지/모델 언로드할 수 있다. 기존 사용자 서비스나 Docker를 전체 종료·초기화하지 않는다.
 
 ## 상세 결과
 
-[비교·실측 결과·남은 범위](apm-v2-20261026.md), [기존 증거](validation-baseline.md), [다음 단계와 파인튜닝 계획](apm-upgrade-plan.md).
+[현재 기여와 주장 범위](apm-operational-impact-20261110.md), [최신 비용 실측](apm-ab-comparison-20261110.md), [최신 수집·재전송 검증](apm-queue-recovery-20261110.md)을 먼저 본다. [초기 v2 결과](apm-v2-20261026.md), [기존 증거](validation-baseline.md), [후속 계획](apm-upgrade-plan.md)은 당시 기록이며 계획의 모든 항목을 구현했다는 뜻이 아니다. 파인튜닝은 수행하지 않았다.
 
-## v2.1 수집 정책·부하 검증 후 갱신
+## 현재 수집 정책과 저장 설정
 
-최신 결과는 [수집 신뢰성 개선·3만 동접 재검증](apm-reliability-20261026.md)에 있다. 모든 요청의 기본 기록은 보존 대상으로 보내고, 정상 내부 상세는 기본 1%만 선택한다. `APM_DETAIL_SAMPLE_RATE`는 0~1, `APM_SLOW_TRACE_MS`는 0 이상 숫자다. 기본 100ms 이상 또는 종료 시 오류인 요청은 상세 보존 대상이며 버퍼·큐·구간 상한은 적용된다.
+최신 결과는 [2026-11-10 수집·재전송 검증](apm-queue-recovery-20261110.md)에 있다. [2026-10-26 신뢰성 검증](apm-reliability-20261026.md)은 개선 과정과 당시 실패를 보존한 기록이다. 모든 요청의 기본 기록은 보존 대상으로 보내고, 정상 내부 상세는 기본 1%만 선택한다. `APM_DETAIL_SAMPLE_RATE`는 0~1, `APM_SLOW_TRACE_MS`는 0 이상 숫자다. 기본 100ms 이상 또는 종료 시 오류인 요청은 상세 보존 대상이며 버퍼·큐·구간 상한은 적용된다.
 
 `check_game.py`의 상세 연결 회귀 검사는 게임 서버를 `APM_DETAIL_SAMPLE_RATE=1`로 실행해야 한다. 부하 검사는 기본 0.01을 사용하며 비교 조건에 남긴다. `sampled_out`은 정책상 제외, `truncated`/`buffer_limit`는 상한, `queue_dropped`는 상세 전송 큐 유실, `pending`은 상세 도착 대기다. pending이 지속되면 유실/HTTP 실패 카운터도 확인한다. 상세 유실과 기본 요청 유실을 혼동하지 않는다.
 
-에이전트 기본 상한: 요청 큐 32,768개, 상세 큐 32,768 span, 추적 버퍼 4,096개, trace당 내부 64개. 선택한 상세는 약 1초 기다린 후 묶는다. batch는 256개까지다. 저장기는 FULL 동기화, 32MiB cache, 16,384페이지 WAL checkpoint를 쓰며 디스크 공간과 긴 읽기 트랜잭션을 감시해야 한다. 해당 정책과 단기 실험 통과는 무제한·영속 무손실 보장을 뜻하지 않는다.
+| 항목 | 현재 기본값·동작 |
+|---|---|
+| Agent 메모리 상한 | 기본 요청 32,768개, 상세 32,768 span, 추적 버퍼 4,096개, trace당 내부 64개 |
+| 상세 묶기 | 약 1초 대기 후 선택된 상세를 묶음 |
+| 배치/API 상한 | spans/metrics 각각 1,024개, logs 1,024개, runtime 256개, 본문 2,000,000바이트 |
+| SQLite 쓰기 | 단일 writer 연결의 prepared SQL, FULL 동기화, 캐시 설정 512MiB |
+| WAL 체크포인트 | 자동 체크포인트 해제, 별도 연결에서 1초 간격 PASSIVE. SQLite 3.51.3 이상 필요 |
+
+저장 성공 응답은 배치 영수증과 데이터를 같은 트랜잭션으로 커밋한 뒤 보낸다. 캐시 설정은 프로세스 전체 메모리 상한이 아니다. 디스크 공간과 오래 지속되는 읽기 트랜잭션을 관찰한다. 이전 256개 배치·32MiB 캐시·자동 체크포인트 값은 10월 기록에만 해당한다. 단기 실험 통과를 무제한·영속 무손실 보장으로 해석하지 않는다.
+
+구현 기준: [AgentOptions](../src/Apm.Agent/TelemetryData.cs), [수집 API 제한](../src/CollectionServer/Controllers/TelemetryController.cs), [배치 저장기](../src/CollectionServer/Services/TelemetryBatchWriter.cs), [체크포인트 서비스](../src/CollectionServer/Services/TelemetryCheckpointService.cs).
 
 
-## 2026-11-10 배치·디스크 재전송
+## 업데이트 순서와 디스크 재전송
 
 수집기를 먼저 재시작한 뒤 새 Agent를 배포한다. 새 Agent는 최대 1024 spans/metrics를 보내며 구 수집기의 256개 제한과 호환되지 않는다. HTTP 2MB와 logs 1024개 제한은 그대로 적용되며 큰 배치는 나눈다.
 
 Trickcal의 `ApmReporter`는 실행 파일 아래 `.apm-spool`을 기본 사용한다. 실행 디렉터리가 배포 때 교체된다면 `APM_SPOOL_DIRECTORY`를 별도의 쓰기 가능한 영구 경로로 지정한다. 같은 서비스·collector 주소에 대해 한 프로세스만 해당 디렉터리를 소유할 수 있다. 다중 인스턴스에는 별도 경로를 사용하고 재시작 때 각 경로를 유지한다. 공용 Agent 자체는 `AgentOptions.SpoolDirectory`를 지정해야 디스크 보관을 사용한다.
 
-기본 메모리 큐는 32,768개다. 포화 시 큐의 기본 요청을 최대 1024개씩 묶어 디스크에 보관한다. HTTP 재시도 후 실패한 배치도 동일한 BatchId로 보관한다. 파일 flush 및 원자적 rename 후 보관으로 집계하며, collector가 커밋을 확인한 뒤 파일을 삭제한다. 재시작 시 남은 파일을 같은 BatchId로 전송하므로 응답 유실로 중복 전송되어도 metrics를 중복 저장하지 않는다.
+기본 메모리 큐는 32,768개다. 포화 시 큐의 기본 요청을 최대 1024개씩 묶어 디스크에 보관한다. HTTP 재시도 후 실패한 배치도 동일한 BatchId로 보관한다. 파일 flush 및 원자적 rename 후 보관으로 집계하며, collector가 커밋을 확인한 뒤 파일을 삭제한다. 재시작 시 남은 파일을 같은 BatchId로 전송하므로 수집기가 해당 배치 영수증을 보존하는 동안 응답 유실로 같은 배치가 중복 전송되어도 metrics를 중복 저장하지 않는다. 영수증까지 정리하는 retention 기간보다 긴 재전송에 중복 방지를 보장하지 않는다.
 
-스풀 한도는 기본 256MiB / 8192배치다. 디스크 오류·한도 초과는 SpoolErrors와 RequestsDropped/DetailsDropped에 드러난다. 프로세스 종료 시 아직 메모리에만 있던 항목의 강제 종료 복구, 무제한 수집기 장애, 7일보다 오래된 기록의 재수집을 보장하지 않는다. 수집기 장애 동안 runtime 자체가 도착하지 않을 수 있으므로 수신 시각도 함께 본다.
+스풀 한도는 기본 256MiB / 8192배치다. 디스크 오류·한도 초과는 SpoolErrors와 RequestsDropped/DetailsDropped에 드러난다. 프로세스 종료 시 아직 메모리에만 있던 항목의 강제 종료 복구, 무제한 수집기 장애, 7일보다 오래된 기록의 재수집을 보장하지 않는다. 수집 API는 7일 이전 시각의 자료를 거절한다. 수집기 장애 동안 runtime 자체가 도착하지 않을 수 있으므로 수신 시각도 함께 본다.
 
 대시보드 자원 카드에서 디스크 대기 요청/배치/용량, 복구 요청, 보관 실패를 확인한다. RequestsSent는 현재 Agent 인스턴스의 기본 요청 전송이고 ReplayedRequests에는 이전 인스턴스의 재전송도 포함된다. 스풀은 내부 추적 메타데이터를 포함하므로 공개 저장소에 올리지 않는다.
 

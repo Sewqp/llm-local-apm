@@ -29,7 +29,20 @@
 외부 API 기반 LLM에 트래픽/로그 데이터를 보내지 않고, **LM Studio로 로컬 서빙되는 LLM**을 호출하여
 민감 데이터를 외부로 노출하지 않는 것이 핵심 설계 목표입니다.
 
-## 아키텍처
+## 현재 버전 실행
+
+게임 서버 계측과 재전송 설정은 [현재 운영 안내](docs/apm-v2-runbook.md)를 따른다. 기존 증거 DB와 분리해서 시작하려면 저장소에서 다음을 실행한다.
+
+```powershell
+npm --prefix dashboard ci
+./tools/start-local.ps1
+```
+
+기본 주소는 `http://127.0.0.1:5219`, DB는 `.local-evidence/live/apm-v2.db`다. LLM 없이도 수집·조회가 동작한다. `/api/health`는 API의 고정 응답이며 DB/LLM 준비 상태를 확인하지 않는다.
+
+TCP 게임 서버는 `Apm.Agent`를 통해 기본 요청과 선택된 상세를 `/api/telemetry/batch`로 전송한다. 정상 내부 상세 기본 1%, 오류·느린 요청 우선 선택, 메모리·디스크 상한이 적용된다. 요청 추적의 근거 스냅샷 조사와 아래의 초기 HTTP 메트릭 데모를 구분한다.
+
+## 초기 HTTP 데모 아키텍처
 
 ```
 [대상 서버 (TargetServer, ASP.NET Core)]
@@ -54,15 +67,15 @@
 | 대상 서버 | ASP.NET Core (계측 미들웨어) |
 | 수집 서버 | ASP.NET Core Web API + EF Core + SQLite |
 | 이상탐지 | 임계값 기반 룰 (기준선 평균 대비 N배 초과 / HTTP 5xx) |
-| 코드 분석 | [Graphify](https://github.com/Graphify-Labs/graphify) CLI — tree-sitter AST로 로컬에서 만든 코드 지식그래프를 이상탐지 엔드포인트 기준으로 스코핑해서 LLM에 전달 |
+| 코드 분석 | [Graphify](https://github.com/Graphify-Labs/graphify) CLI — 로컬 코드 그래프를 LLM의 explain/query 도구 호출로 탐색 |
 | LLM 추론 | LM Studio 로컬 서버 (OpenAI 호환 `/v1/chat/completions`), Gemma |
 | 대시보드 | React (Vite) + Recharts |
 
 ## 사전 준비
 
 1. [.NET 10 SDK](https://dotnet.microsoft.com/) 이상
-2. Node.js 18+
-3. [LM Studio](https://lmstudio.ai/) 설치 후:
+2. Node.js 20.19 이상인 20.x 또는 22.12 이상과 npm(`dashboard/package-lock.json`의 Vite 요구사항)
+3. LLM 분석을 사용할 때 [LM Studio](https://lmstudio.ai/) 설치 후:
    - 모델 다운로드 (예: Gemma 계열)
    - LM Studio 앱에서 **Local Server** 실행 (기본 포트 `1234`)
    - 또는 CLI: `lms server start` 후 `lms load <model>`
@@ -76,7 +89,7 @@
 
 ## 실행 방법
 
-### 빠른 실행 — 단일 exe (권장)
+### Windows 단일 exe 빌드(기존 배포 방식)
 
 dashboard(React)는 빌드되면 CollectionServer의 정적 파일(`wwwroot`)로 서빙되도록 구성되어 있어,
 **API + 대시보드가 하나의 실행 파일·하나의 포트**로 뜬다. 별도 Vite dev server를 띄울 필요가 없다.
@@ -156,26 +169,24 @@ dotnet run --urls http://localhost:5082
 ]
 ```
 
-## 실제 서버 연동 사례 — Trickcal-Bottleneck-Server
+## 초기 게임 서버 연동 사례와 해석 범위
 
 데모용 `TargetServer`(HTTP) 외에, 실제 보유 중인 TCP 패킷 기반 게임 서버
-([`Trickcal-Bottleneck-Server`](../Trickcal-Bottleneck-Server), C#/.NET 10, Orleans + PostgreSQL + Redis)에
+([`Trickcal-Bottleneck-Server`](https://github.com/Sewqp/Trickcal-Bottleneck-Server), C#/.NET 10, Orleans + PostgreSQL + Redis)에
 계측을 붙여 검증했습니다. HTTP 미들웨어를 쓸 수 없는 구조라, `PacketDispatcher.DispatchAsync`에서
 핸들러 호출을 감싸는 방식으로 대체 계측(`ApmReporter`, `AsyncLogger`와 동일한 Channel 기반 백그라운드
 전송 패턴)을 추가하고, `Method="PACKET"`, `Path="/packet/{PacketId}"`로 맞춰 기존 이상탐지 룰을
 그대로 재사용했습니다.
 
-**검증 결과**: 가벼운 트래픽(30~50명, 평균 응답 14~15ms)으로 기준선을 만든 뒤 3,000명 및
-README에 문서화된 규모인 3만 명(rampUp 3000) 동시 로그인을 발생시켜 재현. 3만 명 테스트에서
-`connectFailed=0, loginOk=30000` 전원 성공했지만, 로그인 응답시간은 평균 78ms·p95 243ms까지
-치솟아 기준선 대비 3배 이상 벌어진 구간이 다수 잡혔고, 이상탐지 룰이 이를 정확히 표기했습니다.
-LM Studio(Gemma)가 생성한 분석도 "로그인 요청 집중으로 인한 서버 자원 점유율 증가",
-"DB 쿼리 실행 계획 점검·인덱스 최적화·인증 캐싱 검토" 등 실제 원인(PostgreSQL 커넥션 풀 경합)과
-부합하는 방향을 제시했습니다. 응답시간이 원래 1ms 미만인 하트비트처럼 기준선이 0에 가까운
-경로는 배수만으로 이상 여부를 판단하면 왜곡되기 쉬워, 절대 지연 증가량(`MinAbsoluteDeltaMs`)
-조건을 추가하고 사유 문구에도 배수·절대값을 함께 표기하도록 개선했습니다.
+초기 화면에는 `connectFailed=0, loginOk=30000`이 남아 있고, 보존한 initial DB의 Login 평균은 78.2693ms, p95는 244.6999ms다. 당시 화면의 실행과 DB 전체를 묶는 run ID는 없으므로 이를 한 실행의 정확한 전체 수집 결과로 합치지 않는다. 이후 run ID와 trace ID를 사용한 대조 결과는 문서 상단의 11월 기록을 따른다.
 
-## API
+LLM은 `HeartbeatManager`를 관련 코드 후보로 제시했고, 사람이 전체 세션 순회·순차 Grain 호출 구조를 확인했다. 이 구조가 특정 지연을 일으켰다는 인과관계나 PostgreSQL 커넥션 풀 경합을 확정한 것은 아니다. `Task.WhenAll` 시도도 개선이 입증되지 않아 원복했다. [원본 증거와 한계](docs/validation-baseline.md)를 함께 보존한다.
+
+기준선이 0에 가까운 Heartbeat에서는 배수만으로 이상 여부를 판단하면 왜곡될 수 있어 최소 절대 증가량 조건을 추가했다. 이것은 오탐률 개선을 정량 입증했다는 뜻은 아니다.
+
+## 초기 메트릭·분석 API
+
+게임 서버의 배치 수집(`/api/telemetry/batch`)과 요청별 추적·조사 API는 [운영 안내](docs/apm-v2-runbook.md) 및 [v2 기능 기록](docs/apm-v2-20261026.md)을 함께 본다.
 
 | Method | Path | 설명 |
 |---|---|---|
@@ -189,42 +200,26 @@ LM Studio(Gemma)가 생성한 분석도 "로그인 요청 집중으로 인한 �
 ## 이상탐지 룰
 
 1. HTTP 5xx 응답은 항상 이상으로 표기
-2. 응답시간이 해당 경로(Path)의 기준선 평균 대비 `ThresholdMultiplier`(기본 3배)를 초과하면 이상으로 표기
+2. 응답시간이 해당 경로(Path)의 기준선 평균 대비 `ThresholdMultiplier`(기본 3배)를 초과하고 최소 절대 증가량 `MinAbsoluteDeltaMs`(기본 5ms)도 충족하면 이상으로 표기
    - 기준선은 조회 구간 이전 과거 데이터 평균 우선 사용, 부족하면 조회 구간 내 평균으로 대체
    - `/api/products/{id}`처럼 ID가 섞인 경로는 미들웨어에서 정규화하여 동일 경로로 집계
 
 LLM이 생성하는 분석/추천 텍스트는 대시보드에 **"참고용 추천"**으로 표기되어, 과신하지 않도록 안내합니다.
 
-## 원인 코드 위치 지목 (Graphify)
+## 코드 후보 탐색과 요청 조사
 
-이상탐지까지는 "언제·어디서·얼마나" 벗어났는지만 알려준다. 그 다음 질문("정확히 어느 코드가 원인일
-가능성이 높은가")에 답하기 위해, `/api/analysis/run`은 LLM을 부르기 전에
-[Graphify](https://github.com/Graphify-Labs/graphify) CLI로 원시 소스 전체 대신 압축된 코드
-지식그래프 조각 하나만 잘라와 프롬프트에 얹는다.
+현재 `/api/analysis/run`은 LM Studio에 `graphify_explain`·`graphify_query` 도구를 제공하여 모델이 탐색할 이름을 선택하도록 한다. 예전의 패킷 이름 기반 고정 스코핑 설명은 현재 구현과 다르다. `quick`이 기본이며 `full`은 넓은 탐색을 유도한다. 도구 호출이나 올바른 원인 발견을 보장하는 모드는 아니다.
 
-1. **그래프 빌드(최초 1회, 서버당)**: `graphify extract <소스 디렉터리> --code-only --no-viz` —
-   tree-sitter AST 로컬 파싱만 쓰고 LLM 호출이 없어 API 키 없이도 몇 초 안에 끝난다.
-   결과(`graphify-out/graph.json`)는 디스크에 캐시되고, `appsettings.json`의
-   `Graphify:ServerSourceDirs`(메트릭의 `ServerName` -> 소스 디렉터리 매핑)에 등록된 서버에만 동작한다.
-2. **스코핑**: 이상탐지된 엔드포인트 경로(예: `/packet/MatchRequest`, `/api/products/{id}`)에서 마지막
-   세그먼트를 뽑아 `MatchHandler`/`ProductsController` 같은 처리 클래스 이름 후보를 만들고,
-   `graphify explain "<후보>"`로 그 클래스와 바로 연결된 노드(소스 위치, 상속·호출 관계)만 가져온다.
-   못 찾으면 `graphify query "<원본 세그먼트>"`로 한 번 더 넓게 훑는다.
-3. **LLM에 위임**: 이 스코핑된 그래프 텍스트를 프롬프트에 포함시켜, LLM에게 "이 그래프 안에서
-   원인일 가능성이 가장 높은 파일/함수 하나를 정확히 골라 마지막 줄에 `의심 코드: <파일:라인>` 형식으로
-   답하라"고 지시한다. 응답에서 그 줄을 정규식으로 분리해 `SuspectedCode`로 따로 저장 — 대시보드에서
-   분석 텍스트와 별개의 배지로 표시된다.
+Graphify는 `Graphify:ServerSourceDirs`에 등록한 로컬 소스를 `extract . --code-only --no-viz`로 파싱한다. 기존 `graphify-out/graph.json`은 재사용하므로 소스를 수정한 뒤에는 그래프도 갱신해야 한다. 코드 버전과 캐시의 자동 일치 검사는 아직 없다. CLI가 없거나 경로가 잘못되면 코드 근거가 제한되며, 수집·조회 자체는 계속 사용할 수 있다.
 
-**"완전 간소화"는 Graphify(결정론적 로컬 그래프 스코핑)가 담당하고, "특정 코드를 고르는 판단"은 그
-축약된 컨텍스트를 받은 LLM이 한다** — LLM이 직접 여러 차례 그래프 명령을 골라 호출하는 완전 에이전틱
-방식은 쓰지 않았다(로컬 소형 모델 신뢰성·안전성 트레이드오프).
+v2의 **이 요청 분석**은 해당 trace의 span·log·code 스냅샷을 근거로 별도 조사 기록을 남긴다. Graphify 기반 이상탐지 분석과 구분한다. 답변은 검증할 후보이며 의도적 오류 시연, 자연 발생 관측, 원인 미확정 결과를 섞지 않는다. [기존 성공·실패 사례](docs/validation-baseline.md), [다른 구조의 조사와 오인용 기록](docs/apm-architectures-20261026.md)을 확인한다.
 
-Graphify가 설치되어 있지 않거나 해당 서버가 `ServerSourceDirs`에 없으면 이 단계는 조용히 건너뛰고
-기존처럼 지표만으로 분석한다 — 필수 의존성이 아니다.
-
-## Out of Scope (향후 확장)
+## 남은 범위
 
 - RAG(벡터DB 기반 지식검색)
 - LLM 파인튜닝/LoRA
 - C++/Node 등 멀티 언어 에이전트
-- 부하 시뮬레이션 자동화
+- 상용 운영용 다중 사용자 인증, DB/LLM readiness, 외부 경보
+- 고정 사례 LLM 정확도 평가와 그래프/코드 버전 관리
+
+부하·복구 재현 스크립트는 이미 있다. 실행 명령과 격리 조건은 [운영 안내](docs/apm-v2-runbook.md)를 따른다. 원본 DB를 초기화하거나 단기 통과 결과를 무제한 무손실·운영 SLA로 확대하지 않는다.
