@@ -284,11 +284,12 @@ public sealed class TelemetrySender : IAsyncDisposable
             while (await timer.WaitForNextTickAsync(_runtimeStop.Token))
             {
                 process.Refresh(); var cpu = process.TotalProcessorTime;
-                var elapsed = Stopwatch.GetElapsedTime(previous).TotalMilliseconds; var health = Health;
+                var now = Stopwatch.GetTimestamp();
+                var elapsed = Stopwatch.GetElapsedTime(previous, now).TotalMilliseconds; var health = Health;
                 var sample = new RuntimeData
                 {
                     Timestamp = DateTime.UtcNow, ServiceName = _options.ServiceName, InstanceId = _instanceId, RunId = _options.RunId,
-                    CpuPercent = Math.Clamp((cpu - previousCpu).TotalMilliseconds / elapsed / Environment.ProcessorCount * 100, 0, 100),
+                    CpuPercent = elapsed > 0 ? Math.Clamp((cpu - previousCpu).TotalMilliseconds / elapsed / Environment.ProcessorCount * 100, 0, 100) : 0,
                     WorkingSetMb = process.WorkingSet64 / 1048576d, GcHeapMb = GC.GetTotalMemory(false) / 1048576d,
                     ThreadPoolQueue = ThreadPool.PendingWorkItemCount, ThreadPoolThreads = ThreadPool.ThreadCount,
                     ActiveSessions = _options.ActiveSessions?.Invoke() ?? 0,
@@ -301,11 +302,13 @@ public sealed class TelemetrySender : IAsyncDisposable
                     SpoolBytes = health.SpoolBytes, RequestsSpooled = health.RequestsSpooled,
                     ReplayedRequests = health.ReplayedRequests, SpoolErrors = health.SpoolErrors
                 };
+                // Both baselines describe this capture, including any later transport delay.
+                // Advance before sending so slow/failed uploads cannot inflate the next CPU value.
+                previousCpu = cpu; previous = now;
                 // Health reports never compete with either bounded data queue.
                 var batch = new TelemetryBatch(Guid.NewGuid().ToString("N"), [], [], [], [sample]);
                 if (await SendBatchAsync(batch, _runtimeStop.Token)) Interlocked.Increment(ref _sent);
                 else Interlocked.Increment(ref _runtimeDropped);
-                previousCpu = cpu; previous = Stopwatch.GetTimestamp();
             }
         }
         catch (OperationCanceledException) { }

@@ -1,8 +1,8 @@
 # Local APM v2 실행·검증 안내
 
-현재 동작 기준: 2026-11-10 구현, 문서 대조: 2026-11-15. 날짜가 붙은 실측 문서는 당시 결과를 보존한다. 이 안내의 기본 설정과 아래의 2026-10-26 재현 예제를 구분한다.
+현재 동작 기준: 2026-11-16 CPU 측정 수정, 수집·저장 구조는 2026-11-10 구현. 날짜가 붙은 실측 문서는 당시 결과를 보존한다. 이 안내의 기본 설정과 아래의 2026-10-26 재현 예제를 구분한다.
 
-최신 근거: [운영 관측·검증 기여](apm-operational-impact-20261110.md), [배치·디스크 복구](apm-queue-recovery-20261110.md), [APM ON/OFF 비용 측정](apm-ab-comparison-20261110.md).
+최신 근거: [CPU 보정·런타임 정체 조사](runtime-cpu-stall-validation-20261116.md), [운영 관측·검증 기여](apm-operational-impact-20261110.md), [배치·디스크 복구](apm-queue-recovery-20261110.md), [APM ON/OFF 비용 측정](apm-ab-comparison-20261110.md).
 
 ## 기본 실행
 
@@ -117,7 +117,8 @@ dotnet run --project tools/verification/SourcePathChecks -- '.local-evidence/new
 - `Telemetry__RetentionDays`는 새 추적 자료에만 적용되며 기본은 비활성이다. Metrics/Analyses 보존·정리는 별도 정책이 필요하다.
 - 대시보드 API는 loopback 접근을 검사하는 단일 로컬 사용자용이며 사용자별 인증·권한 관리 기능은 없다. 공용 네트워크에 노출하지 않는다.
 - 자원 수신이 끊기면 과거의 정상 값만 남을 수 있다. 별도 외부 경보는 아직 없으므로 마지막 수신 시각과 대기·유실 카운터를 함께 확인한다.
-- Agent CPU 지표는 CPU 누적값과 경과 시간의 기준 갱신 시점 불일치가 남아 있다. CPU 비용 비교는 외부 Win32 누적값으로 측정한 [11월 10일 기록](apm-ab-comparison-20261110.md)을 기준으로 한다.
+- Agent CPU 지표는 11월 16일 누적 CPU와 시간 기준 시점 불일치를 수정했다. 표시 단위는 전체 논리 CPU 용량 대비 프로세스 사용률이다. 지연 업로드 성공/실패 회귀 검사를 통과했다. [수정·검증](runtime-cpu-stall-validation-20261116.md).
+- 반복 부하 시험 전에 이전 TCP 연결의 TIME_WAIT 정리를 확인한다. [진단 하네스](../tools/verification/runtime-diagnostics.md)는 전체 TIME_WAIT 2,000 미만을 두 번 확인한 뒤 시작한다. 이 수치는 3만 연결 로컬 시험용 기준이다. 기존 30초 대기만으로는 연결 만료와 다음 시험의 겹침을 피하지 못했다. 11월 10일 실측은 보존하지만 순수 APM 비용으로 단정하지 않는다.
 
 검증 실행마다 해당 프로세스의 PID/경로/포트는 비공개 증거 폴더의 `processes.json`에 기록한다. PID는 재사용될 수 있으므로 종료 전 해당 실행 경로와 포트를 대조한다. 정상 종료 순서는 게임 → 수집기 → 시험 PostgreSQL/Redis다. LM Studio는 앱에서 서버 중지/모델 언로드할 수 있다. 기존 사용자 서비스나 Docker를 전체 종료·초기화하지 않는다.
 

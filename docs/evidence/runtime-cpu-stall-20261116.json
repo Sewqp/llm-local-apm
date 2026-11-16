@@ -1,0 +1,1194 @@
+{
+  "date": "2026-11-16",
+  "scope": "Same Windows host; diagnostic isolation, not a controlled APM speedup benchmark",
+  "cpuRegression": [
+    {
+      "test": "CPU interval includes delayed runtime upload",
+      "passed": false,
+      "logicalProcessors": 16,
+      "elapsedMs": 8012.9649,
+      "expectedPercent": 5.959580111226994,
+      "reportedPercent": 100,
+      "errorPercentagePoints": 94.040419888773
+    },
+    {
+      "test": "CPU interval includes delayed runtime upload",
+      "passed": true,
+      "logicalProcessors": 16,
+      "elapsedMs": 8021.2611,
+      "expectedPercent": 5.929066908194773,
+      "reportedPercent": 5.939569253212592,
+      "errorPercentagePoints": 0.010502345017818548
+    },
+    {
+      "test": "CPU interval includes delayed runtime upload",
+      "passed": true,
+      "delayedUploadFailed": true,
+      "logicalProcessors": 16,
+      "elapsedMs": 8022.2717,
+      "expectedPercent": 6.135263406747991,
+      "reportedPercent": 6.131829529266463,
+      "errorPercentagePoints": 0.0034338774815276807
+    }
+  ],
+  "gameRuns": [
+    {
+      "case": "diag01_on",
+      "passed": true,
+      "holdSeconds": 60.003040399999996,
+      "holdMinimumLogged": 30000,
+      "holdRttP99": 76.0245,
+      "watchdog": [],
+      "threadPoolStallSeconds": [],
+      "availableMemoryMinMb": 3123.82,
+      "whole": {
+        "samples": 960,
+        "cpuHostNormalizedPercent": 7.836681984760652,
+        "maxSamplerIntervalMs": 415.6093,
+        "p99SamplerIntervalMs": 175.5291,
+        "gcPauseTotalMs": 3894.828,
+        "maxGcPauseDeltaMs": 294.5429999999999,
+        "maxThreadPoolPending": 9021,
+        "maxProbePendingMs": 0,
+        "maxProbeDispatchMs": 64.5879,
+        "maxThreadPoolThreads": 36,
+        "gapsOver500ms": []
+      },
+      "hold": {
+        "samples": 517,
+        "cpuHostNormalizedPercent": 7.077391193433414,
+        "maxSamplerIntervalMs": 415.6093,
+        "p99SamplerIntervalMs": 164.8032,
+        "gcPauseTotalMs": 1871.579,
+        "maxGcPauseDeltaMs": 294.5429999999999,
+        "maxThreadPoolPending": 3,
+        "maxProbePendingMs": 0,
+        "maxProbeDispatchMs": 7.5491,
+        "maxThreadPoolThreads": 36,
+        "gapsOver500ms": []
+      },
+      "ledger": {
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 426869
+        },
+        "actual": {
+          "/packet/Heartbeat": 426869,
+          "/packet/LoginRequest": 31000
+        },
+        "matched": true
+      },
+      "client": {
+        "connectFailed": 0,
+        "loginFailed": 0,
+        "unexpectedDisconnects": 0,
+        "heartbeatSent": 424869,
+        "heartbeatAck": 424869
+      },
+      "protocol": {
+        "startedUtc": "2026-11-16T11:14:25.316855+00:00",
+        "apm": "on",
+        "count": 30000,
+        "holdSeconds": 60,
+        "heartbeatSeconds": 5,
+        "minThreads": 0,
+        "splitCpus": false,
+        "startupProbe": true,
+        "stackCapture": false,
+        "binaryHashes": {
+          "game": "cacb161f54c95e0ab1a53bc0d293e5e1641f36f65b27250247a1280efdfbce88",
+          "agent": "4fa2b79f2ad3fa1b3b75724c06026e1ffc7d365154ab7b375f6e32916d14a756",
+          "collector": "2972a5238387462f440b163fda43eed3f5dde67f3f5fe95db96e13056785c994",
+          "client": "9150c8aba662fd078eb3ca0c814e9af977cf4715cc7986c01915a9be293194ed"
+        }
+      }
+    },
+    {
+      "case": "diag02_off",
+      "passed": true,
+      "holdSeconds": 60.0047933,
+      "holdMinimumLogged": 30000,
+      "holdRttP99": 1322.2813,
+      "watchdog": [],
+      "threadPoolStallSeconds": [
+        1.0338733
+      ],
+      "availableMemoryMinMb": 4870.32,
+      "whole": {
+        "samples": 950,
+        "cpuHostNormalizedPercent": 5.115371448550963,
+        "maxSamplerIntervalMs": 1495.9351,
+        "p99SamplerIntervalMs": 182.5144,
+        "gcPauseTotalMs": 1147.185,
+        "maxGcPauseDeltaMs": 390.51099999999997,
+        "maxThreadPoolPending": 7810,
+        "maxProbePendingMs": 397.2528,
+        "maxProbeDispatchMs": 499.1179,
+        "maxThreadPoolThreads": 34,
+        "gapsOver500ms": [
+          {
+            "utc": "2026-11-16T11:18:09.3167374Z",
+            "intervalMs": 679.441,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 15.625,
+            "queueBefore": 7,
+            "queueAfter": 3,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T11:18:10.995002Z",
+            "intervalMs": 751.7775,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 15.625,
+            "queueBefore": 1,
+            "queueAfter": 35,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T11:18:12.1331662Z",
+            "intervalMs": 549.65,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 187.5,
+            "queueBefore": 4,
+            "queueAfter": 3,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T11:18:12.7755079Z",
+            "intervalMs": 642.3385,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 15.625,
+            "queueBefore": 3,
+            "queueAfter": 9,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T11:18:14.3784266Z",
+            "intervalMs": 1495.9351,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 281.25,
+            "queueBefore": 0,
+            "queueAfter": 1,
+            "probePendingMs": 0
+          }
+        ]
+      },
+      "hold": {
+        "samples": 495,
+        "cpuHostNormalizedPercent": 2.714712213242055,
+        "maxSamplerIntervalMs": 1495.9351,
+        "p99SamplerIntervalMs": 461.642,
+        "gcPauseTotalMs": 549.077,
+        "maxGcPauseDeltaMs": 390.51099999999997,
+        "maxThreadPoolPending": 41,
+        "maxProbePendingMs": 397.2528,
+        "maxProbeDispatchMs": 499.1179,
+        "maxThreadPoolThreads": 34,
+        "gapsOver500ms": [
+          {
+            "utc": "2026-11-16T11:18:09.3167374Z",
+            "intervalMs": 679.441,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 15.625,
+            "queueBefore": 7,
+            "queueAfter": 3,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T11:18:10.995002Z",
+            "intervalMs": 751.7775,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 15.625,
+            "queueBefore": 1,
+            "queueAfter": 35,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T11:18:12.1331662Z",
+            "intervalMs": 549.65,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 187.5,
+            "queueBefore": 4,
+            "queueAfter": 3,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T11:18:12.7755079Z",
+            "intervalMs": 642.3385,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 15.625,
+            "queueBefore": 3,
+            "queueAfter": 9,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T11:18:14.3784266Z",
+            "intervalMs": 1495.9351,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 281.25,
+            "queueBefore": 0,
+            "queueAfter": 1,
+            "probePendingMs": 0
+          }
+        ]
+      },
+      "client": {
+        "connectFailed": 0,
+        "loginFailed": 0,
+        "unexpectedDisconnects": 0,
+        "heartbeatSent": 446972,
+        "heartbeatAck": 446972
+      },
+      "protocol": {
+        "startedUtc": "2026-11-16T11:16:38.358566+00:00",
+        "apm": "off",
+        "count": 30000,
+        "holdSeconds": 60,
+        "heartbeatSeconds": 5,
+        "minThreads": 0,
+        "splitCpus": false,
+        "startupProbe": true,
+        "stackCapture": false,
+        "binaryHashes": {
+          "game": "cacb161f54c95e0ab1a53bc0d293e5e1641f36f65b27250247a1280efdfbce88",
+          "agent": "4fa2b79f2ad3fa1b3b75724c06026e1ffc7d365154ab7b375f6e32916d14a756",
+          "collector": "2972a5238387462f440b163fda43eed3f5dde67f3f5fe95db96e13056785c994",
+          "client": "9150c8aba662fd078eb3ca0c814e9af977cf4715cc7986c01915a9be293194ed"
+        }
+      }
+    },
+    {
+      "case": "diag03_off_host",
+      "passed": true,
+      "holdSeconds": 60.0087857,
+      "holdMinimumLogged": 30000,
+      "holdRttP99": 14.3923,
+      "watchdog": [],
+      "threadPoolStallSeconds": [],
+      "availableMemoryMinMb": 15516.82,
+      "whole": {
+        "samples": 910,
+        "cpuHostNormalizedPercent": 4.639330253673882,
+        "maxSamplerIntervalMs": 294.0115,
+        "p99SamplerIntervalMs": 130.0304,
+        "gcPauseTotalMs": 2146.425,
+        "maxGcPauseDeltaMs": 231.11400000000003,
+        "maxThreadPoolPending": 3944,
+        "maxProbePendingMs": 0,
+        "maxProbeDispatchMs": 16.3566,
+        "maxThreadPoolThreads": 32,
+        "gapsOver500ms": []
+      },
+      "hold": {
+        "samples": 551,
+        "cpuHostNormalizedPercent": 2.326703341052599,
+        "maxSamplerIntervalMs": 223.2243,
+        "p99SamplerIntervalMs": 123.4135,
+        "gcPauseTotalMs": 799.3140000000001,
+        "maxGcPauseDeltaMs": 173.17599999999993,
+        "maxThreadPoolPending": 3,
+        "maxProbePendingMs": 0,
+        "maxProbeDispatchMs": 2.7258,
+        "maxThreadPoolThreads": 32,
+        "gapsOver500ms": []
+      },
+      "client": {
+        "connectFailed": 0,
+        "loginFailed": 0,
+        "unexpectedDisconnects": 0,
+        "heartbeatSent": 414421,
+        "heartbeatAck": 414421
+      },
+      "protocol": {
+        "startedUtc": "2026-11-16T13:06:50.748036+00:00",
+        "apm": "off",
+        "count": 30000,
+        "holdSeconds": 60,
+        "heartbeatSeconds": 5,
+        "minThreads": 0,
+        "splitCpus": false,
+        "startupProbe": true,
+        "stackCapture": false,
+        "tcpMonitor": true,
+        "binaryHashes": {
+          "game": "cacb161f54c95e0ab1a53bc0d293e5e1641f36f65b27250247a1280efdfbce88",
+          "agent": "4fa2b79f2ad3fa1b3b75724c06026e1ffc7d365154ab7b375f6e32916d14a756",
+          "collector": "2972a5238387462f440b163fda43eed3f5dde67f3f5fe95db96e13056785c994",
+          "client": "9150c8aba662fd078eb3ca0c814e9af977cf4715cc7986c01915a9be293194ed"
+        }
+      }
+    },
+    {
+      "case": "diag04_off_overlap",
+      "passed": true,
+      "holdSeconds": 120.0144974,
+      "holdMinimumLogged": 30000,
+      "holdRttP99": 434.2621,
+      "watchdog": [],
+      "threadPoolStallSeconds": [
+        4.2774056
+      ],
+      "availableMemoryMinMb": 14984.3,
+      "whole": {
+        "samples": 1480,
+        "cpuHostNormalizedPercent": 3.825124742225102,
+        "maxSamplerIntervalMs": 1187.6719,
+        "p99SamplerIntervalMs": 173.2353,
+        "gcPauseTotalMs": 2461.002,
+        "maxGcPauseDeltaMs": 485.0450000000001,
+        "maxThreadPoolPending": 3161,
+        "maxProbePendingMs": 240.5614,
+        "maxProbeDispatchMs": 270.0552,
+        "maxThreadPoolThreads": 42,
+        "gapsOver500ms": [
+          {
+            "utc": "2026-11-16T13:10:28.8501455Z",
+            "intervalMs": 626.0138,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 0,
+            "queueBefore": 3,
+            "queueAfter": 0,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T13:10:29.7889976Z",
+            "intervalMs": 587.7486,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 0,
+            "queueBefore": 1,
+            "queueAfter": 3,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T13:10:31.3416437Z",
+            "intervalMs": 1187.6719,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 31.25,
+            "queueBefore": 1,
+            "queueAfter": 2,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T13:12:04.5761378Z",
+            "intervalMs": 507.3644,
+            "gcPauseDeltaMs": 485.0450000000001,
+            "cpuDeltaMs": 250.0,
+            "queueBefore": 2,
+            "queueAfter": 2,
+            "probePendingMs": 0
+          }
+        ]
+      },
+      "hold": {
+        "samples": 1056,
+        "cpuHostNormalizedPercent": 2.0212082783236296,
+        "maxSamplerIntervalMs": 1187.6719,
+        "p99SamplerIntervalMs": 199.6705,
+        "gcPauseTotalMs": 1571.1450000000002,
+        "maxGcPauseDeltaMs": 485.0450000000001,
+        "maxThreadPoolPending": 7,
+        "maxProbePendingMs": 240.5614,
+        "maxProbeDispatchMs": 270.0552,
+        "maxThreadPoolThreads": 42,
+        "gapsOver500ms": [
+          {
+            "utc": "2026-11-16T13:10:28.8501455Z",
+            "intervalMs": 626.0138,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 0,
+            "queueBefore": 3,
+            "queueAfter": 0,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T13:10:29.7889976Z",
+            "intervalMs": 587.7486,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 0,
+            "queueBefore": 1,
+            "queueAfter": 3,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T13:10:31.3416437Z",
+            "intervalMs": 1187.6719,
+            "gcPauseDeltaMs": 0.0,
+            "cpuDeltaMs": 31.25,
+            "queueBefore": 1,
+            "queueAfter": 2,
+            "probePendingMs": 0
+          },
+          {
+            "utc": "2026-11-16T13:12:04.5761378Z",
+            "intervalMs": 507.3644,
+            "gcPauseDeltaMs": 485.0450000000001,
+            "cpuDeltaMs": 250.0,
+            "queueBefore": 2,
+            "queueAfter": 2,
+            "probePendingMs": 0
+          }
+        ]
+      },
+      "client": {
+        "connectFailed": 0,
+        "loginFailed": 0,
+        "unexpectedDisconnects": 0,
+        "heartbeatSent": 782243,
+        "heartbeatAck": 782243
+      },
+      "protocol": {
+        "startedUtc": "2026-11-16T13:09:37.886176+00:00",
+        "apm": "off",
+        "count": 30000,
+        "holdSeconds": 120,
+        "heartbeatSeconds": 5,
+        "minThreads": 0,
+        "splitCpus": false,
+        "startupProbe": true,
+        "stackCapture": false,
+        "tcpMonitor": true,
+        "binaryHashes": {
+          "game": "cacb161f54c95e0ab1a53bc0d293e5e1641f36f65b27250247a1280efdfbce88",
+          "agent": "4fa2b79f2ad3fa1b3b75724c06026e1ffc7d365154ab7b375f6e32916d14a756",
+          "collector": "2972a5238387462f440b163fda43eed3f5dde67f3f5fe95db96e13056785c994",
+          "client": "9150c8aba662fd078eb3ca0c814e9af977cf4715cc7986c01915a9be293194ed"
+        }
+      }
+    },
+    {
+      "case": "diag05_off_guarded",
+      "passed": true,
+      "holdSeconds": 120.00044799999999,
+      "holdMinimumLogged": 30000,
+      "holdRttP99": 8.5007,
+      "watchdog": [],
+      "threadPoolStallSeconds": [],
+      "availableMemoryMinMb": 15080.21,
+      "whole": {
+        "samples": 1450,
+        "cpuHostNormalizedPercent": 3.7090802624676664,
+        "maxSamplerIntervalMs": 247.2154,
+        "p99SamplerIntervalMs": 124.3792,
+        "gcPauseTotalMs": 1834.583,
+        "maxGcPauseDeltaMs": 191.49400000000003,
+        "maxThreadPoolPending": 3625,
+        "maxProbePendingMs": 0,
+        "maxProbeDispatchMs": 24.103,
+        "maxThreadPoolThreads": 34,
+        "gapsOver500ms": []
+      },
+      "hold": {
+        "samples": 1101,
+        "cpuHostNormalizedPercent": 2.400327959009394,
+        "maxSamplerIntervalMs": 247.2154,
+        "p99SamplerIntervalMs": 118.9115,
+        "gcPauseTotalMs": 1106.623,
+        "maxGcPauseDeltaMs": 191.49400000000003,
+        "maxThreadPoolPending": 4,
+        "maxProbePendingMs": 0,
+        "maxProbeDispatchMs": 3.2945,
+        "maxThreadPoolThreads": 34,
+        "gapsOver500ms": []
+      },
+      "client": {
+        "connectFailed": 0,
+        "loginFailed": 0,
+        "unexpectedDisconnects": 0,
+        "heartbeatSent": 765882,
+        "heartbeatAck": 765882
+      },
+      "protocol": {
+        "startedUtc": "2026-11-16T13:19:59.176282+00:00",
+        "apm": "off",
+        "count": 30000,
+        "holdSeconds": 120,
+        "heartbeatSeconds": 5,
+        "minThreads": 0,
+        "splitCpus": false,
+        "startupProbe": true,
+        "stackCapture": false,
+        "tcpMonitor": true,
+        "allowTimewaitOverlap": false,
+        "binaryHashes": {
+          "game": "cacb161f54c95e0ab1a53bc0d293e5e1641f36f65b27250247a1280efdfbce88",
+          "agent": "4fa2b79f2ad3fa1b3b75724c06026e1ffc7d365154ab7b375f6e32916d14a756",
+          "collector": "2972a5238387462f440b163fda43eed3f5dde67f3f5fe95db96e13056785c994",
+          "client": "9150c8aba662fd078eb3ca0c814e9af977cf4715cc7986c01915a9be293194ed"
+        }
+      }
+    }
+  ],
+  "tcpOnly": {
+    "count": 30000,
+    "closedUtc": "2026-11-16T13:14:59.3074569Z",
+    "peakUtc": "2026-11-16T13:16:59.091848+00:00",
+    "secondsAfterClose": 119.784392,
+    "peakHost": {
+      "cpu": 97.41788462126847,
+      "privileged": 96.27653968813966,
+      "dpc": 0.18442602051897652,
+      "interrupt": 0.0,
+      "runQueue": 1.0,
+      "pageReads": 3.779367337687039,
+      "pagesInput": 24.565887694965753,
+      "availableMb": 17473.0,
+      "intervalSeconds": 0.525468699997873
+    },
+    "maxProcessorQueue": 194.0,
+    "initialTcp": {
+      "serverEstablished": 0,
+      "systemTimeWait": 30047
+    },
+    "end": {
+      "exitCode": 0,
+      "endTcp": {
+        "serverEstablished": 0,
+        "systemTimeWait": 49
+      },
+      "noTcpPollingDuringExpiry": true
+    },
+    "samplerGapsOver300ms": [
+      {
+        "utc": "2026-11-16T13:16:58.5953511Z",
+        "intervalMs": 374.289,
+        "gcPauseDeltaMs": 0.0,
+        "poolPending": 1,
+        "probeDispatchMs": 0.0197
+      },
+      {
+        "utc": "2026-11-16T13:16:58.9756704Z",
+        "intervalMs": 380.3217,
+        "gcPauseDeltaMs": 0.0,
+        "poolPending": 1,
+        "probeDispatchMs": 4.0918
+      }
+    ],
+    "maxSamplerIntervalMs": 380.3217
+  },
+  "historicalRuns": [
+    {
+      "run": "ab-clean-01-before-off",
+      "watchdog": [],
+      "maxPrivilegedPct": 22.2972972972973
+    },
+    {
+      "run": "ab-clean-02-after-on",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:03.4821175. Total GC Pause duration during that period: 00:00:00.0373690. We are now using a total of 402MB memory. Collection counts per generation: 0: 72, 1: 29, 2: 18"
+      ],
+      "maxPrivilegedPct": 84.12267080745342
+    },
+    {
+      "run": "ab-clean-03-after-off",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:08.0438951. Total GC Pause duration during that period: 00:00:00. We are now using a total of 303MB memory. Collection counts per generation: 0: 38, 1: 17, 2: 13"
+      ],
+      "maxPrivilegedPct": 92.744871681023
+    },
+    {
+      "run": "ab-clean-04-before-on",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:05.8182354. Total GC Pause duration during that period: 00:00:00.0055630. We are now using a total of 351MB memory. Collection counts per generation: 0: 62, 1: 28, 2: 18"
+      ],
+      "maxPrivilegedPct": 91.19475138121547
+    },
+    {
+      "run": "ab-clean-05-after-off",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:12.6533527. Total GC Pause duration during that period: 00:00:00. We are now using a total of 361MB memory. Collection counts per generation: 0: 35, 1: 16, 2: 12"
+      ],
+      "maxPrivilegedPct": 95.73467401881285
+    },
+    {
+      "run": "ab-clean-06-before-on",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:05.7241839. Total GC Pause duration during that period: 00:00:00. We are now using a total of 365MB memory. Collection counts per generation: 0: 61, 1: 29, 2: 18"
+      ],
+      "maxPrivilegedPct": 96.16596638655463
+    },
+    {
+      "run": "ab-clean-07-before-off",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:08.9599924. Total GC Pause duration during that period: 00:00:00. We are now using a total of 320MB memory. Collection counts per generation: 0: 37, 1: 17, 2: 13"
+      ],
+      "maxPrivilegedPct": 92.26612988664054
+    },
+    {
+      "run": "ab-clean-08-after-on",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:05.0468652. Total GC Pause duration during that period: 00:00:00.0115840. We are now using a total of 489MB memory. Collection counts per generation: 0: 76, 1: 31, 2: 20"
+      ],
+      "maxPrivilegedPct": 96.7616831491177
+    },
+    {
+      "run": "ab-clean-09-before-on",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:12.0271846. Total GC Pause duration during that period: 00:00:00. We are now using a total of 485MB memory. Collection counts per generation: 0: 43, 1: 23, 2: 17"
+      ],
+      "maxPrivilegedPct": 91.06258624888383
+    },
+    {
+      "run": "ab-clean-10-after-off",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:07.9871534. Total GC Pause duration during that period: 00:00:00. We are now using a total of 309MB memory. Collection counts per generation: 0: 42, 1: 20, 2: 14"
+      ],
+      "maxPrivilegedPct": 88.25973409306742
+    },
+    {
+      "run": "ab-clean-11-after-on",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:07.9325875. Total GC Pause duration during that period: 00:00:00. We are now using a total of 457MB memory. Collection counts per generation: 0: 73, 1: 32, 2: 19"
+      ],
+      "maxPrivilegedPct": 89.78299242030941
+    },
+    {
+      "run": "ab-clean-12-before-off",
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:07.8790626. Total GC Pause duration during that period: 00:00:00. We are now using a total of 322MB memory. Collection counts per generation: 0: 38, 1: 17, 2: 12"
+      ],
+      "maxPrivilegedPct": 94.38320825515947
+    }
+  ],
+  "historicalTimewait": [
+    {
+      "run": "ab-clean-02-after-on",
+      "previousComplete": "2026-11-10T08:55:49.3781545Z",
+      "predictedExpiration": "2026-11-10T08:57:49.378154+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T08:57:29.454457+00:00",
+          "secondsFromPreviousClose": 100.076303,
+          "timewait": 31023
+        },
+        {
+          "utc": "2026-11-10T08:57:34.771899+00:00",
+          "secondsFromPreviousClose": 105.393745,
+          "timewait": 31024
+        },
+        {
+          "utc": "2026-11-10T08:57:40.041362+00:00",
+          "secondsFromPreviousClose": 110.663208,
+          "timewait": 31025
+        },
+        {
+          "utc": "2026-11-10T08:57:45.310940+00:00",
+          "secondsFromPreviousClose": 115.932786,
+          "timewait": 31026
+        },
+        {
+          "utc": "2026-11-10T08:57:52.616964+00:00",
+          "secondsFromPreviousClose": 123.23881,
+          "timewait": 1027
+        },
+        {
+          "utc": "2026-11-10T08:57:57.990356+00:00",
+          "secondsFromPreviousClose": 128.612202,
+          "timewait": 1029
+        },
+        {
+          "utc": "2026-11-10T08:58:03.213128+00:00",
+          "secondsFromPreviousClose": 133.834974,
+          "timewait": 1030
+        },
+        {
+          "utc": "2026-11-10T08:58:08.420100+00:00",
+          "secondsFromPreviousClose": 139.041946,
+          "timewait": 1031
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:03.4821175. Total GC Pause duration during that period: 00:00:00.0373690. We are now using a total of 402MB memory. Collection counts per generation: 0: 72, 1: 29, 2: 18"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 08:57:48 but fired at 11/10/2026 08:57:52, which is 00:00:04.3486787 longer than expected",
+        "Timer should have fired at 11/10/2026 08:57:48 but fired at 11/10/2026 08:57:52, which is 00:00:03.9736802 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-03-after-off",
+      "previousComplete": "2026-11-10T08:58:35.2756696Z",
+      "predictedExpiration": "2026-11-10T09:00:35.275669+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:00:19.732001+00:00",
+          "secondsFromPreviousClose": 104.456332,
+          "timewait": 31010
+        },
+        {
+          "utc": "2026-11-10T09:00:25.001999+00:00",
+          "secondsFromPreviousClose": 109.72633,
+          "timewait": 31009
+        },
+        {
+          "utc": "2026-11-10T09:00:30.256516+00:00",
+          "secondsFromPreviousClose": 114.980847,
+          "timewait": 31008
+        },
+        {
+          "utc": "2026-11-10T09:00:44.468083+00:00",
+          "secondsFromPreviousClose": 129.192414,
+          "timewait": 1004
+        },
+        {
+          "utc": "2026-11-10T09:00:49.779614+00:00",
+          "secondsFromPreviousClose": 134.503945,
+          "timewait": 1016
+        },
+        {
+          "utc": "2026-11-10T09:00:54.987614+00:00",
+          "secondsFromPreviousClose": 139.711945,
+          "timewait": 1016
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:08.0438951. Total GC Pause duration during that period: 00:00:00. We are now using a total of 303MB memory. Collection counts per generation: 0: 38, 1: 17, 2: 13"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:00:34 but fired at 11/10/2026 09:00:44, which is 00:00:09.5379521 longer than expected",
+        "Timer should have fired at 11/10/2026 09:00:36 but fired at 11/10/2026 09:00:44, which is 00:00:07.9606770 longer than expected",
+        "Timer should have fired at 11/10/2026 09:00:36 but fired at 11/10/2026 09:00:44, which is 00:00:08.1775673 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-04-before-on",
+      "previousComplete": "2026-11-10T09:01:05.3289289Z",
+      "predictedExpiration": "2026-11-10T09:03:05.328928+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:02:46.704436+00:00",
+          "secondsFromPreviousClose": 101.375508,
+          "timewait": 31052
+        },
+        {
+          "utc": "2026-11-10T09:02:51.969396+00:00",
+          "secondsFromPreviousClose": 106.640468,
+          "timewait": 31053
+        },
+        {
+          "utc": "2026-11-10T09:02:57.247069+00:00",
+          "secondsFromPreviousClose": 111.918141,
+          "timewait": 31054
+        },
+        {
+          "utc": "2026-11-10T09:03:02.494397+00:00",
+          "secondsFromPreviousClose": 117.165469,
+          "timewait": 31055
+        },
+        {
+          "utc": "2026-11-10T09:03:09.382518+00:00",
+          "secondsFromPreviousClose": 124.05359,
+          "timewait": 1058
+        },
+        {
+          "utc": "2026-11-10T09:03:14.680028+00:00",
+          "secondsFromPreviousClose": 129.3511,
+          "timewait": 1055
+        },
+        {
+          "utc": "2026-11-10T09:03:19.879897+00:00",
+          "secondsFromPreviousClose": 134.550969,
+          "timewait": 1055
+        },
+        {
+          "utc": "2026-11-10T09:03:25.077397+00:00",
+          "secondsFromPreviousClose": 139.748469,
+          "timewait": 1056
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:05.8182354. Total GC Pause duration during that period: 00:00:00.0055630. We are now using a total of 351MB memory. Collection counts per generation: 0: 62, 1: 28, 2: 18"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:03:04 but fired at 11/10/2026 09:03:09, which is 00:00:04.6786134 longer than expected",
+        "Timer should have fired at 11/10/2026 09:03:05 but fired at 11/10/2026 09:03:09, which is 00:00:04.1552166 longer than expected",
+        "Timer should have fired at 11/10/2026 09:03:05 but fired at 11/10/2026 09:03:09, which is 00:00:04.2580239 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-05-after-off",
+      "previousComplete": "2026-11-10T09:03:46.0476514Z",
+      "predictedExpiration": "2026-11-10T09:05:46.047651+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:05:26.049898+00:00",
+          "secondsFromPreviousClose": 100.002247,
+          "timewait": 31023
+        },
+        {
+          "utc": "2026-11-10T09:05:31.310897+00:00",
+          "secondsFromPreviousClose": 105.263246,
+          "timewait": 31021
+        },
+        {
+          "utc": "2026-11-10T09:05:36.568374+00:00",
+          "secondsFromPreviousClose": 110.520723,
+          "timewait": 31020
+        },
+        {
+          "utc": "2026-11-10T09:05:41.816899+00:00",
+          "secondsFromPreviousClose": 115.769248,
+          "timewait": 31019
+        },
+        {
+          "utc": "2026-11-10T09:05:57.072565+00:00",
+          "secondsFromPreviousClose": 131.024914,
+          "timewait": 1014
+        },
+        {
+          "utc": "2026-11-10T09:06:02.392895+00:00",
+          "secondsFromPreviousClose": 136.345244,
+          "timewait": 1014
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:12.6533527. Total GC Pause duration during that period: 00:00:00. We are now using a total of 361MB memory. Collection counts per generation: 0: 35, 1: 16, 2: 12"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:05:45 but fired at 11/10/2026 09:05:57, which is 00:00:11.6037369 longer than expected",
+        "Timer should have fired at 11/10/2026 09:05:48 but fired at 11/10/2026 09:05:57, which is 00:00:09.0365254 longer than expected",
+        "Timer should have fired at 11/10/2026 09:05:48 but fired at 11/10/2026 09:05:57, which is 00:00:09.1397275 longer than expected",
+        "Timer should have fired at 11/10/2026 09:05:48 but fired at 11/10/2026 09:05:57, which is 00:00:08.5591855 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-06-before-on",
+      "previousComplete": "2026-11-10T09:06:17.5538555Z",
+      "predictedExpiration": "2026-11-10T09:08:17.553855+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:07:57.982896+00:00",
+          "secondsFromPreviousClose": 100.429041,
+          "timewait": 31037
+        },
+        {
+          "utc": "2026-11-10T09:08:03.282906+00:00",
+          "secondsFromPreviousClose": 105.729051,
+          "timewait": 31046
+        },
+        {
+          "utc": "2026-11-10T09:08:08.581911+00:00",
+          "secondsFromPreviousClose": 111.028056,
+          "timewait": 31047
+        },
+        {
+          "utc": "2026-11-10T09:08:13.865897+00:00",
+          "secondsFromPreviousClose": 116.312042,
+          "timewait": 31048
+        },
+        {
+          "utc": "2026-11-10T09:08:21.715350+00:00",
+          "secondsFromPreviousClose": 124.161495,
+          "timewait": 1044
+        },
+        {
+          "utc": "2026-11-10T09:08:27.116912+00:00",
+          "secondsFromPreviousClose": 129.563057,
+          "timewait": 1045
+        },
+        {
+          "utc": "2026-11-10T09:08:32.382909+00:00",
+          "secondsFromPreviousClose": 134.829054,
+          "timewait": 1046
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:05.7241839. Total GC Pause duration during that period: 00:00:00. We are now using a total of 365MB memory. Collection counts per generation: 0: 61, 1: 29, 2: 18"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:08:17 but fired at 11/10/2026 09:08:21, which is 00:00:04.5564379 longer than expected",
+        "Timer should have fired at 11/10/2026 09:08:16 but fired at 11/10/2026 09:08:21, which is 00:00:05.1435889 longer than expected",
+        "Timer should have fired at 11/10/2026 09:08:16 but fired at 11/10/2026 09:08:21, which is 00:00:05.2685825 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-07-before-off",
+      "previousComplete": "2026-11-10T09:08:57.7167862Z",
+      "predictedExpiration": "2026-11-10T09:10:57.716786+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:10:42.877405+00:00",
+          "secondsFromPreviousClose": 105.160619,
+          "timewait": 31019
+        },
+        {
+          "utc": "2026-11-10T09:10:48.110897+00:00",
+          "secondsFromPreviousClose": 110.394111,
+          "timewait": 31018
+        },
+        {
+          "utc": "2026-11-10T09:10:53.339407+00:00",
+          "secondsFromPreviousClose": 115.622621,
+          "timewait": 31017
+        },
+        {
+          "utc": "2026-11-10T09:11:06.065023+00:00",
+          "secondsFromPreviousClose": 128.348237,
+          "timewait": 1013
+        },
+        {
+          "utc": "2026-11-10T09:11:11.399907+00:00",
+          "secondsFromPreviousClose": 133.683121,
+          "timewait": 1011
+        },
+        {
+          "utc": "2026-11-10T09:11:16.599905+00:00",
+          "secondsFromPreviousClose": 138.883119,
+          "timewait": 1010
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:08.9599924. Total GC Pause duration during that period: 00:00:00. We are now using a total of 320MB memory. Collection counts per generation: 0: 37, 1: 17, 2: 13"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:10:58 but fired at 11/10/2026 09:11:06, which is 00:00:07.8693655 longer than expected",
+        "Timer should have fired at 11/10/2026 09:10:59 but fired at 11/10/2026 09:11:06, which is 00:00:06.2713437 longer than expected",
+        "Timer should have fired at 11/10/2026 09:10:59 but fired at 11/10/2026 09:11:06, which is 00:00:06.3445171 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-08-after-on",
+      "previousComplete": "2026-11-10T09:11:29.6594434Z",
+      "predictedExpiration": "2026-11-10T09:13:29.659443+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:13:10.220462+00:00",
+          "secondsFromPreviousClose": 100.561019,
+          "timewait": 31021
+        },
+        {
+          "utc": "2026-11-10T09:13:15.532459+00:00",
+          "secondsFromPreviousClose": 105.873016,
+          "timewait": 31023
+        },
+        {
+          "utc": "2026-11-10T09:13:20.812410+00:00",
+          "secondsFromPreviousClose": 111.152967,
+          "timewait": 31023
+        },
+        {
+          "utc": "2026-11-10T09:13:26.097395+00:00",
+          "secondsFromPreviousClose": 116.437952,
+          "timewait": 31024
+        },
+        {
+          "utc": "2026-11-10T09:13:35.236443+00:00",
+          "secondsFromPreviousClose": 125.577,
+          "timewait": 1026
+        },
+        {
+          "utc": "2026-11-10T09:13:40.573548+00:00",
+          "secondsFromPreviousClose": 130.914105,
+          "timewait": 1025
+        },
+        {
+          "utc": "2026-11-10T09:13:45.856368+00:00",
+          "secondsFromPreviousClose": 136.196925,
+          "timewait": 1026
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:05.0468652. Total GC Pause duration during that period: 00:00:00.0115840. We are now using a total of 489MB memory. Collection counts per generation: 0: 76, 1: 31, 2: 20"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:13:31 but fired at 11/10/2026 09:13:35, which is 00:00:03.9779827 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-09-before-on",
+      "previousComplete": "2026-11-10T09:14:09.4707609Z",
+      "predictedExpiration": "2026-11-10T09:16:09.470760+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:15:53.593079+00:00",
+          "secondsFromPreviousClose": 104.122319,
+          "timewait": 31026
+        },
+        {
+          "utc": "2026-11-10T09:15:58.871767+00:00",
+          "secondsFromPreviousClose": 109.401007,
+          "timewait": 31024
+        },
+        {
+          "utc": "2026-11-10T09:16:04.227398+00:00",
+          "secondsFromPreviousClose": 114.756638,
+          "timewait": 31024
+        },
+        {
+          "utc": "2026-11-10T09:16:19.525278+00:00",
+          "secondsFromPreviousClose": 130.054518,
+          "timewait": 1023
+        },
+        {
+          "utc": "2026-11-10T09:16:24.977915+00:00",
+          "secondsFromPreviousClose": 135.507155,
+          "timewait": 1023
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:12.0271846. Total GC Pause duration during that period: 00:00:00. We are now using a total of 485MB memory. Collection counts per generation: 0: 43, 1: 23, 2: 17"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:16:08 but fired at 11/10/2026 09:16:19, which is 00:00:11.2550887 longer than expected",
+        "Timer should have fired at 11/10/2026 09:16:12 but fired at 11/10/2026 09:16:19, which is 00:00:07.6426724 longer than expected",
+        "Timer should have fired at 11/10/2026 09:16:12 but fired at 11/10/2026 09:16:19, which is 00:00:07.5533236 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-10-after-off",
+      "previousComplete": "2026-11-10T09:16:46.5403342Z",
+      "predictedExpiration": "2026-11-10T09:18:46.540334+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:18:31.548599+00:00",
+          "secondsFromPreviousClose": 105.008265,
+          "timewait": 31012
+        },
+        {
+          "utc": "2026-11-10T09:18:36.848398+00:00",
+          "secondsFromPreviousClose": 110.308064,
+          "timewait": 31012
+        },
+        {
+          "utc": "2026-11-10T09:18:42.080800+00:00",
+          "secondsFromPreviousClose": 115.540466,
+          "timewait": 31011
+        },
+        {
+          "utc": "2026-11-10T09:18:53.600640+00:00",
+          "secondsFromPreviousClose": 127.060306,
+          "timewait": 1010
+        },
+        {
+          "utc": "2026-11-10T09:18:58.935421+00:00",
+          "secondsFromPreviousClose": 132.395087,
+          "timewait": 1009
+        },
+        {
+          "utc": "2026-11-10T09:19:04.123393+00:00",
+          "secondsFromPreviousClose": 137.583059,
+          "timewait": 1008
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:07.9871534. Total GC Pause duration during that period: 00:00:00. We are now using a total of 309MB memory. Collection counts per generation: 0: 42, 1: 20, 2: 14"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:18:46 but fired at 11/10/2026 09:18:53, which is 00:00:06.8947986 longer than expected",
+        "Timer should have fired at 11/10/2026 09:18:48 but fired at 11/10/2026 09:18:53, which is 00:00:05.3564607 longer than expected",
+        "Timer should have fired at 11/10/2026 09:18:48 but fired at 11/10/2026 09:18:53, which is 00:00:05.5035625 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-11-after-on",
+      "previousComplete": "2026-11-10T09:19:24.434077Z",
+      "predictedExpiration": "2026-11-10T09:21:24.434077+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:21:09.491942+00:00",
+          "secondsFromPreviousClose": 105.057865,
+          "timewait": 31023
+        },
+        {
+          "utc": "2026-11-10T09:21:14.801917+00:00",
+          "secondsFromPreviousClose": 110.36784,
+          "timewait": 31023
+        },
+        {
+          "utc": "2026-11-10T09:21:20.098396+00:00",
+          "secondsFromPreviousClose": 115.664319,
+          "timewait": 31024
+        },
+        {
+          "utc": "2026-11-10T09:21:31.750428+00:00",
+          "secondsFromPreviousClose": 127.316351,
+          "timewait": 1026
+        },
+        {
+          "utc": "2026-11-10T09:21:37.083897+00:00",
+          "secondsFromPreviousClose": 132.64982,
+          "timewait": 1026
+        },
+        {
+          "utc": "2026-11-10T09:21:42.351018+00:00",
+          "secondsFromPreviousClose": 137.916941,
+          "timewait": 1027
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:07.9325875. Total GC Pause duration during that period: 00:00:00. We are now using a total of 457MB memory. Collection counts per generation: 0: 73, 1: 32, 2: 19"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:21:23 but fired at 11/10/2026 09:21:31, which is 00:00:08.1517920 longer than expected",
+        "Timer should have fired at 11/10/2026 09:21:23 but fired at 11/10/2026 09:21:31, which is 00:00:07.8663168 longer than expected",
+        "Timer should have fired at 11/10/2026 09:21:23 but fired at 11/10/2026 09:21:31, which is 00:00:08.3767379 longer than expected"
+      ]
+    },
+    {
+      "run": "ab-clean-12-before-off",
+      "previousComplete": "2026-11-10T09:22:01.0236915Z",
+      "predictedExpiration": "2026-11-10T09:24:01.023691+00:00",
+      "tcpAroundExpiration": [
+        {
+          "utc": "2026-11-10T09:23:45.045897+00:00",
+          "secondsFromPreviousClose": 104.022206,
+          "timewait": 31014
+        },
+        {
+          "utc": "2026-11-10T09:23:50.278899+00:00",
+          "secondsFromPreviousClose": 109.255208,
+          "timewait": 31013
+        },
+        {
+          "utc": "2026-11-10T09:23:55.526895+00:00",
+          "secondsFromPreviousClose": 114.503204,
+          "timewait": 31012
+        },
+        {
+          "utc": "2026-11-10T09:24:08.085406+00:00",
+          "secondsFromPreviousClose": 127.061715,
+          "timewait": 1008
+        },
+        {
+          "utc": "2026-11-10T09:24:13.389896+00:00",
+          "secondsFromPreviousClose": 132.366205,
+          "timewait": 1005
+        },
+        {
+          "utc": "2026-11-10T09:24:18.574895+00:00",
+          "secondsFromPreviousClose": 137.551204,
+          "timewait": 1005
+        }
+      ],
+      "watchdog": [
+        ".NET Runtime Platform stalled for 00:00:07.8790626. Total GC Pause duration during that period: 00:00:00. We are now using a total of 322MB memory. Collection counts per generation: 0: 38, 1: 17, 2: 12"
+      ],
+      "timerMessages": [
+        "Timer should have fired at 11/10/2026 09:24:00 but fired at 11/10/2026 09:24:08, which is 00:00:07.7539286 longer than expected",
+        "Timer should have fired at 11/10/2026 09:24:01 but fired at 11/10/2026 09:24:08, which is 00:00:06.4727337 longer than expected",
+        "Timer should have fired at 11/10/2026 09:24:01 but fired at 11/10/2026 09:24:08, which is 00:00:06.3671807 longer than expected"
+      ]
+    }
+  ],
+  "guardedPreflight": {
+    "allowOverlap": false,
+    "threshold": 2000,
+    "observations": [
+      {
+        "utc": "2026-11-16T13:19:55.145093+00:00",
+        "serverEstablished": 0,
+        "systemTimeWait": 47
+      },
+      {
+        "utc": "2026-11-16T13:19:57.152435+00:00",
+        "serverEstablished": 0,
+        "systemTimeWait": 47
+      }
+    ]
+  },
+  "limitations": [
+    "No kernel stack capture; exact Windows component not identified",
+    "Shared host, changing background workload and only one guarded 120-second control",
+    "Login and heartbeat workload only; not mixed-content max TPS",
+    "diag01 original ledger failure retained; corrected analysis filters Method=PACKET"
+  ]
+}
