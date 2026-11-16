@@ -9,6 +9,7 @@ public class ApmDbContext(DbContextOptions<ApmDbContext> options) : DbContext(op
     public DbSet<MetricRecord> Metrics => Set<MetricRecord>();
     public DbSet<AnalysisResult> Analyses => Set<AnalysisResult>();
 
+    public DbSet<HeartbeatAggregate> HeartbeatAggregates => Set<HeartbeatAggregate>();
     public DbSet<SpanData> Spans => Set<SpanData>();
     public DbSet<LogData> TelemetryLogs => Set<LogData>();
     public DbSet<RuntimeData> RuntimeSamples => Set<RuntimeData>();
@@ -17,6 +18,7 @@ public class ApmDbContext(DbContextOptions<ApmDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<HeartbeatAggregate>().HasIndex(a => new { a.ServiceName, a.Timestamp });
         modelBuilder.Entity<SpanData>().HasKey(s => new { s.TraceId, s.SpanId });
         modelBuilder.Entity<SpanData>().HasIndex(s => new { s.ServiceName, s.StartTime });
         modelBuilder.Entity<SpanData>().HasIndex(s => new { s.IsEntry, s.StartTime });

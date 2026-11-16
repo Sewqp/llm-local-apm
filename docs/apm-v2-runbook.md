@@ -1,5 +1,7 @@
 # Local APM v2 실행·검증 안내
 
+> **2026-11-17 Heartbeat 집계:** 정상 Heartbeat는 통계로 묶고 오류·지연·지정 유저 상세를 남긴다. [설정과 한계](heartbeat-aggregation-guide.md) · [새 로컬 전후 실측](heartbeat-aggregation-validation-20261117.md). 아래 과거 검증 수치는 당시 수집 정책의 기록이며 보존한다.
+
 현재 동작 기준: 2026-11-16 CPU 측정 수정, 수집·저장 구조는 2026-11-10 구현. 날짜가 붙은 실측 문서는 당시 결과를 보존한다. 이 안내의 기본 설정과 아래의 2026-10-26 재현 예제를 구분한다.
 
 최신 근거: [CPU 보정·런타임 정체 조사](runtime-cpu-stall-validation-20261116.md), [운영 관측·검증 기여](apm-operational-impact-20261110.md), [배치·디스크 복구](apm-queue-recovery-20261110.md), [APM ON/OFF 비용 측정](apm-ab-comparison-20261110.md).
@@ -124,17 +126,17 @@ dotnet run --project tools/verification/SourcePathChecks -- '.local-evidence/new
 
 ## 상세 결과
 
-[현재 기여와 주장 범위](apm-operational-impact-20261110.md), [최신 비용 실측](apm-ab-comparison-20261110.md), [최신 수집·재전송 검증](apm-queue-recovery-20261110.md)을 먼저 본다. [초기 v2 결과](apm-v2-20261026.md), [기존 증거](validation-baseline.md), [후속 계획](apm-upgrade-plan.md)은 당시 기록이며 계획의 모든 항목을 구현했다는 뜻이 아니다. 파인튜닝은 수행하지 않았다.
+[현재 기여와 주장 범위](apm-operational-impact-20261110.md), [최신 집계 비용 실측](heartbeat-aggregation-validation-20261117.md) 및 [11월 10일 비용 기록](apm-ab-comparison-20261110.md), [최신 수집·재전송 검증](apm-queue-recovery-20261110.md)을 먼저 본다. [초기 v2 결과](apm-v2-20261026.md), [기존 증거](validation-baseline.md), [후속 계획](apm-upgrade-plan.md)은 당시 기록이며 계획의 모든 항목을 구현했다는 뜻이 아니다. 파인튜닝은 수행하지 않았다.
 
 ## 현재 수집 정책과 저장 설정
 
-최신 결과는 [2026-11-10 수집·재전송 검증](apm-queue-recovery-20261110.md)에 있다. [2026-10-26 신뢰성 검증](apm-reliability-20261026.md)은 개선 과정과 당시 실패를 보존한 기록이다. 모든 요청의 기본 기록은 보존 대상으로 보내고, 정상 내부 상세는 기본 1%만 선택한다. `APM_DETAIL_SAMPLE_RATE`는 0~1, `APM_SLOW_TRACE_MS`는 0 이상 숫자다. 기본 100ms 이상 또는 종료 시 오류인 요청은 상세 보존 대상이며 버퍼·큐·구간 상한은 적용된다.
+집계 적용 결과는 [2026-11-17 실측](heartbeat-aggregation-validation-20261117.md), 기존 수집·재전송 결과는 [2026-11-10 수집·재전송 검증](apm-queue-recovery-20261110.md)에 있다. [2026-10-26 신뢰성 검증](apm-reliability-20261026.md)은 개선 과정과 당시 실패를 보존한 기록이다. 게임 서버의 정상 Heartbeat는 기본적으로 집계 Count에 보존하고, 오류·지연·지정 유저 등 예외는 개별 기록으로 보낸다. 다른 요청은 기존 기본 기록을 보내며, 일반 정상 내부 상세는 기본 1%만 선택한다. `APM_DETAIL_SAMPLE_RATE`는 0~1, `APM_SLOW_TRACE_MS`는 0 이상 숫자다. 기본 100ms 이상 또는 종료 시 오류인 요청은 상세 보존 대상이며 버퍼·큐·구간 상한은 적용된다.
 
-`check_game.py`의 상세 연결 회귀 검사는 게임 서버를 `APM_DETAIL_SAMPLE_RATE=1`로 실행해야 한다. 부하 검사는 기본 0.01을 사용하며 비교 조건에 남긴다. `sampled_out`은 정책상 제외, `truncated`/`buffer_limit`는 상한, `queue_dropped`는 상세 전송 큐 유실, `pending`은 상세 도착 대기다. pending이 지속되면 유실/HTTP 실패 카운터도 확인한다. 상세 유실과 기본 요청 유실을 혼동하지 않는다.
+`check_game.py`의 상세 연결 회귀 검사는 게임 서버를 `APM_DETAIL_SAMPLE_RATE=1`, `APM_AGGREGATE_HEARTBEATS=0`으로 실행해야 한다. 새 집계 정책은 `HeartbeatChecks`로 별도 검사한다. 부하 검사는 기본 0.01을 사용하며 비교 조건에 남긴다. `sampled_out`은 정책상 제외, `truncated`/`buffer_limit`는 상한, `queue_dropped`는 상세 전송 큐 유실, `pending`은 상세 도착 대기다. pending이 지속되면 유실/HTTP 실패 카운터도 확인한다. 상세 유실과 기본 요청 유실을 혼동하지 않는다.
 
 | 항목 | 현재 기본값·동작 |
 |---|---|
-| Agent 메모리 상한 | 기본 요청 32,768개, 상세 32,768 span, 추적 버퍼 4,096개, trace당 내부 64개 |
+| Agent 메모리 상한 | 기본 요청 32,768개, 상세 32,768 span, 추적 버퍼 범용 Agent 4,096개 / 게임 서버 16,384개, trace당 내부 64개 |
 | 상세 묶기 | 약 1초 대기 후 선택된 상세를 묶음 |
 | 배치/API 상한 | spans/metrics 각각 1,024개, logs 1,024개, runtime 256개, 본문 2,000,000바이트 |
 | SQLite 쓰기 | 단일 writer 연결의 prepared SQL, FULL 동기화, 캐시 설정 512MiB |
@@ -155,6 +157,6 @@ Trickcal의 `ApmReporter`는 실행 파일 아래 `.apm-spool`을 기본 사용�
 
 스풀 한도는 기본 256MiB / 8192배치다. 디스크 오류·한도 초과는 SpoolErrors와 RequestsDropped/DetailsDropped에 드러난다. 프로세스 종료 시 아직 메모리에만 있던 항목의 강제 종료 복구, 무제한 수집기 장애, 7일보다 오래된 기록의 재수집을 보장하지 않는다. 수집 API는 7일 이전 시각의 자료를 거절한다. 수집기 장애 동안 runtime 자체가 도착하지 않을 수 있으므로 수신 시각도 함께 본다.
 
-대시보드 자원 카드에서 디스크 대기 요청/배치/용량, 복구 요청, 보관 실패를 확인한다. RequestsSent는 현재 Agent 인스턴스의 기본 요청 전송이고 ReplayedRequests에는 이전 인스턴스의 재전송도 포함된다. 스풀은 내부 추적 메타데이터를 포함하므로 공개 저장소에 올리지 않는다.
+대시보드 자원 카드에서 디스크 대기 요청/배치/용량, 복구 요청, 보관 실패를 확인한다. RequestsSent는 집계 Count를 포함한 현재 Agent 인스턴스의 기본 요청 전송이고 ReplayedRequests에는 이전 인스턴스의 재전송도 포함된다. 스풀은 내부 추적 메타데이터를 포함하므로 공개 저장소에 올리지 않는다.
 
 검증: `dotnet run --project tools/verification/SenderRecoveryChecks -c Release`, `dotnet run --project tools/verification/CollectorWriterChecks -c Release`, `python tools/verification/check_api.py <분리된 수집기 URL>`.

@@ -80,7 +80,7 @@ export default function TraceExplorer({ server }) {
   return <section className="trace-explorer" aria-label="요청 추적">
     <div className="trace-heading">
       <div><span className="trace-kicker">LOCAL OBSERVABILITY</span><h2>요청에서 원인까지</h2>
-        <p>요청·내부 호출·오류를 연결하고, 선택한 근거를 로컬 LLM으로 분석합니다.</p></div>
+        <p>요청·내부 호출·오류를 연결하고, 선택한 근거를 로컬 LLM으로 분석합니다. 정상 Heartbeat 집계는 상단 통계에 포함되며, 오류·지연·사전에 지정한 유저의 상세 요청은 이 목록에 남습니다.</p></div>
       <span className="local-badge">내부 수집 · 로컬 추론</span>
     </div>
 
@@ -116,7 +116,7 @@ export default function TraceExplorer({ server }) {
         <td><button className="trace-link mono" disabled={busy} onClick={() => setSelected(span.traceId)}>{short(span.traceId)}</button></td>
       </tr>)}</tbody>
     </table></div>
-    {page.items.length === 0 && <div className="trace-empty"><strong>조건에 맞는 요청 추적이 없습니다.</strong><p>계측된 서버를 실행하거나 조회 조건을 변경하세요. 기존 메트릭에는 요청 추적 정보가 없습니다.</p></div>}
+    {page.items.length === 0 && <div className="trace-empty"><strong>조건에 맞는 요청 추적이 없습니다.</strong><p>계측 상태와 조회 조건을 확인하세요. 집계된 정상 Heartbeat의 개별 이력과 기존 메트릭의 trace는 제공되지 않습니다.</p></div>}
     <div className="trace-pagination"><span>{page.items.length ? skip + 1 : 0}–{skip + page.items.length} · 최신 요청부터 표시</span>
       <button disabled={skip === 0} onClick={() => setSkip(Math.max(0, skip - 30))}>이전</button>
       <button disabled={!page.hasMore || skip >= 9960} onClick={() => setSkip(skip + 30)}>다음</button></div>
@@ -180,7 +180,7 @@ function DetailCoverage({ root, spans }) {
   const labels = { pending: "기본 요청 기록 보존 · 늦게 도착하는 상세 구간 수집 중", sampled_out: "기본 요청 기록만 보존 · 정상 상세 추적 표본에서 제외", retained: "선택한 상세 추적 보존",
     truncated: "상세 구간 상한 적용 · 일부 구간 생략", buffer_limit: "동시 추적 버퍼 상한 · 기본 요청 기록만 보존",
     queue_dropped: "상세 전송 큐 유실 · 기본 요청 기록은 보존" };
-  const reason = { error: "오류", slow: "느린 요청", sample: "정상 표본", none: "표본 제외" }[root.samplingReason];
+  const reason = { error: "오류", slow: "느린 요청", sample: "정상 표본", none: "표본 제외", selected_user: "지정 유저", non_success: "성공 외 결과" }[root.samplingReason];
   const incomplete = ["truncated", "buffer_limit", "queue_dropped"].includes(root.detailStatus) || collected < expected;
   return <div className={incomplete ? "telemetry-warning" : "telemetry-note"}>
     <strong>{root.serviceName} · {labels[root.detailStatus] ?? root.detailStatus}</strong>{reason ? ` · ${reason}` : ""}
@@ -205,7 +205,7 @@ function RuntimeCard({ sample }) {
       기본 요청·작업: 관측 {(sample.requestsObserved ?? 0).toLocaleString()} · 전송 {(sample.requestsSent ?? 0).toLocaleString()} · 대기 {(sample.requestQueueDepth ?? 0).toLocaleString()} · 유실 {(sample.requestsDropped ?? 0).toLocaleString()}
     </div>
     <div className="collector-health">
-      정상 상세 표본 {((sample.detailSampleRate ?? 0) * 100).toFixed(1)}% · 표본 제외 {(sample.sampledOutTraces ?? 0).toLocaleString()}건 · 상한 적용 {(sample.limitedTraces ?? 0).toLocaleString()}건 · 상세 유실 {(sample.detailsDropped ?? 0).toLocaleString()}개
+      정상 Heartbeat 집계 {(sample.requestsAggregated ?? 0).toLocaleString()}건 · 정상 상세 표본 {((sample.detailSampleRate ?? 0) * 100).toFixed(1)}% · 표본 제외 {(sample.sampledOutTraces ?? 0).toLocaleString()}건 · 상한 적용 {(sample.limitedTraces ?? 0).toLocaleString()}건 · 상세 유실 {(sample.detailsDropped ?? 0).toLocaleString()}개
     </div>
     <div className={`collector-health ${sample.spoolErrors > 0 || sample.spoolPendingBatches > 0 ? "degraded" : ""}`}>
       디스크 재전송 대기 {(sample.spoolPendingRequests ?? 0).toLocaleString()}건 / {(sample.spoolPendingBatches ?? 0).toLocaleString()}배치 · {((sample.spoolBytes ?? 0) / 1048576).toFixed(1)} MB · 복구 {(sample.replayedRequests ?? 0).toLocaleString()}건 · 보관 실패 {(sample.spoolErrors ?? 0).toLocaleString()}회

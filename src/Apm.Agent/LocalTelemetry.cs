@@ -14,6 +14,8 @@ public sealed class LocalTelemetry : IAsyncDisposable
     private readonly byte[] _hashKey;
     private readonly ConcurrentDictionary<ActivityTraceId, TraceBuffer> _traces = new();
     private int _bufferCount;
+    private readonly HashSet<string> _traceUsers;
+    private readonly HeartbeatAccumulator _heartbeats;
     private readonly CancellationTokenSource _flushStop = new();
     private readonly Task _flushWorker;
     public TelemetrySender Sender { get; }
@@ -28,9 +30,13 @@ public sealed class LocalTelemetry : IAsyncDisposable
             options.MaxBufferedTraces < 1 || options.MaxDetailSpansPerTrace is < 1 or > 128 ||
             options.DetailFlushDelay < TimeSpan.Zero || options.DetailFlushDelay > TimeSpan.FromSeconds(5))
             throw new ArgumentException("Invalid trace capture limits.");
+        if (options.TraceUserIds is null || options.TraceUserIds.Count > 128 || options.TraceUserIds.Any(id => id <= 0))
+            throw new ArgumentException("TraceUserIds must contain at most 128 positive player IDs.");
         _options = options;
         _hashKey = options.UserHashKey is { Length: >= 32 } key ? key.ToArray() : RandomNumberGenerator.GetBytes(32);
         Sender = new TelemetrySender(options, InstanceId, handler);
+        _traceUsers = options.TraceUserIds.Select(id => UserKey(id)!).ToHashSet(StringComparer.Ordinal);
+        _heartbeats = new HeartbeatAccumulator(options, InstanceId, Sender);
         _listener = new ActivityListener
         {
             ShouldListenTo = source => source.Name == SourceName || options.CaptureDependencies &&
@@ -141,7 +147,7 @@ public sealed class LocalTelemetry : IAsyncDisposable
         public List<SpanData> Spans { get; } = [];
         public List<LogData> Logs { get; } = [];
         public int Seen;
-        public bool HasError, Sealed;
+        public bool HasError, Sealed, DeferredHeartbeat;
         public SpanData? Root;
         public long CompletedAt;
     }
@@ -185,7 +191,19 @@ public sealed class LocalTelemetry : IAsyncDisposable
         }
         lock (buffer)
         {
+            // Delay only aggregation candidates, allowing late dependency errors to promote
+            // them to a detailed trace during the same grace period as retained traces.
+            if (_options.AggregateHeartbeats && root.Category == "packet" && root.Name == "Heartbeat")
+            {
+                buffer.DeferredHeartbeat = true;
+                buffer.HasError |= activity.Status == ActivityStatusCode.Error;
+                buffer.Logs.AddRange(logs);
+                buffer.Root = root;
+                buffer.CompletedAt = Stopwatch.GetTimestamp();
+                return;
+            }
             root.SamplingReason = root.Outcome is "error" or "timeout" || buffer.HasError ? "error" :
+                root.UserKey is not null && _traceUsers.Contains(root.UserKey) ? "selected_user" :
                 root.DurationMs >= _options.SlowTraceMs ? "slow" :
                 Convert.ToUInt32(root.TraceId[..8], 16) / ((double)uint.MaxValue + 1) < _options.DetailSampleRate ? "sample" : "none";
             if (root.SamplingReason == "none")
@@ -207,7 +225,7 @@ public sealed class LocalTelemetry : IAsyncDisposable
         try
         {
             using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
-            while (await timer.WaitForNextTickAsync(_flushStop.Token)) FlushReady(false);
+            while (await timer.WaitForNextTickAsync(_flushStop.Token)) { FlushReady(false); _heartbeats.Flush(false); }
         }
         catch (OperationCanceledException) { }
     }
@@ -222,6 +240,19 @@ public sealed class LocalTelemetry : IAsyncDisposable
                     !force && Stopwatch.GetElapsedTime(buffer.CompletedAt) < _options.DetailFlushDelay) continue;
                 buffer.Sealed = true;
                 if (_traces.TryRemove(traceId, out _)) Interlocked.Decrement(ref _bufferCount);
+                if (buffer.DeferredHeartbeat)
+                {
+                    var selected = root.UserKey is not null && _traceUsers.Contains(root.UserKey);
+                    if (root.Outcome == "success" && !buffer.HasError && root.ErrorType is null &&
+                        root.DurationMs < _options.SlowTraceMs && !selected)
+                    {
+                        _heartbeats.Record(root);
+                        continue;
+                    }
+                    root.SamplingReason = buffer.HasError || root.Outcome is "error" or "timeout" ? "error" :
+                        selected ? "selected_user" : root.DurationMs >= _options.SlowTraceMs ? "slow" : "non_success";
+                    Sender.Enqueue(root.Copy());
+                }
                 root.ExpectedDetailSpans = buffer.Spans.Count;
                 root.LimitedDetailSpans = buffer.Seen - buffer.Spans.Count;
                 root.DetailStatus = root.LimitedDetailSpans > 0 ? "truncated" : "retained";
@@ -270,8 +301,10 @@ public sealed class LocalTelemetry : IAsyncDisposable
                 Timestamp = e.Timestamp.UtcDateTime, TraceId = span.TraceId, SpanId = span.SpanId,
                 ServiceName = span.ServiceName, Message = "처리 중 예외가 발생했습니다. 원문 메시지는 수집하지 않습니다.",
                 ErrorType = Limit(e.Tags.FirstOrDefault(t => t.Key == "exception.type").Value?.ToString(), 160),
-                StackTrace = activity.Source.Name == SourceName ? Limit(e.Tags.FirstOrDefault(t => t.Key == "exception.stacktrace").Value?.ToString(), 4000) : null
+                StackTrace = activity.Source.Name == SourceName ? CleanStack(e.Tags.FirstOrDefault(t => t.Key == "exception.stacktrace").Value?.ToString()) : null
         }).ToList();
+
+    private static string? CleanStack(string? value) => string.IsNullOrWhiteSpace(value) ? null : Limit(value, 4000);
 
     private static string? FindTag(Activity activity, string key)
     {
@@ -290,6 +323,7 @@ public sealed class LocalTelemetry : IAsyncDisposable
         await _flushStop.CancelAsync();
         await _flushWorker;
         FlushReady(true);
+        _heartbeats.Flush(true);
         _traces.Clear();
         await Sender.DisposeAsync();
         _flushStop.Dispose();

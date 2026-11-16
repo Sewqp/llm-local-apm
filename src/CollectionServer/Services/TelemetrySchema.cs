@@ -17,6 +17,12 @@ public static class TelemetrySchema
 #pragma warning restore EF1002
         }
         db.Database.ExecuteSqlRaw("""
+            CREATE TABLE IF NOT EXISTS HeartbeatAggregates (
+                Id TEXT PRIMARY KEY, Timestamp TEXT NOT NULL, ServiceName TEXT NOT NULL,
+                InstanceId TEXT NOT NULL, RunId TEXT NOT NULL, CodeVersion TEXT NOT NULL,
+                Count INTEGER NOT NULL, DurationSumMs REAL NOT NULL, MinDurationMs REAL NOT NULL,
+                MaxDurationMs REAL NOT NULL, Histogram TEXT NOT NULL);
+            CREATE INDEX IF NOT EXISTS IX_HeartbeatAggregates_ServiceName_Timestamp ON HeartbeatAggregates(ServiceName, Timestamp);
             CREATE TABLE IF NOT EXISTS Spans (
                 TraceId TEXT NOT NULL, SpanId TEXT NOT NULL, ParentSpanId TEXT NULL,
                 RunId TEXT NOT NULL, ServiceName TEXT NOT NULL, InstanceId TEXT NOT NULL,
@@ -59,6 +65,7 @@ public static class TelemetrySchema
         foreach (var column in new[] { "RequestQueueDepth", "RequestsObserved", "RequestsSent", "RequestsDropped",
             "DetailsDropped", "SampledOutTraces", "LimitedTraces", "UncorrelatedSpansSkipped" })
             AddColumn(db, "RuntimeSamples", column, "INTEGER NOT NULL DEFAULT 0");
+        AddColumn(db, "RuntimeSamples", "RequestsAggregated", "INTEGER NOT NULL DEFAULT 0");
         AddColumn(db, "RuntimeSamples", "DetailSampleRate", "REAL NOT NULL DEFAULT 0");
         foreach (var column in new[] { "SpoolPendingBatches", "SpoolPendingRequests", "SpoolBytes",
             "RequestsSpooled", "ReplayedRequests", "SpoolErrors" })

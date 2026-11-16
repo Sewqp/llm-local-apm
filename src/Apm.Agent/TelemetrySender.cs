@@ -8,7 +8,7 @@ namespace Apm.Agent;
 
 public sealed class TelemetrySender : IAsyncDisposable
 {
-    private sealed record Envelope(List<SpanData> Spans, List<LogData> Logs, bool ProducesMetrics = false);
+    private sealed record Envelope(List<SpanData> Spans, List<LogData> Logs, bool ProducesMetrics = false, HeartbeatAggregate? Aggregate = null);
     private readonly Channel<Envelope> _requests, _details;
     private readonly HttpClient _http;
     private readonly AgentOptions _options;
@@ -21,15 +21,15 @@ public sealed class TelemetrySender : IAsyncDisposable
     private long _requestsSpooled, _replayedRequests, _spoolErrors;
     private readonly object _overflowGate = new();
     private long _requestDropped, _detailDropped, _runtimeDropped, _failedBatches, _sent, _requestsObserved, _requestsSent;
-    private long _sampledOut, _limited, _uncorrelated;
+    private long _sampledOut, _limited, _uncorrelated, _aggregated, _aggregatePending;
     private int _detailQueued, _disposed;
-    public AgentHealth Health => new(_requests.Reader.Count + Volatile.Read(ref _detailQueued),
+    public AgentHealth Health => new(_requests.Reader.Count + Volatile.Read(ref _detailQueued) + Interlocked.Read(ref _aggregatePending),
         Interlocked.Read(ref _requestDropped) + Interlocked.Read(ref _detailDropped) + Interlocked.Read(ref _runtimeDropped),
-        Interlocked.Read(ref _failedBatches), Interlocked.Read(ref _sent), _requests.Reader.Count,
+        Interlocked.Read(ref _failedBatches), Interlocked.Read(ref _sent), _requests.Reader.Count + Interlocked.Read(ref _aggregatePending),
         Interlocked.Read(ref _requestsObserved), Interlocked.Read(ref _requestsSent), Interlocked.Read(ref _requestDropped),
         Interlocked.Read(ref _detailDropped), Interlocked.Read(ref _sampledOut), Interlocked.Read(ref _limited), Interlocked.Read(ref _uncorrelated),
         _spool?.Health.Batches ?? 0, _spool?.Health.Requests ?? 0, _spool?.Health.Bytes ?? 0,
-        Interlocked.Read(ref _requestsSpooled), Interlocked.Read(ref _replayedRequests), Interlocked.Read(ref _spoolErrors));
+        Interlocked.Read(ref _requestsSpooled), Interlocked.Read(ref _replayedRequests), Interlocked.Read(ref _spoolErrors), Interlocked.Read(ref _aggregated));
 
     public TelemetrySender(AgentOptions options, string instanceId, HttpMessageHandler? handler = null)
     {
@@ -66,6 +66,23 @@ public sealed class TelemetrySender : IAsyncDisposable
         if (_requests.Writer.TryWrite(new Envelope([span], logs ?? [], true))) return true;
         if (_spool is not null) return SpillRequests(new Envelope([span], logs ?? [], true));
         Interlocked.Increment(ref _requestDropped);
+        return false;
+    }
+
+    internal void RecordAggregation()
+    {
+        Interlocked.Increment(ref _requestsObserved);
+        Interlocked.Increment(ref _aggregated);
+        Interlocked.Increment(ref _aggregatePending);
+    }
+
+    internal bool EnqueueAggregate(HeartbeatAggregate aggregate)
+    {
+        Interlocked.Add(ref _aggregatePending, -aggregate.Count);
+        var entry = new Envelope([], [], Aggregate: aggregate);
+        if (_requests.Writer.TryWrite(entry)) return true;
+        if (_spool is not null) return SpillRequests(entry);
+        Interlocked.Add(ref _requestDropped, aggregate.Count);
         return false;
     }
 
@@ -126,11 +143,11 @@ public sealed class TelemetrySender : IAsyncDisposable
                 var queuedSpans = requests ? queue.Reader.Count : Volatile.Read(ref _detailQueued);
                 if (queuedSpans < _options.BatchSize) await Task.Delay(_options.FlushInterval, _stop.Token);
                 var entries = new List<Envelope>(); var spanCount = 0;
-                while (queue.Reader.TryPeek(out var next) && spanCount + next.Spans.Count <= 1024)
+                while (queue.Reader.TryPeek(out var next) && spanCount + Math.Max(1, next.Spans.Count) <= 1024)
                 {
                     if (spanCount >= _options.BatchSize) break;
                     if (!queue.Reader.TryRead(out var entry)) break;
-                    entries.Add(entry); spanCount += entry.Spans.Count;
+                    entries.Add(entry); spanCount += Math.Max(1, entry.Spans.Count);
                     if (!requests) Interlocked.Add(ref _detailQueued, -entry.Spans.Count);
                 }
                 if (entries.Count != 0) await DeliverAsync(entries);
@@ -142,7 +159,8 @@ public sealed class TelemetrySender : IAsyncDisposable
 
     private static TelemetryBatch Batch(List<Envelope> entries) => new(Guid.NewGuid().ToString("N"),
         entries.SelectMany(e => e.Spans).ToList(), entries.Where(e => e.ProducesMetrics).SelectMany(e => e.Spans.Select(ToMetric)).ToList(),
-        entries.SelectMany(e => e.Logs).ToList(), []);
+        entries.SelectMany(e => e.Logs).ToList(), [])
+        { Aggregates = entries.Where(e => e.Aggregate is not null).Select(e => e.Aggregate!).ToList() };
 
     private async Task DeliverAsync(List<Envelope> entries)
     {
@@ -185,7 +203,7 @@ public sealed class TelemetrySender : IAsyncDisposable
             if (delivered)
             {
                 Interlocked.Add(ref _sent, batch.Spans.Count);
-                Interlocked.Add(ref _requestsSent, batch.Metrics.Count);
+                Interlocked.Add(ref _requestsSent, batch.RequestCount());
             }
             else if (!TrySpool(batch)) RecordLost(batch);
         }
@@ -198,7 +216,7 @@ public sealed class TelemetrySender : IAsyncDisposable
         {
             if (_spool.TryStore(batch))
             {
-                Interlocked.Add(ref _requestsSpooled, batch.Metrics.Count);
+                Interlocked.Add(ref _requestsSpooled, batch.RequestCount());
                 return true;
             }
         }
@@ -209,7 +227,7 @@ public sealed class TelemetrySender : IAsyncDisposable
 
     private void RecordLost(TelemetryBatch batch)
     {
-        Interlocked.Add(ref _requestDropped, batch.Metrics.Count);
+        Interlocked.Add(ref _requestDropped, batch.RequestCount());
         Interlocked.Add(ref _detailDropped, batch.Spans.Count - batch.Metrics.Count);
     }
 
@@ -226,9 +244,9 @@ public sealed class TelemetrySender : IAsyncDisposable
                     {
                         _spool.Acknowledge(pending.Path);
                         Interlocked.Add(ref _sent, pending.Batch.Spans.Count);
-                        Interlocked.Add(ref _replayedRequests, pending.Batch.Metrics.Count);
-                        if (pending.Batch.Spans.All(s => s.InstanceId == _instanceId))
-                            Interlocked.Add(ref _requestsSent, pending.Batch.Metrics.Count);
+                        Interlocked.Add(ref _replayedRequests, pending.Batch.RequestCount());
+                        if (pending.Batch.Spans.All(s => s.InstanceId == _instanceId) && pending.Batch.Aggregates.All(a => a.InstanceId == _instanceId))
+                            Interlocked.Add(ref _requestsSent, pending.Batch.RequestCount());
                         continue;
                     }
                 }
@@ -249,7 +267,7 @@ public sealed class TelemetrySender : IAsyncDisposable
             {
                 using var content = new ByteArrayContent(bytes);
                 content.Headers.ContentType = new("application/json");
-                using var response = await _http.PostAsync("/api/telemetry/batch", content, ct);
+                using var response = await _http.PostAsync(batch.Aggregates.Count > 0 ? "/api/telemetry/batch-with-heartbeats" : "/api/telemetry/batch", content, ct);
                 if (response.IsSuccessStatusCode) return true;
                 Interlocked.Increment(ref _failedBatches);
                 if ((int)response.StatusCode < 500 && response.StatusCode != HttpStatusCode.TooManyRequests) return false;
@@ -297,7 +315,7 @@ public sealed class TelemetrySender : IAsyncDisposable
                     RequestQueueDepth = health.RequestQueueDepth, RequestsObserved = health.RequestsObserved, RequestsSent = health.RequestsSent,
                     RequestsDropped = health.RequestsDropped, DetailsDropped = health.DetailsDropped,
                     SampledOutTraces = health.SampledOutTraces, LimitedTraces = health.LimitedTraces,
-                    UncorrelatedSpansSkipped = health.UncorrelatedSpansSkipped, DetailSampleRate = _options.DetailSampleRate,
+                    UncorrelatedSpansSkipped = health.UncorrelatedSpansSkipped, RequestsAggregated = health.RequestsAggregated, DetailSampleRate = _options.DetailSampleRate,
                     SpoolPendingBatches = health.SpoolPendingBatches, SpoolPendingRequests = health.SpoolPendingRequests,
                     SpoolBytes = health.SpoolBytes, RequestsSpooled = health.RequestsSpooled,
                     ReplayedRequests = health.ReplayedRequests, SpoolErrors = health.SpoolErrors

@@ -85,6 +85,7 @@ public sealed class RuntimeData
     public long SampledOutTraces { get; set; }
     public long LimitedTraces { get; set; }
     public long UncorrelatedSpansSkipped { get; set; }
+    public long RequestsAggregated { get; set; }
     public double DetailSampleRate { get; set; }
     public long SpoolPendingBatches { get; set; }
     public long SpoolPendingRequests { get; set; }
@@ -95,13 +96,17 @@ public sealed class RuntimeData
 }
 
 public sealed record TelemetryBatch(string BatchId, List<SpanData> Spans, List<MetricData> Metrics,
-    List<LogData> Logs, List<RuntimeData> Runtime);
+    List<LogData> Logs, List<RuntimeData> Runtime)
+{
+    public List<HeartbeatAggregate> Aggregates { get; init; } = [];
+    internal long RequestCount() => Metrics.Count + Aggregates.Sum(a => a.Count);
+}
 
 public sealed record AgentHealth(long QueueDepth, long Dropped, long FailedBatches, long Sent,
     long RequestQueueDepth, long RequestsObserved, long RequestsSent, long RequestsDropped,
     long DetailsDropped, long SampledOutTraces, long LimitedTraces, long UncorrelatedSpansSkipped,
     long SpoolPendingBatches = 0, long SpoolPendingRequests = 0, long SpoolBytes = 0,
-    long RequestsSpooled = 0, long ReplayedRequests = 0, long SpoolErrors = 0);
+    long RequestsSpooled = 0, long ReplayedRequests = 0, long SpoolErrors = 0, long RequestsAggregated = 0);
 
 public sealed class AgentOptions
 {
@@ -126,6 +131,9 @@ public sealed class AgentOptions
     public double DetailSampleRate { get; init; } = 0.01;
     public double SlowTraceMs { get; init; } = 100;
     public int MaxBufferedTraces { get; init; } = 4096;
+    // Opt-in for the exact PACKET Heartbeat operation, never arbitrary user-supplied names.
+    public bool AggregateHeartbeats { get; init; }
+    public IReadOnlyCollection<long> TraceUserIds { get; init; } = Array.Empty<long>();
     public int MaxDetailSpansPerTrace { get; init; } = 64;
     public TimeSpan DetailFlushDelay { get; init; } = TimeSpan.FromSeconds(1);
 }

@@ -1,0 +1,2165 @@
+{
+  "dateKst": "2026-11-17",
+  "scope": "Local Windows checks and repeated same-host APM comparison; no remote CI execution",
+  "plan": {
+    "createdUtc": "2026-11-16T19:56:25.976857+00:00",
+    "serverCommit": "a194c67493a0ff54c4953885e0103602b253e58d",
+    "apmCommit": "0e37c6350168a6abcc69339efae1839aacfe295b",
+    "gate": "Windows local checks; remote CI excluded at user request",
+    "scope": "Same-host repeated APM ON/OFF; fixed binaries, no game-code before/after comparison",
+    "order": [
+      "off",
+      "on",
+      "on",
+      "off",
+      "off",
+      "on"
+    ],
+    "connections": 30000,
+    "holdSeconds": 120,
+    "warmupConnections": 1000,
+    "warmupHoldSeconds": 10,
+    "heartbeatSeconds": 5,
+    "priorTimewaitThreshold": 2000,
+    "priorTimewaitStableObservations": 2,
+    "startupProbe": true,
+    "note": "Do not stop unrelated user processes. Background load is observed, not eliminated.",
+    "binarySha256": {
+      "game": "ef6d941912490f79bdd6801a2516752aa5da8ceca7416638ce258cf2c97c8720",
+      "agent": "a89d269ab215d0d2cb520cabbb2fb069f0955b8e8ceab97bd8378ec499c82e88",
+      "collector": "871c85b74c721a825322a14095ef3e4246e74278a68a954c2b5f8d3ed4328fde",
+      "client": "32f9840783ad6d711e75439cc78038a37bedcf433c5f8872c5c5ca558a4a7e97",
+      "probe": "eff33448a67d67a24ecff4f64ab7b83b90c2b7349fa48efe721ec7a72c066941"
+    }
+  },
+  "localChecks": {
+    "status": "passed",
+    "finishedUtc": "2026-11-16T19:56:02.777901+00:00",
+    "environment": "Windows local; not GitHub Actions/Linux",
+    "serverCommit": "a194c67493a0ff54c4953885e0103602b253e58d",
+    "apmCommit": "0e37c6350168a6abcc69339efae1839aacfe295b",
+    "steps": [
+      {
+        "name": "pg-init",
+        "exitCode": 0,
+        "seconds": 3.953
+      },
+      {
+        "name": "pg-start",
+        "exitCode": 0,
+        "seconds": 0.297
+      },
+      {
+        "name": "db-create",
+        "exitCode": 0,
+        "seconds": 0.266
+      },
+      {
+        "name": "checks-build",
+        "exitCode": 0,
+        "seconds": 1.984
+      },
+      {
+        "name": "integration",
+        "exitCode": 0,
+        "seconds": 3.734
+      },
+      {
+        "name": "crash-recovery",
+        "exitCode": 0,
+        "seconds": 3.297
+      },
+      {
+        "name": "cpu-build",
+        "exitCode": 0,
+        "seconds": 1.344
+      },
+      {
+        "name": "cpu-success",
+        "exitCode": 0,
+        "seconds": 13.187
+      },
+      {
+        "name": "cpu-failed-upload",
+        "exitCode": 0,
+        "seconds": 13.172
+      },
+      {
+        "name": "redis-stop",
+        "exitCode": 0,
+        "seconds": 0.11
+      },
+      {
+        "name": "pg-stop",
+        "exitCode": 0,
+        "seconds": 0.672
+      }
+    ],
+    "redisStopped": true,
+    "postgresStopped": true
+  },
+  "runs": [
+    {
+      "case": "ab01_off",
+      "apm": "off",
+      "holdSeconds": 120.0093229,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 776924,
+      "heartbeatAck": 776924,
+      "holdAck": 718116,
+      "holdAckPerSecond": 5983.835110863708,
+      "holdRttMs": {
+        "count": 718112,
+        "p50": 0.3613,
+        "p95": 1.4694,
+        "p99": 8.7246,
+        "max": 88.8375
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T19:56:26.350579+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 73
+          },
+          {
+            "utc": "2026-11-16T19:56:28.365809+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 72
+          }
+        ]
+      },
+      "hostAvailableMemoryMinMb": 12996.75,
+      "processes": {
+        "game": {
+          "cpuPercent": 2.176323112896789,
+          "cpuSeconds": 41.7886501871056,
+          "cpuSecondsPer1000HeartbeatAck": 0.058192061153219815,
+          "workingSetMeanMiB": 1358.208178146798,
+          "privateMeanMiB": 1287.0768740421572
+        },
+        "client": {
+          "cpuPercent": 1.6389716833794434,
+          "cpuSeconds": 31.470701173664967,
+          "cpuSecondsPer1000HeartbeatAck": 0.0438239799331375,
+          "workingSetMeanMiB": 214.09873991309541,
+          "privateMeanMiB": 188.5843690885725
+        },
+        "redis": {
+          "cpuPercent": 0.006404439843707308,
+          "cpuSeconds": 0.1229747984970917,
+          "cpuSecondsPer1000HeartbeatAck": 0.00017124642606081982,
+          "workingSetMeanMiB": 38.742618135460766,
+          "privateMeanMiB": 14.40692331777132
+        }
+      },
+      "hostCpuPercent": 18.30709511994704,
+      "hostPrivilegedCpuPercent": 8.850325904038037,
+      "hostPrivilegedPeakPercent": 26.750180693917542,
+      "highPrivilegedSamples": 0,
+      "maxObserverIntervalMs": 745.9361553192139,
+      "runtime": {
+        "maxSamplerIntervalMs": 167.4179,
+        "gcPauseDeltaMs": 999.98,
+        "maxThreadPoolPending": 3,
+        "maxProbeDispatchMs": 5.425
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": []
+    },
+    {
+      "case": "ab02_on",
+      "apm": "on",
+      "holdSeconds": 120.00972960000001,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 777601,
+      "heartbeatAck": 777601,
+      "holdAck": 718595,
+      "holdAckPerSecond": 5987.806175341969,
+      "holdRttMs": {
+        "count": 718602,
+        "p50": 0.7552,
+        "p95": 5.5788,
+        "p99": 39.4563,
+        "max": 279.2715
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T19:59:16.606365+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T19:59:18.668949+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T19:59:20.735695+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T19:59:22.797207+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T19:59:24.875888+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T19:59:26.937899+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T19:59:29.002392+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T19:59:31.069255+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T19:59:33.134882+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T19:59:35.194927+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T19:59:37.252795+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T19:59:39.316900+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T19:59:41.379407+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T19:59:43.442385+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T19:59:45.508405+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T19:59:47.574055+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T19:59:49.636803+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T19:59:51.703906+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T19:59:53.768238+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T19:59:55.835913+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T19:59:57.902838+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T19:59:59.968391+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:00:02.034885+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:00:04.094450+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:00:06.157446+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:00:08.231440+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:00:10.301748+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:12.362400+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:00:14.420563+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:00:16.482028+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:18.541754+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:00:20.605556+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:00:22.670912+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:24.731405+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:00:26.800389+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:00:28.867389+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:00:30.934350+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:33.002612+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:35.067412+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:00:37.138798+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:39.217414+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:41.274903+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:00:43.332166+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:00:45.392861+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:47.467688+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:00:49.531298+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:00:51.595263+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:53.657901+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:55.715318+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:00:57.792904+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:00:59.855880+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:01:01.920401+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:01:03.996741+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:01:06.060399+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:01:10.179719+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 48
+          },
+          {
+            "utc": "2026-11-16T20:01:12.188127+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 48
+          }
+        ]
+      },
+      "hostAvailableMemoryMinMb": 10774.21,
+      "processes": {
+        "game": {
+          "cpuPercent": 4.763868384028807,
+          "cpuSeconds": 91.4736892586296,
+          "cpuSecondsPer1000HeartbeatAck": 0.12729519306233636,
+          "workingSetMeanMiB": 2265.971226320531,
+          "privateMeanMiB": 2214.735241539046
+        },
+        "client": {
+          "cpuPercent": 1.5794886905651249,
+          "cpuSeconds": 30.328641772022625,
+          "cpuSecondsPer1000HeartbeatAck": 0.042205472863048904,
+          "workingSetMeanMiB": 214.42835744534074,
+          "privateMeanMiB": 188.84240769608536
+        },
+        "collector": {
+          "cpuPercent": 4.474949885763272,
+          "cpuSeconds": 85.92600430998269,
+          "cpuSecondsPer1000HeartbeatAck": 0.11957500999865389,
+          "workingSetMeanMiB": 603.0347719672474,
+          "privateMeanMiB": 529.6338510074573
+        },
+        "redis": {
+          "cpuPercent": 0.007227000787620136,
+          "cpuSeconds": 0.13876966595780704,
+          "cpuSecondsPer1000HeartbeatAck": 0.00019311248472061041,
+          "workingSetMeanMiB": 38.78197354152793,
+          "privateMeanMiB": 14.405211659247056
+        }
+      },
+      "hostCpuPercent": 26.06915830321743,
+      "hostPrivilegedCpuPercent": 12.801743863719542,
+      "hostPrivilegedPeakPercent": 49.82666837921978,
+      "highPrivilegedSamples": 0,
+      "maxObserverIntervalMs": 1338.914155960083,
+      "runtime": {
+        "maxSamplerIntervalMs": 356.5275,
+        "gcPauseDeltaMs": 2476.695,
+        "maxThreadPoolPending": 6,
+        "maxProbeDispatchMs": 7.1949
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": [],
+      "ledger": {
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 779601
+        },
+        "actual": {
+          "/packet/Heartbeat": 779601,
+          "/packet/LoginRequest": 31000
+        },
+        "packetMetrics": 810601,
+        "uniqueMetricTraceIds": 810601,
+        "packetEntrySpans": 810601,
+        "uniqueEntryTraceIds": 810601,
+        "missingEntry": 0,
+        "missingMetric": 0,
+        "quickCheck": "ok",
+        "passed": true
+      },
+      "allHeartbeatEntryDurationMs": {
+        "count": 779601,
+        "mean": 0.09342231128487521,
+        "p99": 0.3111
+      },
+      "telemetryHealth": {
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolPendingBatches": 0,
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "activeSessions": 0
+      }
+    },
+    {
+      "case": "ab03_on",
+      "apm": "on",
+      "holdSeconds": 120.00677,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 765715,
+      "heartbeatAck": 765715,
+      "holdAck": 716407,
+      "holdAckPerSecond": 5969.721541543031,
+      "holdRttMs": {
+        "count": 716361,
+        "p50": 0.8199,
+        "p95": 7.2268,
+        "p99": 49.7924,
+        "max": 233.9616
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T20:04:12.365391+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T20:04:14.426389+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30073
+          },
+          {
+            "utc": "2026-11-16T20:04:16.485616+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T20:04:18.547614+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30073
+          },
+          {
+            "utc": "2026-11-16T20:04:20.606339+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30073
+          },
+          {
+            "utc": "2026-11-16T20:04:22.666336+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T20:04:24.738395+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T20:04:26.796791+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T20:04:28.858707+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T20:04:30.916773+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T20:04:32.975068+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T20:04:35.034392+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T20:04:37.108577+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T20:04:39.165888+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T20:04:41.229908+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T20:04:43.289916+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T20:04:45.356901+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T20:04:47.420894+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T20:04:49.485395+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T20:04:51.553403+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T20:04:53.614471+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T20:04:55.679921+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T20:04:57.750256+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T20:04:59.819423+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T20:05:01.889027+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T20:05:03.973848+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T20:05:06.042740+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T20:05:08.112641+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T20:05:10.182543+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T20:05:12.251471+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T20:05:14.336110+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T20:05:16.420550+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T20:05:18.489404+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T20:05:20.573817+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T20:05:22.642960+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T20:05:24.712039+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T20:05:26.781519+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T20:05:28.850819+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:05:30.919714+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:05:32.989569+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:05:35.060878+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T20:05:37.129754+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T20:05:39.198768+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T20:05:41.268840+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30056
+          },
+          {
+            "utc": "2026-11-16T20:05:43.354021+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30056
+          },
+          {
+            "utc": "2026-11-16T20:05:45.424389+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30056
+          },
+          {
+            "utc": "2026-11-16T20:05:47.508722+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30056
+          },
+          {
+            "utc": "2026-11-16T20:05:49.577934+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30054
+          },
+          {
+            "utc": "2026-11-16T20:05:51.663544+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30055
+          },
+          {
+            "utc": "2026-11-16T20:05:53.733297+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30055
+          },
+          {
+            "utc": "2026-11-16T20:05:57.823755+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 51
+          },
+          {
+            "utc": "2026-11-16T20:05:59.827004+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 51
+          }
+        ]
+      },
+      "hostAvailableMemoryMinMb": 11636.23,
+      "processes": {
+        "game": {
+          "cpuPercent": 4.654500081968287,
+          "cpuSeconds": 89.37144413827201,
+          "cpuSecondsPer1000HeartbeatAck": 0.12474954060788353,
+          "workingSetMeanMiB": 2252.493414741529,
+          "privateMeanMiB": 2203.270678843141
+        },
+        "client": {
+          "cpuPercent": 1.628343638299139,
+          "cpuSeconds": 31.265961960542434,
+          "cpuSecondsPer1000HeartbeatAck": 0.04364273654576579,
+          "workingSetMeanMiB": 213.8450493986425,
+          "privateMeanMiB": 188.4344872037995
+        },
+        "collector": {
+          "cpuPercent": 4.1921806009449964,
+          "cpuSeconds": 80.49440923770857,
+          "cpuSecondsPer1000HeartbeatAck": 0.1123584906871493,
+          "workingSetMeanMiB": 596.3529526690454,
+          "privateMeanMiB": 524.3406812815894
+        },
+        "redis": {
+          "cpuPercent": 0.0030596431877395387,
+          "cpuSeconds": 0.058748463942549733,
+          "cpuSecondsPer1000HeartbeatAck": 8.200431311049409e-05,
+          "workingSetMeanMiB": 38.7497561867938,
+          "privateMeanMiB": 14.39471846590552
+        }
+      },
+      "hostCpuPercent": 24.69996263923493,
+      "hostPrivilegedCpuPercent": 12.169403790468124,
+      "hostPrivilegedPeakPercent": 46.18979387095683,
+      "highPrivilegedSamples": 0,
+      "maxObserverIntervalMs": 761.8281841278076,
+      "runtime": {
+        "maxSamplerIntervalMs": 339.027,
+        "gcPauseDeltaMs": 2498.8459999999995,
+        "maxThreadPoolPending": 6,
+        "maxProbeDispatchMs": 11.9551
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": [],
+      "ledger": {
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 767715
+        },
+        "actual": {
+          "/packet/Heartbeat": 767715,
+          "/packet/LoginRequest": 31000
+        },
+        "packetMetrics": 798715,
+        "uniqueMetricTraceIds": 798715,
+        "packetEntrySpans": 798715,
+        "uniqueEntryTraceIds": 798715,
+        "missingEntry": 0,
+        "missingMetric": 0,
+        "quickCheck": "ok",
+        "passed": true
+      },
+      "allHeartbeatEntryDurationMs": {
+        "count": 767715,
+        "mean": 0.09553133584728708,
+        "p99": 0.303
+      },
+      "telemetryHealth": {
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolPendingBatches": 0,
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "activeSessions": 0
+      }
+    },
+    {
+      "case": "ab04_off",
+      "apm": "off",
+      "holdSeconds": 120.0042621,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 777322,
+      "heartbeatAck": 777322,
+      "holdAck": 719028,
+      "holdAckPerSecond": 5991.68719025022,
+      "holdRttMs": {
+        "count": 718916,
+        "p50": 0.3378,
+        "p95": 1.6213,
+        "p99": 19.1142,
+        "max": 280.0859
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T20:08:58.288155+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T20:09:00.341187+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T20:09:02.402408+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T20:09:04.461127+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T20:09:06.524842+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T20:09:08.598549+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T20:09:10.656343+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T20:09:12.715894+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T20:09:14.779633+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T20:09:16.855633+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T20:09:18.912721+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T20:09:20.972784+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T20:09:23.030593+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T20:09:25.094725+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T20:09:27.152384+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T20:09:29.213391+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:09:31.274387+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:09:33.337198+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:09:35.401190+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:09:37.463911+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T20:09:39.527610+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T20:09:41.595485+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T20:09:43.655747+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:09:45.720409+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T20:09:47.782375+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T20:09:49.845422+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T20:09:51.905896+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T20:09:53.969905+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T20:09:56.028279+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T20:09:58.092894+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T20:10:00.151886+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T20:10:02.214395+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:10:04.274916+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T20:10:06.331891+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T20:10:08.397835+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T20:10:10.461433+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T20:10:12.523298+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T20:10:14.587884+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T20:10:16.656012+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30057
+          },
+          {
+            "utc": "2026-11-16T20:10:18.719492+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T20:10:20.782914+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30057
+          },
+          {
+            "utc": "2026-11-16T20:10:22.847500+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30056
+          },
+          {
+            "utc": "2026-11-16T20:10:24.912893+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30056
+          },
+          {
+            "utc": "2026-11-16T20:10:26.978404+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30056
+          },
+          {
+            "utc": "2026-11-16T20:10:29.042116+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30054
+          },
+          {
+            "utc": "2026-11-16T20:10:31.099072+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30054
+          },
+          {
+            "utc": "2026-11-16T20:10:33.162869+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30054
+          },
+          {
+            "utc": "2026-11-16T20:10:35.223958+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30052
+          },
+          {
+            "utc": "2026-11-16T20:10:37.288887+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30053
+          },
+          {
+            "utc": "2026-11-16T20:10:39.347290+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30053
+          },
+          {
+            "utc": "2026-11-16T20:10:41.424690+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 8448
+          },
+          {
+            "utc": "2026-11-16T20:10:43.966559+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 52
+          },
+          {
+            "utc": "2026-11-16T20:10:45.976366+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 52
+          }
+        ]
+      },
+      "hostAvailableMemoryMinMb": 13629.04,
+      "processes": {
+        "game": {
+          "cpuPercent": 2.285398667697022,
+          "cpuSeconds": 43.88121286806253,
+          "cpuSecondsPer1000HeartbeatAck": 0.061028517482020914,
+          "workingSetMeanMiB": 1391.9178154572292,
+          "privateMeanMiB": 1319.7724394094578
+        },
+        "client": {
+          "cpuPercent": 1.7285385346499154,
+          "cpuSeconds": 33.18911858212276,
+          "cpuSecondsPer1000HeartbeatAck": 0.0461583117515907,
+          "workingSetMeanMiB": 214.42678189881227,
+          "privateMeanMiB": 189.006165718168
+        },
+        "redis": {
+          "cpuPercent": 0.010278030624401756,
+          "cpuSeconds": 0.19734519673467776,
+          "cpuSecondsPer1000HeartbeatAck": 0.0002744610734695697,
+          "workingSetMeanMiB": 38.7404022398576,
+          "privateMeanMiB": 14.393562694277911
+        }
+      },
+      "hostCpuPercent": 18.06339584143217,
+      "hostPrivilegedCpuPercent": 8.862674363629207,
+      "hostPrivilegedPeakPercent": 25.855668052065056,
+      "highPrivilegedSamples": 0,
+      "maxObserverIntervalMs": 727.8890609741211,
+      "runtime": {
+        "maxSamplerIntervalMs": 358.2217,
+        "gcPauseDeltaMs": 1822.199,
+        "maxThreadPoolPending": 2,
+        "maxProbeDispatchMs": 56.5704
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": []
+    },
+    {
+      "case": "ab05_off",
+      "apm": "off",
+      "holdSeconds": 120.00659290000002,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 777940,
+      "heartbeatAck": 777940,
+      "holdAck": 718895,
+      "holdAckPerSecond": 5990.462545662355,
+      "holdRttMs": {
+        "count": 718909,
+        "p50": 0.336,
+        "p95": 1.2678,
+        "p99": 15.4257,
+        "max": 273.1439
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T20:13:34.345230+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30054
+          },
+          {
+            "utc": "2026-11-16T20:13:36.405041+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30054
+          },
+          {
+            "utc": "2026-11-16T20:13:38.460409+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30055
+          },
+          {
+            "utc": "2026-11-16T20:13:40.525397+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30055
+          },
+          {
+            "utc": "2026-11-16T20:13:42.598166+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30054
+          },
+          {
+            "utc": "2026-11-16T20:13:44.663396+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30055
+          },
+          {
+            "utc": "2026-11-16T20:13:46.723330+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30054
+          },
+          {
+            "utc": "2026-11-16T20:13:48.802129+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30053
+          },
+          {
+            "utc": "2026-11-16T20:13:50.874395+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30053
+          },
+          {
+            "utc": "2026-11-16T20:13:52.934397+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:13:54.991791+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:13:57.051433+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:13:59.114441+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:14:01.186281+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:14:03.249040+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:14:05.309893+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:14:07.366866+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:14:09.432504+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:14:11.497384+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:14:13.559909+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:14:15.619861+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:14:17.676623+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:14:19.735729+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:14:21.791957+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:14:23.863401+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:14:25.933406+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:14:27.990934+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:14:30.054271+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:14:32.112922+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:14:34.189384+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:14:36.250422+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:14:38.313986+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:14:40.377546+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:14:42.440915+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:14:44.505750+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:14:46.569901+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:14:48.630918+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:14:50.697365+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:14:52.756387+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30051
+          },
+          {
+            "utc": "2026-11-16T20:14:54.819393+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:14:56.877397+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:14:58.954914+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:15:01.014184+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:15:03.072396+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:15:05.136384+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30050
+          },
+          {
+            "utc": "2026-11-16T20:15:07.198221+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:15:09.275441+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:15:11.351916+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:15:13.411900+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:15:15.475393+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:15:17.536413+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:15:19.595567+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:15:21.657901+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30048
+          },
+          {
+            "utc": "2026-11-16T20:15:23.717651+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30049
+          },
+          {
+            "utc": "2026-11-16T20:15:26.761244+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 49
+          },
+          {
+            "utc": "2026-11-16T20:15:29.375053+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 48
+          }
+        ]
+      },
+      "hostAvailableMemoryMinMb": 13689.28,
+      "processes": {
+        "game": {
+          "cpuPercent": 2.2290891779754194,
+          "cpuSeconds": 42.800863634785465,
+          "cpuSecondsPer1000HeartbeatAck": 0.05953701671980673,
+          "workingSetMeanMiB": 1378.4629886984824,
+          "privateMeanMiB": 1308.125897449777
+        },
+        "client": {
+          "cpuPercent": 1.7395622479326454,
+          "cpuSeconds": 33.40143018666032,
+          "cpuSecondsPer1000HeartbeatAck": 0.04646218180215514,
+          "workingSetMeanMiB": 214.27417479906185,
+          "privateMeanMiB": 189.00971456820145
+        },
+        "redis": {
+          "cpuPercent": 0.008526099060596664,
+          "cpuSeconds": 0.16371009595978325,
+          "cpuSecondsPer1000HeartbeatAck": 0.0002277246273235775,
+          "workingSetMeanMiB": 38.76997873535831,
+          "privateMeanMiB": 14.425324394950287
+        }
+      },
+      "hostCpuPercent": 17.994630336202906,
+      "hostPrivilegedCpuPercent": 8.610186788912477,
+      "hostPrivilegedPeakPercent": 34.47392061694896,
+      "highPrivilegedSamples": 0,
+      "maxObserverIntervalMs": 731.8520545959473,
+      "runtime": {
+        "maxSamplerIntervalMs": 373.2884,
+        "gcPauseDeltaMs": 1517.0260000000003,
+        "maxThreadPoolPending": 3,
+        "maxProbeDispatchMs": 8.1899
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": []
+    },
+    {
+      "case": "ab06_on",
+      "apm": "on",
+      "holdSeconds": 120.00512759999998,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 763406,
+      "heartbeatAck": 763406,
+      "holdAck": 718688,
+      "holdAckPerSecond": 5988.810764782688,
+      "holdRttMs": {
+        "count": 718282,
+        "p50": 0.7894,
+        "p95": 4.9878,
+        "p99": 27.4492,
+        "max": 440.5258
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T20:18:14.808773+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:18:16.867867+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:18:18.926856+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:18:20.990946+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:18:23.053897+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:18:25.116384+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:18:27.176909+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30047
+          },
+          {
+            "utc": "2026-11-16T20:18:29.233904+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:18:31.295915+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:18:33.358146+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:18:35.421385+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:18:37.501398+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:18:39.562483+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:18:41.638402+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:18:43.701301+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:18:45.761528+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:18:47.840241+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30043
+          },
+          {
+            "utc": "2026-11-16T20:18:49.900905+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:18:51.963663+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:18:54.024952+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30043
+          },
+          {
+            "utc": "2026-11-16T20:18:56.083912+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:18:58.147143+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:00.212894+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30043
+          },
+          {
+            "utc": "2026-11-16T20:19:02.272590+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:04.329792+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:19:06.391032+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:08.453910+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:19:10.512888+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:19:12.571890+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:19:14.629910+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:19:16.700093+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:19:18.770533+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:19:20.838538+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30045
+          },
+          {
+            "utc": "2026-11-16T20:19:22.899175+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30046
+          },
+          {
+            "utc": "2026-11-16T20:19:24.961384+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:27.016916+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:29.076398+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:31.131732+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:33.192193+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:35.256851+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:37.314714+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:39.375523+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30043
+          },
+          {
+            "utc": "2026-11-16T20:19:41.431399+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:43.498394+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:45.558606+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30043
+          },
+          {
+            "utc": "2026-11-16T20:19:47.630586+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:49.701022+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:51.768740+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30043
+          },
+          {
+            "utc": "2026-11-16T20:19:53.825730+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:55.896369+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:19:57.961894+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:20:00.027942+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:20:02.089554+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30044
+          },
+          {
+            "utc": "2026-11-16T20:20:04.145896+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30043
+          },
+          {
+            "utc": "2026-11-16T20:20:06.204936+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30043
+          },
+          {
+            "utc": "2026-11-16T20:20:08.477425+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 16609
+          },
+          {
+            "utc": "2026-11-16T20:20:10.570571+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 42
+          },
+          {
+            "utc": "2026-11-16T20:20:12.574355+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 41
+          }
+        ]
+      },
+      "hostAvailableMemoryMinMb": 11765.44,
+      "processes": {
+        "game": {
+          "cpuPercent": 4.6169370913389525,
+          "cpuSeconds": 88.64897948491563,
+          "cpuSecondsPer1000HeartbeatAck": 0.12334835072370155,
+          "workingSetMeanMiB": 2227.460490965454,
+          "privateMeanMiB": 2171.2962460625263
+        },
+        "client": {
+          "cpuPercent": 1.6286534488993556,
+          "cpuSeconds": 31.271482223649926,
+          "cpuSecondsPer1000HeartbeatAck": 0.04351190255528119,
+          "workingSetMeanMiB": 213.42462118298144,
+          "privateMeanMiB": 187.9234375848739
+        },
+        "collector": {
+          "cpuPercent": 4.347432428989166,
+          "cpuSeconds": 83.4742688897564,
+          "cpuSecondsPer1000HeartbeatAck": 0.11614813227681053,
+          "workingSetMeanMiB": 590.0117867279271,
+          "privateMeanMiB": 518.6064924053499
+        },
+        "redis": {
+          "cpuPercent": 0.003772554719195874,
+          "cpuSeconds": 0.07243614528235387,
+          "cpuSecondsPer1000HeartbeatAck": 0.00010078941805394534,
+          "workingSetMeanMiB": 38.76999934229943,
+          "privateMeanMiB": 14.395048421936696
+        }
+      },
+      "hostCpuPercent": 25.089921485767285,
+      "hostPrivilegedCpuPercent": 12.226616773773921,
+      "hostPrivilegedPeakPercent": 38.17877200382214,
+      "highPrivilegedSamples": 0,
+      "maxObserverIntervalMs": 1243.3679103851318,
+      "runtime": {
+        "maxSamplerIntervalMs": 432.2427,
+        "gcPauseDeltaMs": 2642.657,
+        "maxThreadPoolPending": 4,
+        "maxProbeDispatchMs": 4.7281
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": [],
+      "ledger": {
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 765406
+        },
+        "actual": {
+          "/packet/Heartbeat": 765406,
+          "/packet/LoginRequest": 31000
+        },
+        "packetMetrics": 796406,
+        "uniqueMetricTraceIds": 796406,
+        "packetEntrySpans": 796406,
+        "uniqueEntryTraceIds": 796406,
+        "missingEntry": 0,
+        "missingMetric": 0,
+        "quickCheck": "ok",
+        "passed": true
+      },
+      "allHeartbeatEntryDurationMs": {
+        "count": 765406,
+        "mean": 0.0906439702589214,
+        "p99": 0.2932
+      },
+      "telemetryHealth": {
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolPendingBatches": 0,
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "activeSessions": 0
+      }
+    }
+  ],
+  "aggregate": {
+    "off": {
+      "runs": 3,
+      "stats": {
+        "gameCpuPercent": {
+          "median": 2.2290891779754194,
+          "min": 2.176323112896789,
+          "max": 2.285398667697022
+        },
+        "gameWorkingSetMiB": {
+          "median": 1378.4629886984824,
+          "min": 1358.208178146798,
+          "max": 1391.9178154572292
+        },
+        "gamePrivateMiB": {
+          "median": 1308.125897449777,
+          "min": 1287.0768740421572,
+          "max": 1319.7724394094578
+        },
+        "gameCpuSecondsPer1000HeartbeatAck": {
+          "median": 0.05953701671980673,
+          "min": 0.058192061153219815,
+          "max": 0.061028517482020914
+        },
+        "rttP99Ms": {
+          "median": 15.4257,
+          "min": 8.7246,
+          "max": 19.1142
+        },
+        "holdAckPerSecond": {
+          "median": 5990.462545662355,
+          "min": 5983.835110863708,
+          "max": 5991.68719025022
+        },
+        "hostCpuPercent": {
+          "median": 18.06339584143217,
+          "min": 17.994630336202906,
+          "max": 18.30709511994704
+        },
+        "hostPrivilegedCpuPercent": {
+          "median": 8.850325904038037,
+          "min": 8.610186788912477,
+          "max": 8.862674363629207
+        },
+        "gameAndCollectorCpuPercent": {
+          "median": 2.2290891779754194,
+          "min": 2.176323112896789,
+          "max": 2.285398667697022
+        }
+      }
+    },
+    "on": {
+      "runs": 3,
+      "stats": {
+        "gameCpuPercent": {
+          "median": 4.654500081968287,
+          "min": 4.6169370913389525,
+          "max": 4.763868384028807
+        },
+        "gameWorkingSetMiB": {
+          "median": 2252.493414741529,
+          "min": 2227.460490965454,
+          "max": 2265.971226320531
+        },
+        "gamePrivateMiB": {
+          "median": 2203.270678843141,
+          "min": 2171.2962460625263,
+          "max": 2214.735241539046
+        },
+        "gameCpuSecondsPer1000HeartbeatAck": {
+          "median": 0.12474954060788353,
+          "min": 0.12334835072370155,
+          "max": 0.12729519306233636
+        },
+        "rttP99Ms": {
+          "median": 39.4563,
+          "min": 27.4492,
+          "max": 49.7924
+        },
+        "holdAckPerSecond": {
+          "median": 5987.806175341969,
+          "min": 5969.721541543031,
+          "max": 5988.810764782688
+        },
+        "hostCpuPercent": {
+          "median": 25.089921485767285,
+          "min": 24.69996263923493,
+          "max": 26.06915830321743
+        },
+        "hostPrivilegedCpuPercent": {
+          "median": 12.226616773773921,
+          "min": 12.169403790468124,
+          "max": 12.801743863719542
+        },
+        "gameAndCollectorCpuPercent": {
+          "median": 8.96436952032812,
+          "min": 8.846680682913284,
+          "max": 9.23881826979208
+        },
+        "collectorCpuPercent": {
+          "median": 4.347432428989166,
+          "min": 4.1921806009449964,
+          "max": 4.474949885763272
+        },
+        "collectorWorkingSetMiB": {
+          "median": 596.3529526690454,
+          "min": 590.0117867279271,
+          "max": 603.0347719672474
+        }
+      }
+    }
+  },
+  "environment": {
+    "capturedUtc": "2026-11-16T20:10:14.569345+00:00",
+    "os": "Windows-10-10.0.26200-SP0",
+    "cpu": "AMD Ryzen 7 7800X3D 8-Core Processor           ",
+    "logicalProcessors": 16,
+    "python": "3.10.6",
+    "dotnetSdk": {
+      "exitCode": 0,
+      "text": "10.0.301"
+    },
+    "runtimes": {
+      "exitCode": 0,
+      "text": "Microsoft.AspNetCore.App 10.0.9 [C:\\Program Files\\dotnet\\shared\\Microsoft.AspNetCore.App]\r\nMicrosoft.NETCore.App 6.0.11 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 9.0.20 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.NETCore.App 10.0.9 [C:\\Program Files\\dotnet\\shared\\Microsoft.NETCore.App]\r\nMicrosoft.WindowsDesktop.App 6.0.11 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 7.0.3 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 9.0.20 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]\r\nMicrosoft.WindowsDesktop.App 10.0.9 [C:\\Program Files\\dotnet\\shared\\Microsoft.WindowsDesktop.App]"
+    },
+    "postgres": {
+      "exitCode": 0,
+      "text": "postgres (PostgreSQL) 18.4"
+    },
+    "redis": {
+      "exitCode": 0,
+      "text": "Redis server v=3.0.504 sha=00000000:0 malloc=jemalloc-3.6.0 bits=64 build=a4f7a6e86f2d60b3"
+    }
+  },
+  "analysisAttempt1": {
+    "status": "aborted",
+    "utc": "2026-11-16T20:06:19.306110+00:00",
+    "reason": "Correlated NOT EXISTS scans Metrics without TraceId index; analysis process stopped. No database mutations. Replaced with EXCEPT set comparison.",
+    "timing": "Stopped before ab03 main hold; overlapped prior-connection wait and possibly warmup. No further SQL analysis until all measured runs complete."
+  },
+  "analysisAttempt2": {
+    "status": "completed",
+    "utc": "2026-11-16T20:26:57.255031+00:00",
+    "reason": "SQL DISTINCT/EXCEPT completed successfully but used heavy temporary-file I/O. Rechecked with sequential reads and in-memory TraceId sets.",
+    "timing": "All six load runs had already finished.",
+    "exitCode": 0,
+    "correction": "The SQL process had already completed before the conditional stop command; session completion confirmed exit code 0. Repeated with memory sets to avoid temporary-file I/O.",
+    "memoryRecheckExitCode": 0
+  },
+  "method": "CPU deltas at interpolated UTC hold boundaries; 16 logical CPUs. Memory trapezoidal time mean. Group values are medians of per-run values.",
+  "difference": {
+    "gameCpuPercent": 2.4254109039928675,
+    "gameWorkingSetMiB": 874.0304260430464,
+    "gamePrivateMiB": 895.1447813933639,
+    "rttP99Ms": 24.0306,
+    "gameCpuSecondsPer1000HeartbeatAck": 0.0652125238880768
+  },
+  "analysisCrosscheck": {
+    "sqlAnalysisExitCode": 0,
+    "memoryAnalysisExitCode": 0,
+    "comparedMedians": {
+      "off": {
+        "gameCpuPercent": 2.2290891779754194,
+        "gameWorkingSetMiB": 1378.4629886984824,
+        "rttP99Ms": 15.4257
+      },
+      "on": {
+        "gameCpuPercent": 4.654500081968287,
+        "gameWorkingSetMiB": 2252.493414741529,
+        "rttP99Ms": 39.4563
+      }
+    },
+    "matched": true,
+    "bothMethodsLedgerAssertionsPassed": true
+  }
+}

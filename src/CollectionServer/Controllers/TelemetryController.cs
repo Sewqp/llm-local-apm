@@ -12,12 +12,13 @@ namespace CollectionServer.Controllers;
 public class TelemetryController(TelemetryBatchWriter writer) : ControllerBase
 {
     [HttpPost("batch")]
+    [HttpPost("batch-with-heartbeats")]
     [RequestSizeLimit(2_000_000)]
     public async Task<IActionResult> Ingest(TelemetryBatch batch, CancellationToken ct)
     {
         if (!Valid(batch)) return BadRequest(new { error = "Invalid telemetry batch; maximum 1024 spans/metrics, 1024 logs, 256 runtime samples." });
         if (!await writer.WriteAsync(batch, ct)) return Ok(new { duplicate = true });
-        return Accepted(new { spans = batch.Spans.Count, metrics = batch.Metrics.Count });
+        return Accepted(new { spans = batch.Spans.Count, metrics = batch.Metrics.Count, aggregates = batch.Aggregates.Count });
     }
 
     private static bool Text(string? value, int max, bool optional = false) =>
@@ -29,13 +30,33 @@ public class TelemetryController(TelemetryBatchWriter writer) : ControllerBase
     private static bool Duration(double value) => double.IsFinite(value) && value >= 0 && value <= 86400000;
     private static bool Outcome(string? value) => value is "success" or "rejected" or "error" or "timeout" or "cancelled" or "unknown";
 
+    private static bool ValidAggregate(HeartbeatAggregate a)
+    {
+        if (a is null || !Hex(a.Id, 32) || !Time(a.Timestamp) || a.Timestamp.Ticks % (5 * TimeSpan.TicksPerSecond) != 0 ||
+            !Text(a.ServiceName, 100) || !Text(a.InstanceId, 100) || !Text(a.RunId, 100) || !Text(a.CodeVersion, 200) ||
+            a.Count is < 1 or > 100_000_000 || !Duration(a.MinDurationMs) || !Duration(a.MaxDurationMs) ||
+            a.MinDurationMs > a.MaxDurationMs || !double.IsFinite(a.DurationSumMs) ||
+            a.DurationSumMs < a.Count * a.MinDurationMs - 0.001 || a.DurationSumMs > a.Count * a.MaxDurationMs + 0.001 ||
+            a.Histogram is null || a.Histogram.Length > 4096) return false;
+        try
+        {
+            var bins = System.Text.Json.JsonSerializer.Deserialize<long[]>(a.Histogram);
+            return bins is not null && bins.Length == HeartbeatAggregate.Bounds.Count &&
+                bins.All(n => n >= 0 && n <= a.Count) && bins.Sum() == a.Count &&
+                bins.Select((n, i) => (n, i)).All(x => x.n == 0 ||
+                    x.i >= HeartbeatAggregate.Bin(a.MinDurationMs) && x.i <= HeartbeatAggregate.Bin(a.MaxDurationMs));
+        }
+        catch (System.Text.Json.JsonException) { return false; }
+    }
+
     private static bool Valid(TelemetryBatch batch)
     {
-        if (!Hex(batch.BatchId, 32) || batch.Spans is null || batch.Metrics is null || batch.Logs is null || batch.Runtime is null ||
+        if (!Hex(batch.BatchId, 32) || batch.Spans is null || batch.Metrics is null || batch.Logs is null || batch.Runtime is null || batch.Aggregates is null || batch.Aggregates.Count > 1024 ||
             batch.Spans.Count > 1024 || batch.Metrics.Count > 1024 || batch.Logs.Count > 1024 || batch.Runtime.Count > 256) return false;
         if (batch.Spans.Select(s => (s?.TraceId, s?.SpanId)).Distinct().Count() != batch.Spans.Count ||
             batch.Logs.Select(l => l?.Id).Distinct().Count() != batch.Logs.Count ||
             batch.Runtime.Select(r => r?.Id).Distinct().Count() != batch.Runtime.Count) return false;
+        if (batch.Aggregates.Select(a => a?.Id).Distinct().Count() != batch.Aggregates.Count || !batch.Aggregates.All(ValidAggregate)) return false;
         return batch.Spans.All(s => s is not null && Hex(s.TraceId, 32) && Hex(s.SpanId, 16) &&
                 (s.ParentSpanId is null || Hex(s.ParentSpanId, 16)) && Text(s.ServiceName, 100) && Text(s.InstanceId, 100) &&
                 Text(s.RunId, 100) && Text(s.Name, 160) && Text(s.Category, 40) && Text(s.CodeVersion, 200) &&
@@ -60,6 +81,6 @@ public class TelemetryController(TelemetryBatchWriter writer) : ControllerBase
                 r.SampledOutTraces >= 0 && r.LimitedTraces >= 0 && r.UncorrelatedSpansSkipped >= 0 &&
                 double.IsFinite(r.DetailSampleRate) && r.DetailSampleRate is >= 0 and <= 1 &&
                 r.SpoolPendingBatches >= 0 && r.SpoolPendingRequests >= 0 && r.SpoolBytes >= 0 &&
-                r.RequestsSpooled >= 0 && r.ReplayedRequests >= 0 && r.SpoolErrors >= 0);
+                r.RequestsAggregated >= 0 && r.RequestsSpooled >= 0 && r.ReplayedRequests >= 0 && r.SpoolErrors >= 0);
     }
 }

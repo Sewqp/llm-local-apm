@@ -12,7 +12,7 @@ internal sealed class TelemetrySpool : IDisposable
     private readonly FileStream _lease;
     private readonly long _maxBytes;
     private readonly int _maxBatches;
-    private readonly SortedDictionary<string, (long Bytes, int Requests)> _pending = new(StringComparer.Ordinal);
+    private readonly SortedDictionary<string, (long Bytes, long Requests)> _pending = new(StringComparer.Ordinal);
     private long _bytes, _requests;
 
     public TelemetrySpool(AgentOptions options)
@@ -29,8 +29,8 @@ internal sealed class TelemetrySpool : IDisposable
             {
                 var batch = Read(path);
                 var size = new FileInfo(path).Length;
-                _pending.Add(path, (size, batch.Metrics.Count));
-                _bytes += size; _requests += batch.Metrics.Count;
+                _pending.Add(path, (size, batch.RequestCount()));
+                _bytes += size; _requests += batch.RequestCount();
             }
             // Only our incomplete atomic-write files are removed; committed JSON files are never reset.
             foreach (var path in Directory.EnumerateFiles(_directory, "*.tmp")) File.Delete(path);
@@ -59,8 +59,8 @@ internal sealed class TelemetrySpool : IDisposable
                     file.Flush(flushToDisk: true);
                 }
                 File.Move(temporary, path);
-                _pending.Add(path, (data.Length, batch.Metrics.Count));
-                _bytes += data.Length; _requests += batch.Metrics.Count;
+                _pending.Add(path, (data.Length, batch.RequestCount()));
+                _bytes += data.Length; _requests += batch.RequestCount();
                 return true;
             }
             finally { if (File.Exists(temporary)) File.Delete(temporary); }

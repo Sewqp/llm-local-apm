@@ -18,7 +18,7 @@ export default function SummaryCards({ summary }) {
     </div>
     <details className="panel"><summary style={{ cursor: "pointer" }}>요청별 처리량 · 지연 분포</summary>
       <div className="trace-table-scroll"><table className="trace-table"><thead><tr><th>요청</th><th>건수</th><th>req/s</th><th>p50</th><th>p95</th><th>p99</th><th>서버 오류</th><th>거절</th></tr></thead>
-        <tbody>{summary.map(item => <tr key={item.path}><td>{item.path}</td><td>{item.count.toLocaleString()}</td>
+        <tbody>{summary.map(item => <tr key={item.path}><td>{item.path}{item.aggregatedCount > 0 && <small>정상 집계 {item.aggregatedCount.toLocaleString()}건 · 백분위는 구간 상한 추정</small>}</td><td>{item.count.toLocaleString()}</td>
           <td>{(item.requestsPerSecond ?? 0).toFixed(2)}</td><td>{duration(item.p50DurationMs ?? 0)}</td>
           <td>{duration(item.p95DurationMs)}</td><td>{duration(item.p99DurationMs ?? 0)}</td>
           <td>{(item.errorRate * 100).toFixed(2)}%</td><td>{((item.rejectedRate ?? 0) * 100).toFixed(2)}%</td></tr>)}</tbody>

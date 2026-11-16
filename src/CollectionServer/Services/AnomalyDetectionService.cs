@@ -38,21 +38,12 @@ public class AnomalyDetectionService(ApmDbContext db, IOptions<AnomalyDetectionO
             recentQuery = recentQuery.Where(m => m.ServerName == server);
         }
 
-        // 서버가 여러 대 섞여 있어도 기준선이 서로 오염되지 않도록 (서버, 경로) 조합으로 그룹핑
-        var historicalBaselines = (await historicalQuery
-            .GroupBy(m => new { m.ServerName, m.Path })
-            .Select(g => new { g.Key.ServerName, g.Key.Path, Avg = g.Average(m => m.DurationMs), Count = g.Count() })
-            .Where(g => g.Count >= _options.MinBaselineSamples)
-            .ToListAsync(ct))
-            .ToDictionary(g => (g.ServerName, g.Path), g => g.Avg);
-
-        var recent = await recentQuery
-            .OrderByDescending(m => m.Timestamp)
-            .ToListAsync(ct);
-
-        var windowFallbackBaselines = recent
-            .GroupBy(m => (m.ServerName, m.Path))
-            .ToDictionary(g => g.Key, g => g.Average(m => m.DurationMs));
+        // Preserve the baseline denominator when normal Heartbeats have no individual rows.
+        var historicalBaselines = (await Baselines(since, server, true, ct))
+            .Where(b => b.Count >= _options.MinBaselineSamples).ToDictionary(b => (b.ServerName, b.Path), b => b.Avg);
+        var recent = await recentQuery.OrderByDescending(m => m.Timestamp).ToListAsync(ct);
+        var windowFallbackBaselines = (await Baselines(since, server, false, ct))
+            .ToDictionary(b => (b.ServerName, b.Path), b => b.Avg);
 
         var results = new List<AnomalyDto>();
 
@@ -87,4 +78,27 @@ public class AnomalyDetectionService(ApmDbContext db, IOptions<AnomalyDetectionO
 
         return results;
     }
+    private async Task<List<BaselineRow>> Baselines(DateTime since, string? server, bool historical, CancellationToken ct)
+    {
+        var selected = server ?? "";
+        return await db.Database.SqlQuery<BaselineRow>($"""
+            WITH weighted AS (
+                SELECT ServerName, Path, 1 AS N, DurationMs AS Total FROM Metrics
+                WHERE ({selected}='' OR ServerName={selected}) AND
+                    (({historical}=1 AND Timestamp < {since}) OR ({historical}=0 AND Timestamp >= {since}))
+                UNION ALL SELECT ServiceName, '/packet/Heartbeat', Count, DurationSumMs FROM HeartbeatAggregates
+                WHERE ({selected}='' OR ServiceName={selected}) AND
+                    (({historical}=1 AND Timestamp < {since}) OR ({historical}=0 AND Timestamp >= {since}))
+            ) SELECT ServerName, Path, SUM(N) AS Count, SUM(Total)/SUM(N) AS Avg
+            FROM weighted GROUP BY ServerName, Path
+            """).ToListAsync(ct);
+    }
+    public sealed class BaselineRow
+    {
+        public string ServerName { get; set; } = "";
+        public string Path { get; set; } = "";
+        public long Count { get; set; }
+        public double Avg { get; set; }
+    }
+
 }

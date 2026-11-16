@@ -1,0 +1,2159 @@
+{
+  "verifiedDate": "2026-11-17",
+  "localOnly": true,
+  "runs": [
+    {
+      "case": "hb01_before",
+      "variant": "before",
+      "holdSeconds": 120.0047568,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 780780,
+      "heartbeatAck": 780780,
+      "holdAck": 717649,
+      "holdAckPerSecond": 5980.17127934382,
+      "holdRttMs": {
+        "count": 717539,
+        "p50": 0.8125,
+        "p95": 6.6742,
+        "p99": 43.3375,
+        "max": 449.175
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T20:52:22.198278+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 1176
+          },
+          {
+            "utc": "2026-11-16T20:52:24.201880+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 1176
+          }
+        ]
+      },
+      "processes": {
+        "game": {
+          "cpuPercent": 4.4593999058365545,
+          "cpuSeconds": 85.62387227878217,
+          "cpuSecondsPer1000HeartbeatAck": 0.11931163044717148,
+          "workingSetMeanMiB": 2288.756478809302,
+          "privateMeanMiB": 2237.5671002304343
+        },
+        "client": {
+          "cpuPercent": 1.6741152931658405,
+          "cpuSeconds": 32.14428781199372,
+          "cpuSecondsPer1000HeartbeatAck": 0.04479109956537767,
+          "workingSetMeanMiB": 199.2506027234935,
+          "privateMeanMiB": 174.0491846605846
+        },
+        "collector": {
+          "cpuPercent": 3.9006661267219127,
+          "cpuSeconds": 74.89575846280927,
+          "cpuSecondsPer1000HeartbeatAck": 0.10436265982786748,
+          "workingSetMeanMiB": 606.7563233148426,
+          "privateMeanMiB": 533.9172692969096
+        },
+        "redis": {
+          "cpuPercent": 0.007673380569907537,
+          "cpuSeconds": 0.14733474721662088,
+          "cpuSecondsPer1000HeartbeatAck": 0.0002053019612883469,
+          "workingSetMeanMiB": 38.77280844718649,
+          "privateMeanMiB": 14.394012604436307
+        }
+      },
+      "hostAvailableMemoryMinMiB": 10893.25,
+      "hostCpuPercent": 25.971281096954748,
+      "hostPrivilegedCpuPercent": 12.791443309810594,
+      "hostPrivilegedPeakPercent": 69.67654475686787,
+      "maxObserverIntervalMs": 1229.1779518127441,
+      "runtime": {
+        "gcPauseDeltaMs": 2471.5249999999996,
+        "maxSamplerIntervalMs": 744.7366,
+        "maxProbeDispatchMs": 9.8943,
+        "maxThreadPoolPending": 8
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": [],
+      "ledger": {
+        "passed": true,
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 782780
+        },
+        "actual": {
+          "/packet/Heartbeat": 782780,
+          "/packet/LoginRequest": 31000
+        },
+        "individualPacketMetrics": 813780,
+        "normalHeartbeatsAggregated": 0,
+        "heartbeatAggregateRows": 0,
+        "retainedHeartbeatRequests": 782780,
+        "packetStatisticRows": 813780,
+        "missingOrDuplicateTraceIds": 0,
+        "retainedHeartbeatReasons": [
+          {
+            "reason": "none",
+            "outcome": "success",
+            "count": 774896
+          },
+          {
+            "reason": "sample",
+            "outcome": "success",
+            "count": 7861
+          },
+          {
+            "reason": "slow",
+            "outcome": "success",
+            "count": 23
+          }
+        ]
+      },
+      "storage": {
+        "logicalDatabaseMiB": 791.3828125,
+        "metricRows": 813830,
+        "spanRows": 868159,
+        "databaseAndWalMiB": 855.3828125,
+        "statisticRowsPer1000Packets": 1000.0,
+        "logicalDatabaseMiBPer1000Packets": 0.9724775891518592
+      },
+      "health": {
+        "requestsObserved": 813829,
+        "requestsSent": 813829,
+        "requestsAggregated": 0,
+        "sampledOutTraces": 805316,
+        "limitedTraces": 26,
+        "uncorrelatedSpansSkipped": 674649,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolPendingBatches": 0,
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "activeSessions": 0
+      }
+    },
+    {
+      "case": "hb02_after",
+      "variant": "after",
+      "holdSeconds": 120.00449959999999,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 776574,
+      "heartbeatAck": 776574,
+      "holdAck": 718970,
+      "holdAckPerSecond": 5991.192016936672,
+      "holdRttMs": {
+        "count": 719106,
+        "p50": 0.6434,
+        "p95": 2.1272,
+        "p99": 15.1148,
+        "max": 236.8601
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T20:56:57.599238+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30102
+          },
+          {
+            "utc": "2026-11-16T20:56:59.660382+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30101
+          },
+          {
+            "utc": "2026-11-16T20:57:01.720996+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30099
+          },
+          {
+            "utc": "2026-11-16T20:57:03.785220+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30099
+          },
+          {
+            "utc": "2026-11-16T20:57:05.841387+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30099
+          },
+          {
+            "utc": "2026-11-16T20:57:07.900395+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30097
+          },
+          {
+            "utc": "2026-11-16T20:57:09.963261+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 100
+          },
+          {
+            "utc": "2026-11-16T20:57:11.975889+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 99
+          }
+        ]
+      },
+      "processes": {
+        "game": {
+          "cpuPercent": 4.341338002125564,
+          "cpuSeconds": 83.35681468079267,
+          "cpuSecondsPer1000HeartbeatAck": 0.11593921120602065,
+          "workingSetMeanMiB": 2295.8570793873428,
+          "privateMeanMiB": 2236.217955111116
+        },
+        "client": {
+          "cpuPercent": 1.7056748311491305,
+          "cpuSeconds": 32.750184559732,
+          "cpuSecondsPer1000HeartbeatAck": 0.0455515314404384,
+          "workingSetMeanMiB": 214.06756142952898,
+          "privateMeanMiB": 188.5880694538616
+        },
+        "collector": {
+          "cpuPercent": 0.39265066627074713,
+          "cpuSeconds": 7.539175435452259,
+          "cpuSecondsPer1000HeartbeatAck": 0.010486077910694827,
+          "workingSetMeanMiB": 182.01036649028288,
+          "privateMeanMiB": 110.28655879766465
+        },
+        "redis": {
+          "cpuPercent": 0.008699256084352954,
+          "cpuSeconds": 0.16703197883443544,
+          "cpuSecondsPer1000HeartbeatAck": 0.0002323212078868874,
+          "workingSetMeanMiB": 38.77699779009487,
+          "privateMeanMiB": 14.40287666091802
+        }
+      },
+      "hostAvailableMemoryMinMiB": 11308.08,
+      "hostCpuPercent": 22.175695513486822,
+      "hostPrivilegedCpuPercent": 10.133685530387025,
+      "hostPrivilegedPeakPercent": 33.486661056438116,
+      "maxObserverIntervalMs": 730.7569980621338,
+      "runtime": {
+        "gcPauseDeltaMs": 1486.824,
+        "maxSamplerIntervalMs": 330.5841,
+        "maxProbeDispatchMs": 3.1744,
+        "maxThreadPoolPending": 3
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": [],
+      "ledger": {
+        "passed": true,
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 778574
+        },
+        "actual": {
+          "/packet/Heartbeat": 778574,
+          "/packet/LoginRequest": 31000
+        },
+        "individualPacketMetrics": 31011,
+        "normalHeartbeatsAggregated": 778563,
+        "heartbeatAggregateRows": 308,
+        "retainedHeartbeatRequests": 11,
+        "packetStatisticRows": 31319,
+        "missingOrDuplicateTraceIds": 0,
+        "retainedHeartbeatReasons": [
+          {
+            "reason": "slow",
+            "outcome": "success",
+            "count": 11
+          }
+        ]
+      },
+      "storage": {
+        "logicalDatabaseMiB": 39.9921875,
+        "metricRows": 31044,
+        "spanRows": 48977,
+        "databaseAndWalMiB": 79.78652954101562,
+        "statisticRowsPer1000Packets": 38.685777952355195,
+        "logicalDatabaseMiBPer1000Packets": 0.04939905122941202
+      },
+      "health": {
+        "requestsObserved": 809607,
+        "requestsSent": 809607,
+        "requestsAggregated": 778563,
+        "sampledOutTraces": 30270,
+        "limitedTraces": 26,
+        "uncorrelatedSpansSkipped": 674827,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolPendingBatches": 0,
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "activeSessions": 0
+      }
+    },
+    {
+      "case": "hb03_after",
+      "variant": "after",
+      "holdSeconds": 120.01479339999999,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 766146,
+      "heartbeatAck": 766146,
+      "holdAck": 718901,
+      "holdAckPerSecond": 5990.103216725614,
+      "holdRttMs": {
+        "count": 718886,
+        "p50": 0.8501,
+        "p95": 3.6602,
+        "p99": 26.4773,
+        "max": 127.254
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T21:00:17.969085+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30080
+          },
+          {
+            "utc": "2026-11-16T21:00:20.029702+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30081
+          },
+          {
+            "utc": "2026-11-16T21:00:22.097227+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30081
+          },
+          {
+            "utc": "2026-11-16T21:00:24.161408+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30079
+          },
+          {
+            "utc": "2026-11-16T21:00:26.224824+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30080
+          },
+          {
+            "utc": "2026-11-16T21:00:28.279640+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30080
+          },
+          {
+            "utc": "2026-11-16T21:00:30.342909+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30079
+          },
+          {
+            "utc": "2026-11-16T21:00:32.392967+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30077
+          },
+          {
+            "utc": "2026-11-16T21:00:34.452678+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30077
+          },
+          {
+            "utc": "2026-11-16T21:00:36.512389+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30077
+          },
+          {
+            "utc": "2026-11-16T21:00:38.573899+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30074
+          },
+          {
+            "utc": "2026-11-16T21:00:40.625396+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30075
+          },
+          {
+            "utc": "2026-11-16T21:00:42.684962+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30075
+          },
+          {
+            "utc": "2026-11-16T21:00:44.743540+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T21:00:46.805923+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30073
+          },
+          {
+            "utc": "2026-11-16T21:00:48.868386+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30074
+          },
+          {
+            "utc": "2026-11-16T21:00:50.931039+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:00:53.000445+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T21:00:55.059387+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:00:57.122927+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:00:59.190264+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:01:01.253422+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:01:03.313690+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:01:05.372404+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:01:07.429693+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:01:09.493283+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:01:11.557417+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T21:01:13.617387+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:01:15.673897+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:01:17.737744+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:01:19.806314+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:01:21.874374+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:01:23.936055+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:01:26.001890+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:01:28.052747+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:01:30.124074+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:01:32.190283+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:01:34.254459+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:01:36.321910+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:01:38.388448+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:01:40.454896+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:01:42.518283+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:01:44.586263+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:01:46.663520+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:01:48.725291+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T21:01:50.786685+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30057
+          },
+          {
+            "utc": "2026-11-16T21:01:52.851325+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T21:01:54.935395+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30057
+          },
+          {
+            "utc": "2026-11-16T21:01:57.004392+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30056
+          },
+          {
+            "utc": "2026-11-16T21:01:59.068126+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30057
+          },
+          {
+            "utc": "2026-11-16T21:02:01.589860+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 55
+          },
+          {
+            "utc": "2026-11-16T21:02:04.259925+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 53
+          }
+        ]
+      },
+      "processes": {
+        "game": {
+          "cpuPercent": 4.4194164097046045,
+          "cpuSeconds": 84.86325523747696,
+          "cpuSecondsPer1000HeartbeatAck": 0.11804581609634283,
+          "workingSetMeanMiB": 2291.768591634008,
+          "privateMeanMiB": 2236.511172866355
+        },
+        "client": {
+          "cpuPercent": 2.01327042377482,
+          "cpuSeconds": 38.65955727993638,
+          "cpuSecondsPer1000HeartbeatAck": 0.05377591251081356,
+          "workingSetMeanMiB": 217.15472010020454,
+          "privateMeanMiB": 191.80931127346582
+        },
+        "collector": {
+          "cpuPercent": 0.45380932963955894,
+          "cpuSeconds": 8.71421323543584,
+          "cpuSecondsPer1000HeartbeatAck": 0.012121576177298182,
+          "workingSetMeanMiB": 180.27633689154834,
+          "privateMeanMiB": 108.82177658790724
+        },
+        "redis": {
+          "cpuPercent": 0.0035173580627044536,
+          "cpuSeconds": 0.06754159992288145,
+          "cpuSecondsPer1000HeartbeatAck": 9.395118371358706e-05,
+          "workingSetMeanMiB": 38.75597531306813,
+          "privateMeanMiB": 14.414674592058379
+        }
+      },
+      "hostAvailableMemoryMinMiB": 10505.86,
+      "hostCpuPercent": 28.44799959128658,
+      "hostPrivilegedCpuPercent": 13.138203572053142,
+      "hostPrivilegedPeakPercent": 57.959468695490955,
+      "maxObserverIntervalMs": 810.338020324707,
+      "runtime": {
+        "gcPauseDeltaMs": 2073.2259999999997,
+        "maxSamplerIntervalMs": 360.8498,
+        "maxProbeDispatchMs": 10.9488,
+        "maxThreadPoolPending": 3
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": [],
+      "ledger": {
+        "passed": true,
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 768146
+        },
+        "actual": {
+          "/packet/Heartbeat": 768146,
+          "/packet/LoginRequest": 31000
+        },
+        "individualPacketMetrics": 31012,
+        "normalHeartbeatsAggregated": 768134,
+        "heartbeatAggregateRows": 283,
+        "retainedHeartbeatRequests": 12,
+        "packetStatisticRows": 31295,
+        "missingOrDuplicateTraceIds": 0,
+        "retainedHeartbeatReasons": [
+          {
+            "reason": "slow",
+            "outcome": "success",
+            "count": 12
+          }
+        ]
+      },
+      "storage": {
+        "logicalDatabaseMiB": 41.6796875,
+        "metricRows": 31044,
+        "spanRows": 51712,
+        "databaseAndWalMiB": 98.82903289794922,
+        "statisticRowsPer1000Packets": 39.16055389127894,
+        "logicalDatabaseMiBPer1000Packets": 0.05215528514188897
+      },
+      "health": {
+        "requestsObserved": 799177,
+        "requestsSent": 799177,
+        "requestsAggregated": 768134,
+        "sampledOutTraces": 30142,
+        "limitedTraces": 25,
+        "uncorrelatedSpansSkipped": 673659,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolPendingBatches": 0,
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "activeSessions": 0
+      }
+    },
+    {
+      "case": "hb04_before",
+      "variant": "before",
+      "holdSeconds": 120.0109818,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 779793,
+      "heartbeatAck": 779793,
+      "holdAck": 719361,
+      "holdAckPerSecond": 5994.126447518155,
+      "holdRttMs": {
+        "count": 719346,
+        "p50": 0.7744,
+        "p95": 3.4831,
+        "p99": 10.5252,
+        "max": 217.6448
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T21:05:03.728368+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30075
+          },
+          {
+            "utc": "2026-11-16T21:05:05.793511+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30074
+          },
+          {
+            "utc": "2026-11-16T21:05:07.854651+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T21:05:09.913323+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30073
+          },
+          {
+            "utc": "2026-11-16T21:05:11.980773+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30073
+          },
+          {
+            "utc": "2026-11-16T21:05:14.060896+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T21:05:16.127925+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T21:05:18.189550+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:05:20.255405+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:05:22.320667+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:05:24.382895+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:05:26.445057+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:05:28.509895+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:05:30.572938+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:05:32.636991+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:05:34.700504+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:05:36.773897+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:05:38.832821+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:05:40.895389+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:05:42.959388+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:05:45.021674+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:05:47.080892+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:05:49.141888+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:05:51.200392+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:05:53.263460+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T21:05:55.328385+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:05:57.395604+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:05:59.460409+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:06:01.524384+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T21:06:03.587888+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:06:05.653385+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:06:07.718887+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:06:09.781769+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:06:11.849755+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:06:13.916764+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:06:15.981893+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:06:18.042729+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:06:20.103354+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:06:22.161397+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:06:24.223887+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:06:26.285892+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:06:28.348887+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:06:30.412161+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:06:32.478713+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T21:06:34.547091+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T21:06:36.613391+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:06:38.680884+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:06:40.743280+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:06:42.800300+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:06:44.866907+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30057
+          },
+          {
+            "utc": "2026-11-16T21:06:46.926905+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30057
+          },
+          {
+            "utc": "2026-11-16T21:06:48.991269+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30057
+          },
+          {
+            "utc": "2026-11-16T21:06:51.054892+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30055
+          },
+          {
+            "utc": "2026-11-16T21:06:53.785355+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 54
+          },
+          {
+            "utc": "2026-11-16T21:06:55.794250+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 54
+          }
+        ]
+      },
+      "processes": {
+        "game": {
+          "cpuPercent": 4.6932933672129185,
+          "cpuSeconds": 90.11947935760628,
+          "cpuSecondsPer1000HeartbeatAck": 0.12527712700244562,
+          "workingSetMeanMiB": 2274.393480076528,
+          "privateMeanMiB": 2224.060048686719
+        },
+        "client": {
+          "cpuPercent": 1.6289623914051607,
+          "cpuSeconds": 31.27894020691302,
+          "cpuSecondsPer1000HeartbeatAck": 0.04348156239622807,
+          "workingSetMeanMiB": 215.19343927739723,
+          "privateMeanMiB": 189.74258810267273
+        },
+        "collector": {
+          "cpuPercent": 4.527807920626079,
+          "cpuSeconds": 86.94186800438221,
+          "cpuSecondsPer1000HeartbeatAck": 0.1208598575741279,
+          "workingSetMeanMiB": 605.497176066441,
+          "privateMeanMiB": 532.196885472116
+        },
+        "redis": {
+          "cpuPercent": 0.003351738309951467,
+          "cpuSeconds": 0.06435926497711009,
+          "cpuSecondsPer1000HeartbeatAck": 8.946727022608966e-05,
+          "workingSetMeanMiB": 38.751060254775446,
+          "privateMeanMiB": 14.394262845476092
+        }
+      },
+      "hostAvailableMemoryMinMiB": 10628.86,
+      "hostCpuPercent": 28.333095968109696,
+      "hostPrivilegedCpuPercent": 13.856740218043914,
+      "hostPrivilegedPeakPercent": 33.95497015878067,
+      "maxObserverIntervalMs": 1026.0400772094727,
+      "runtime": {
+        "gcPauseDeltaMs": 1941.817,
+        "maxSamplerIntervalMs": 260.7086,
+        "maxProbeDispatchMs": 8.1477,
+        "maxThreadPoolPending": 6
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": [],
+      "ledger": {
+        "passed": true,
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 781793
+        },
+        "actual": {
+          "/packet/Heartbeat": 781793,
+          "/packet/LoginRequest": 31000
+        },
+        "individualPacketMetrics": 812793,
+        "normalHeartbeatsAggregated": 0,
+        "heartbeatAggregateRows": 0,
+        "retainedHeartbeatRequests": 781793,
+        "packetStatisticRows": 812793,
+        "missingOrDuplicateTraceIds": 0,
+        "retainedHeartbeatReasons": [
+          {
+            "reason": "none",
+            "outcome": "success",
+            "count": 773901
+          },
+          {
+            "reason": "sample",
+            "outcome": "success",
+            "count": 7866
+          },
+          {
+            "reason": "slow",
+            "outcome": "success",
+            "count": 26
+          }
+        ]
+      },
+      "storage": {
+        "logicalDatabaseMiB": 789.671875,
+        "metricRows": 812823,
+        "spanRows": 866155,
+        "databaseAndWalMiB": 853.671875,
+        "statisticRowsPer1000Packets": 1000.0,
+        "logicalDatabaseMiBPer1000Packets": 0.9715534890187293
+      },
+      "health": {
+        "requestsObserved": 812823,
+        "requestsSent": 812823,
+        "requestsAggregated": 0,
+        "sampledOutTraces": 804352,
+        "limitedTraces": 27,
+        "uncorrelatedSpansSkipped": 675980,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolPendingBatches": 0,
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "activeSessions": 0
+      }
+    },
+    {
+      "case": "hb05_before",
+      "variant": "before",
+      "holdSeconds": 120.01504489999999,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 772580,
+      "heartbeatAck": 772580,
+      "holdAck": 717356,
+      "holdAckPerSecond": 5977.217278031449,
+      "holdRttMs": {
+        "count": 717357,
+        "p50": 0.9328,
+        "p95": 7.7431,
+        "p99": 60.6078,
+        "max": 341.6988
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T21:09:54.348876+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:09:56.412362+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:09:58.463818+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T21:10:00.532937+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:10:02.600602+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T21:10:04.664108+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:10:06.732897+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:10:08.795333+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:10:10.857170+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:10:12.917387+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:10:14.982411+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:10:17.047040+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:10:19.107887+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T21:10:21.170796+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:10:23.235401+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:10:25.302166+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:10:27.383387+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:10:29.451697+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:10:31.525384+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:10:33.588903+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T21:10:35.655482+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:10:37.732388+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:10:39.792908+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:10:41.855913+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:10:43.914898+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:10:45.979069+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:10:48.038146+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:10:50.099029+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:10:52.163391+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:10:54.224638+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:10:56.287399+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:10:58.351650+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:11:00.417183+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:11:02.482887+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:11:04.545942+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:11:06.609907+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:11:08.673389+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:11:10.727400+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:11:12.786369+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:11:14.845562+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:11:16.903551+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:11:18.970437+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:11:21.032397+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:11:23.096460+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:11:25.159901+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:11:27.222388+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:11:29.285382+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30060
+          },
+          {
+            "utc": "2026-11-16T21:11:31.346253+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:11:33.408403+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:11:35.470668+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30059
+          },
+          {
+            "utc": "2026-11-16T21:11:37.531894+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30058
+          },
+          {
+            "utc": "2026-11-16T21:11:39.737268+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 23202
+          },
+          {
+            "utc": "2026-11-16T21:11:42.185297+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 56
+          },
+          {
+            "utc": "2026-11-16T21:11:44.198515+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 54
+          }
+        ]
+      },
+      "processes": {
+        "game": {
+          "cpuPercent": 4.734879506116615,
+          "cpuSeconds": 90.92108426453504,
+          "cpuSecondsPer1000HeartbeatAck": 0.126744718472467,
+          "workingSetMeanMiB": 2261.0669180155555,
+          "privateMeanMiB": 2208.8598562545203
+        },
+        "client": {
+          "cpuPercent": 1.906852447670973,
+          "cpuSeconds": 36.61615714840484,
+          "cpuSecondsPer1000HeartbeatAck": 0.05104321584876245,
+          "workingSetMeanMiB": 213.9464038894586,
+          "privateMeanMiB": 188.4950585185713
+        },
+        "collector": {
+          "cpuPercent": 4.099870647865998,
+          "cpuSeconds": 78.72738560015587,
+          "cpuSecondsPer1000HeartbeatAck": 0.10974660503314375,
+          "workingSetMeanMiB": 603.2702178001607,
+          "privateMeanMiB": 531.2441215083164
+        },
+        "redis": {
+          "cpuPercent": 0.003678424740917124,
+          "cpuSeconds": 0.0706346096870325,
+          "cpuSecondsPer1000HeartbeatAck": 9.846521070017188e-05,
+          "workingSetMeanMiB": 38.79022743786004,
+          "privateMeanMiB": 14.44305425222222
+        }
+      },
+      "hostAvailableMemoryMinMiB": 9846.45,
+      "hostCpuPercent": 32.95785831271332,
+      "hostPrivilegedCpuPercent": 15.589847206658716,
+      "hostPrivilegedPeakPercent": 39.35673722895598,
+      "maxObserverIntervalMs": 1445.991039276123,
+      "runtime": {
+        "gcPauseDeltaMs": 2956.215,
+        "maxSamplerIntervalMs": 388.2451,
+        "maxProbeDispatchMs": 75.294,
+        "maxThreadPoolPending": 5
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": [],
+      "ledger": {
+        "passed": true,
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 774580
+        },
+        "actual": {
+          "/packet/Heartbeat": 774580,
+          "/packet/LoginRequest": 31000
+        },
+        "individualPacketMetrics": 805580,
+        "normalHeartbeatsAggregated": 0,
+        "heartbeatAggregateRows": 0,
+        "retainedHeartbeatRequests": 774580,
+        "packetStatisticRows": 805580,
+        "missingOrDuplicateTraceIds": 0,
+        "retainedHeartbeatReasons": [
+          {
+            "reason": "none",
+            "outcome": "success",
+            "count": 766770
+          },
+          {
+            "reason": "sample",
+            "outcome": "success",
+            "count": 7759
+          },
+          {
+            "reason": "slow",
+            "outcome": "success",
+            "count": 51
+          }
+        ]
+      },
+      "storage": {
+        "logicalDatabaseMiB": 783.765625,
+        "metricRows": 805611,
+        "spanRows": 860317,
+        "databaseAndWalMiB": 847.765625,
+        "statisticRowsPer1000Packets": 1000.0,
+        "logicalDatabaseMiBPer1000Packets": 0.972920907917277
+      },
+      "health": {
+        "requestsObserved": 805610,
+        "requestsSent": 805610,
+        "requestsAggregated": 0,
+        "sampledOutTraces": 797138,
+        "limitedTraces": 26,
+        "uncorrelatedSpansSkipped": 675570,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolPendingBatches": 0,
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "activeSessions": 0
+      }
+    },
+    {
+      "case": "hb06_after",
+      "variant": "after",
+      "holdSeconds": 120.01366239999999,
+      "holdMinimumLogged": 30000,
+      "connectFailed": 0,
+      "loginFailed": 0,
+      "unexpectedDisconnects": 0,
+      "heartbeatSent": 765768,
+      "heartbeatAck": 765768,
+      "holdAck": 718412,
+      "holdAckPerSecond": 5986.085130920895,
+      "holdRttMs": {
+        "count": 718409,
+        "p50": 0.8539,
+        "p95": 3.6582,
+        "p99": 30.639,
+        "max": 316.2937
+      },
+      "preflight": {
+        "allowOverlap": false,
+        "threshold": 2000,
+        "observations": [
+          {
+            "utc": "2026-11-16T21:14:44.886278+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30089
+          },
+          {
+            "utc": "2026-11-16T21:14:46.949892+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30091
+          },
+          {
+            "utc": "2026-11-16T21:14:49.012854+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30086
+          },
+          {
+            "utc": "2026-11-16T21:14:51.080183+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30076
+          },
+          {
+            "utc": "2026-11-16T21:14:53.146608+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T21:14:55.212672+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T21:14:57.277228+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:14:59.338402+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30071
+          },
+          {
+            "utc": "2026-11-16T21:15:01.397931+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:15:03.471388+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:15:05.532446+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:15:07.604899+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:15:09.666895+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:15:11.731281+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:15:13.798532+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:15:15.866080+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30067
+          },
+          {
+            "utc": "2026-11-16T21:15:17.932891+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:15:19.994401+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:15:22.058114+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:15:24.124104+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:15:26.200120+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30066
+          },
+          {
+            "utc": "2026-11-16T21:15:28.268402+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:15:30.333886+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:15:32.397670+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:15:34.464967+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:15:36.528907+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T21:15:38.596226+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30064
+          },
+          {
+            "utc": "2026-11-16T21:15:40.670894+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:15:42.740668+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30063
+          },
+          {
+            "utc": "2026-11-16T21:15:44.809395+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30062
+          },
+          {
+            "utc": "2026-11-16T21:15:46.870904+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:15:48.934393+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30061
+          },
+          {
+            "utc": "2026-11-16T21:15:50.999903+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30065
+          },
+          {
+            "utc": "2026-11-16T21:15:53.067248+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:15:55.136462+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30073
+          },
+          {
+            "utc": "2026-11-16T21:15:57.205423+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T21:15:59.275412+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30072
+          },
+          {
+            "utc": "2026-11-16T21:16:01.344312+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:16:03.413855+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:16:05.481780+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:16:07.552265+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:16:09.620982+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:16:11.690508+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30068
+          },
+          {
+            "utc": "2026-11-16T21:16:13.759153+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:16:15.829176+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:16:17.899221+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30070
+          },
+          {
+            "utc": "2026-11-16T21:16:19.967849+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:16:22.036906+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:16:24.105860+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:16:26.173470+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 30069
+          },
+          {
+            "utc": "2026-11-16T21:16:28.249031+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 68
+          },
+          {
+            "utc": "2026-11-16T21:16:30.250554+00:00",
+            "serverEstablished": 0,
+            "systemTimeWait": 67
+          }
+        ]
+      },
+      "processes": {
+        "game": {
+          "cpuPercent": 4.567937217743439,
+          "cpuSeconds": 87.71438049597772,
+          "cpuSecondsPer1000HeartbeatAck": 0.12209481536496847,
+          "workingSetMeanMiB": 2221.1568972997015,
+          "privateMeanMiB": 2158.677589391041
+        },
+        "client": {
+          "cpuPercent": 1.9482797568056098,
+          "cpuSeconds": 37.41123044275966,
+          "cpuSecondsPer1000HeartbeatAck": 0.05207489635857928,
+          "workingSetMeanMiB": 213.995478993632,
+          "privateMeanMiB": 188.6346413109899
+        },
+        "collector": {
+          "cpuPercent": 0.47308080265329394,
+          "cpuSeconds": 9.084185607474831,
+          "cpuSecondsPer1000HeartbeatAck": 0.012644813293033567,
+          "workingSetMeanMiB": 192.46932795668494,
+          "privateMeanMiB": 120.32517387582355
+        },
+        "redis": {
+          "cpuPercent": 0.008067151999302115,
+          "cpuSeconds": 0.15490695389531428,
+          "cpuSecondsPer1000HeartbeatAck": 0.0002156241180482986,
+          "workingSetMeanMiB": 38.781002783588384,
+          "privateMeanMiB": 14.3944499906786
+        }
+      },
+      "hostAvailableMemoryMinMiB": 10073.71,
+      "hostCpuPercent": 34.24835553753168,
+      "hostPrivilegedCpuPercent": 14.017037101896914,
+      "hostPrivilegedPeakPercent": 60.556751391731275,
+      "maxObserverIntervalMs": 778.3119678497314,
+      "runtime": {
+        "gcPauseDeltaMs": 1684.072,
+        "maxSamplerIntervalMs": 389.5806,
+        "maxProbeDispatchMs": 9.1313,
+        "maxThreadPoolPending": 11
+      },
+      "platformStallWarnings": [],
+      "threadPoolStallSeconds": [],
+      "ledger": {
+        "passed": true,
+        "expected": {
+          "/packet/LoginRequest": 31000,
+          "/packet/Heartbeat": 767768
+        },
+        "actual": {
+          "/packet/Heartbeat": 767768,
+          "/packet/LoginRequest": 31000
+        },
+        "individualPacketMetrics": 31010,
+        "normalHeartbeatsAggregated": 767758,
+        "heartbeatAggregateRows": 298,
+        "retainedHeartbeatRequests": 10,
+        "packetStatisticRows": 31308,
+        "missingOrDuplicateTraceIds": 0,
+        "retainedHeartbeatReasons": [
+          {
+            "reason": "slow",
+            "outcome": "success",
+            "count": 10
+          }
+        ]
+      },
+      "storage": {
+        "logicalDatabaseMiB": 40.67578125,
+        "metricRows": 31042,
+        "spanRows": 50026,
+        "databaseAndWalMiB": 104.67578125,
+        "statisticRowsPer1000Packets": 39.19536085571781,
+        "logicalDatabaseMiBPer1000Packets": 0.05092314821074455
+      },
+      "health": {
+        "requestsObserved": 798799,
+        "requestsSent": 798799,
+        "requestsAggregated": 767758,
+        "sampledOutTraces": 30220,
+        "limitedTraces": 26,
+        "uncorrelatedSpansSkipped": 672690,
+        "requestsDropped": 0,
+        "detailsDropped": 0,
+        "failedBatches": 0,
+        "requestsSpooled": 0,
+        "replayedRequests": 0,
+        "spoolPendingBatches": 0,
+        "requestQueueDepth": 0,
+        "queueDepth": 0,
+        "activeSessions": 0
+      }
+    }
+  ],
+  "groups": {
+    "before": {
+      "gameCpuPercent": {
+        "median": 4.6932933672129185,
+        "min": 4.4593999058365545,
+        "max": 4.734879506116615
+      },
+      "gameWorkingSetMiB": {
+        "median": 2274.393480076528,
+        "min": 2261.0669180155555,
+        "max": 2288.756478809302
+      },
+      "gamePrivateMiB": {
+        "median": 2224.060048686719,
+        "min": 2208.8598562545203,
+        "max": 2237.5671002304343
+      },
+      "collectorCpuPercent": {
+        "median": 4.099870647865998,
+        "min": 3.9006661267219127,
+        "max": 4.527807920626079
+      },
+      "collectorWorkingSetMiB": {
+        "median": 605.497176066441,
+        "min": 603.2702178001607,
+        "max": 606.7563233148426
+      },
+      "gameAndCollectorCpuPercent": {
+        "median": 8.834750153982613,
+        "min": 8.360066032558468,
+        "max": 9.221101287838998
+      },
+      "gameAndCollectorWorkingSetMiB": {
+        "median": 2879.890656142969,
+        "min": 2864.3371358157165,
+        "max": 2895.5128021241444
+      },
+      "gameCpuSecondsPer1000Ack": {
+        "median": 0.12527712700244562,
+        "min": 0.11931163044717148,
+        "max": 0.126744718472467
+      },
+      "heartbeatRttP99Ms": {
+        "median": 43.3375,
+        "min": 10.5252,
+        "max": 60.6078
+      },
+      "holdAckPerSecond": {
+        "median": 5980.17127934382,
+        "min": 5977.217278031449,
+        "max": 5994.126447518155
+      },
+      "hostCpuPercent": {
+        "median": 28.333095968109696,
+        "min": 25.971281096954748,
+        "max": 32.95785831271332
+      },
+      "logicalDatabaseMiB": {
+        "median": 789.671875,
+        "min": 783.765625,
+        "max": 791.3828125
+      },
+      "logicalDatabaseMiBPer1000Packets": {
+        "median": 0.9724775891518592,
+        "min": 0.9715534890187293,
+        "max": 0.972920907917277
+      },
+      "statisticRowsPer1000Packets": {
+        "median": 1000.0,
+        "min": 1000.0,
+        "max": 1000.0
+      }
+    },
+    "after": {
+      "gameCpuPercent": {
+        "median": 4.4194164097046045,
+        "min": 4.341338002125564,
+        "max": 4.567937217743439
+      },
+      "gameWorkingSetMiB": {
+        "median": 2291.768591634008,
+        "min": 2221.1568972997015,
+        "max": 2295.8570793873428
+      },
+      "gamePrivateMiB": {
+        "median": 2236.217955111116,
+        "min": 2158.677589391041,
+        "max": 2236.511172866355
+      },
+      "collectorCpuPercent": {
+        "median": 0.45380932963955894,
+        "min": 0.39265066627074713,
+        "max": 0.47308080265329394
+      },
+      "collectorWorkingSetMiB": {
+        "median": 182.01036649028288,
+        "min": 180.27633689154834,
+        "max": 192.46932795668494
+      },
+      "gameAndCollectorCpuPercent": {
+        "median": 4.873225739344163,
+        "min": 4.733988668396311,
+        "max": 5.0410180203967325
+      },
+      "gameAndCollectorWorkingSetMiB": {
+        "median": 2472.0449285255563,
+        "min": 2413.6262252563865,
+        "max": 2477.867445877626
+      },
+      "gameCpuSecondsPer1000Ack": {
+        "median": 0.11804581609634283,
+        "min": 0.11593921120602065,
+        "max": 0.12209481536496847
+      },
+      "heartbeatRttP99Ms": {
+        "median": 26.4773,
+        "min": 15.1148,
+        "max": 30.639
+      },
+      "holdAckPerSecond": {
+        "median": 5990.103216725614,
+        "min": 5986.085130920895,
+        "max": 5991.192016936672
+      },
+      "hostCpuPercent": {
+        "median": 28.44799959128658,
+        "min": 22.175695513486822,
+        "max": 34.24835553753168
+      },
+      "logicalDatabaseMiB": {
+        "median": 40.67578125,
+        "min": 39.9921875,
+        "max": 41.6796875
+      },
+      "logicalDatabaseMiBPer1000Packets": {
+        "median": 0.05092314821074455,
+        "min": 0.04939905122941202,
+        "max": 0.05215528514188897
+      },
+      "statisticRowsPer1000Packets": {
+        "median": 39.16055389127894,
+        "min": 38.685777952355195,
+        "max": 39.19536085571781
+      }
+    }
+  },
+  "changeInGroupMedian": {
+    "gameCpuPercent": {
+      "absolute": -0.273876957508314,
+      "percent": -5.8354962300375846
+    },
+    "gameWorkingSetMiB": {
+      "absolute": 17.375111557480068,
+      "percent": 0.7639448367085189
+    },
+    "gamePrivateMiB": {
+      "absolute": 12.157906424397424,
+      "percent": 0.5466536945158751
+    },
+    "collectorCpuPercent": {
+      "absolute": -3.6460613182264394,
+      "percent": -88.93113054979506
+    },
+    "collectorWorkingSetMiB": {
+      "absolute": -423.4868095761582,
+      "percent": -69.94034428489044
+    },
+    "gameAndCollectorCpuPercent": {
+      "absolute": -3.9615244146384496,
+      "percent": -44.840254060298875
+    },
+    "gameAndCollectorWorkingSetMiB": {
+      "absolute": -407.84572761741265,
+      "percent": -14.161847664162341
+    },
+    "gameCpuSecondsPer1000Ack": {
+      "absolute": -0.007231310906102781,
+      "percent": -5.772251550725304
+    },
+    "heartbeatRttP99Ms": {
+      "absolute": -16.8602,
+      "percent": -38.904413037207966
+    },
+    "holdAckPerSecond": {
+      "absolute": 9.931937381794341,
+      "percent": 0.16608115249308053
+    },
+    "hostCpuPercent": {
+      "absolute": 0.11490362317688607,
+      "percent": 0.4055455969450561
+    },
+    "logicalDatabaseMiB": {
+      "absolute": -748.99609375,
+      "percent": -94.84902748372544
+    },
+    "logicalDatabaseMiBPer1000Packets": {
+      "absolute": -0.9215544409411147,
+      "percent": -94.76356588791349
+    },
+    "statisticRowsPer1000Packets": {
+      "absolute": -960.8394461087211,
+      "percent": -96.08394461087211
+    }
+  },
+  "method": "CPU from cumulative process values over client hold boundaries; memory trapezoidal time mean; then median of 3 runs per condition. RTT p99 is median of per-run p99, not a pooled percentile.",
+  "limitations": [
+    "Single shared Windows host; baseline and candidate are measured on this host, not a production SLA.",
+    "Login/Heartbeat workload, no claim about whole-game content or maximum throughput.",
+    "Aggregation includes 1-second tail grace and larger bounded trace buffer; compare complete policy change, not one isolated CPU instruction."
+  ],
+  "plan": {
+    "createdUtc": "2026-11-16T20:52:21.890774+00:00",
+    "scope": "Local Windows, same-host before/after; fresh runs, not reused earlier measurements",
+    "baselineServerCommit": "a194c67493a0ff54c4953885e0103602b253e58d",
+    "baselineApmCommit": "0e37c6350168a6abcc69339efae1839aacfe295b",
+    "candidate": "uncommitted working tree, final-source-hashes.json",
+    "order": [
+      "before",
+      "after",
+      "after",
+      "before",
+      "before",
+      "after"
+    ],
+    "connections": 30000,
+    "holdSeconds": 120,
+    "warmupConnections": 1000,
+    "warmupHoldSeconds": 10,
+    "heartbeatSeconds": 5,
+    "selectedUsersDuringBenchmark": [],
+    "priorTimewaitThreshold": 2000,
+    "priorTimewaitStableObservations": 2,
+    "startupProbe": true,
+    "policy": "Old per-request metric+entry span vs normal Heartbeat aggregation; normal detail 1%, slow 100ms.",
+    "bufferLimits": {
+      "before": 4096,
+      "after": 16384
+    },
+    "binarySha256": {
+      "before": {
+        "game": "ef6d941912490f79bdd6801a2516752aa5da8ceca7416638ce258cf2c97c8720",
+        "agent": "a89d269ab215d0d2cb520cabbb2fb069f0955b8e8ceab97bd8378ec499c82e88",
+        "collector": "871c85b74c721a825322a14095ef3e4246e74278a68a954c2b5f8d3ed4328fde",
+        "client": "32f9840783ad6d711e75439cc78038a37bedcf433c5f8872c5c5ca558a4a7e97",
+        "probe": "eff33448a67d67a24ecff4f64ab7b83b90c2b7349fa48efe721ec7a72c066941"
+      },
+      "after": {
+        "game": "697af3ca6cfb271ee17a687df5cb590823b59bb8fdcb58c6465c6ffa5baefb54",
+        "agent": "13ffca9dbfa2a166d816d22815d457debeee53197e113875f979ebd3b4944052",
+        "collector": "d8db91f42954744d53a3151b371b9ee49ce17120e34b7361a69120a62280c249",
+        "client": "32f9840783ad6d711e75439cc78038a37bedcf433c5f8872c5c5ca558a4a7e97",
+        "probe": "eff33448a67d67a24ecff4f64ab7b83b90c2b7349fa48efe721ec7a72c066941"
+      }
+    }
+  },
+  "functionalChecks": 38,
+  "oldEvidenceFilesUnchanged": 47,
+  "selectedUserLiveCheck": {
+    "passed": true,
+    "selectedUserHeartbeatTraces": 3,
+    "allChildrenPresent": true,
+    "normalHeartbeatsAggregated": 2297
+  },
+  "migration": {
+    "passed": true,
+    "originalSha256Unchanged": "d1528bb2940e67a9a69b08cecce4735d47c59e7a87aa372cc8c50415bcfed6b4",
+    "historicalRows": {
+      "Metrics": {
+        "rows": 66866,
+        "sha256": "60a7a356367f8ff8ee2888f7c435139b1406edddab5a4171484f88cf4ffd70c9"
+      },
+      "Analyses": {
+        "rows": 4,
+        "sha256": "b4457e91e50e2f0448c0d85f8921414e3d6642729a451f31169f6d727cc7c157"
+      }
+    }
+  },
+  "realSlowTraceCheck": {
+    "passed": true,
+    "checks": [
+      {
+        "case": "hb02_after",
+        "slowHeartbeatTraces": 11,
+        "allExpectedChildrenPresent": true,
+        "truncated": 0
+      },
+      {
+        "case": "hb03_after",
+        "slowHeartbeatTraces": 12,
+        "allExpectedChildrenPresent": true,
+        "truncated": 0
+      },
+      {
+        "case": "hb06_after",
+        "slowHeartbeatTraces": 10,
+        "allExpectedChildrenPresent": true,
+        "truncated": 0
+      }
+    ]
+  }
+}

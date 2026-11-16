@@ -1,5 +1,7 @@
 # LLM 기반 로컬 APM 시스템
 
+> **2026-11-17 Heartbeat 집계:** 정상 Heartbeat는 통계로 묶고 오류·지연·지정 유저 상세를 남긴다. [설정과 한계](docs/heartbeat-aggregation-guide.md) · [새 로컬 전후 실측](docs/heartbeat-aggregation-validation-20261117.md). 아래 과거 검증 수치는 당시 수집 정책의 기록이며 보존한다.
+
 ## APM으로 보완한 운영 관측·검증
 
 - **비동기 매칭 추적:** 매칭 접수·생성·결과 전송을 구분하고 원 요청과 연결했다. 20명 시범 재검증에서 결과 unknown 20건→0건, 결과 trace·원 요청 연결 각 20건을 확인했다.
@@ -42,7 +44,7 @@ npm --prefix dashboard ci
 
 기본 주소는 `http://127.0.0.1:5219`, DB는 `.local-evidence/live/apm-v2.db`다. LLM 없이도 수집·조회가 동작한다. `/api/health`는 API의 고정 응답이며 DB/LLM 준비 상태를 확인하지 않는다.
 
-TCP 게임 서버는 `Apm.Agent`를 통해 기본 요청과 선택된 상세를 `/api/telemetry/batch`로 전송한다. 정상 내부 상세 기본 1%, 오류·느린 요청 우선 선택, 메모리·디스크 상한이 적용된다. 요청 추적의 근거 스냅샷 조사와 아래의 초기 HTTP 메트릭 데모를 구분한다.
+TCP 게임 서버는 `Apm.Agent`를 통해 기본 요청과 선택된 상세를 `/api/telemetry/batch`로, 정상 Heartbeat 집계가 포함된 배치는 `/api/telemetry/batch-with-heartbeats`로 전송한다. 다른 정상 요청의 내부 상세 기본 1%, 오류·느린 요청·지정 유저 우선 선택, 메모리·디스크 상한이 적용된다. 요청 추적의 근거 스냅샷 조사와 아래의 초기 HTTP 메트릭 데모를 구분한다.
 
 ## 초기 HTTP 데모 아키텍처
 

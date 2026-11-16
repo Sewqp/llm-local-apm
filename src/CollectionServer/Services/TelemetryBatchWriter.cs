@@ -17,6 +17,7 @@ public sealed class TelemetryBatchWriter(IServiceScopeFactory scopes) : IDisposa
     private PreparedInsert<MetricData>? _metrics;
     private PreparedInsert<LogData>? _logs;
     private PreparedInsert<RuntimeData>? _runtime;
+    private PreparedInsert<HeartbeatAggregate>? _aggregates;
 
     public async Task<bool> WriteAsync(TelemetryBatch batch, CancellationToken ct)
     {
@@ -35,6 +36,7 @@ public sealed class TelemetryBatchWriter(IServiceScopeFactory scopes) : IDisposa
             _metrics!.Write(transaction, batch.Metrics, ct);
             _logs!.Write(transaction, batch.Logs, ct);
             _runtime!.Write(transaction, batch.Runtime, ct);
+            _aggregates!.Write(transaction, batch.Aggregates, ct);
             var inserted = Stopwatch.GetTimestamp();
             transaction.Commit();
             if (Environment.GetEnvironmentVariable("APM_INGEST_TIMINGS") == "1")
@@ -72,6 +74,7 @@ public sealed class TelemetryBatchWriter(IServiceScopeFactory scopes) : IDisposa
             _metrics = new(connection, "Metrics");
             _logs = new(connection, "TelemetryLogs");
             _runtime = new(connection, "RuntimeSamples");
+            _aggregates = new(connection, "HeartbeatAggregates");
             _connection = connection;
         }
         catch
@@ -127,7 +130,7 @@ public sealed class TelemetryBatchWriter(IServiceScopeFactory scopes) : IDisposa
 
     private void DisposeCommands()
     {
-        _receipt?.Dispose(); _spans?.Dispose(); _metrics?.Dispose(); _logs?.Dispose(); _runtime?.Dispose();
+        _receipt?.Dispose(); _spans?.Dispose(); _metrics?.Dispose(); _logs?.Dispose(); _runtime?.Dispose(); _aggregates?.Dispose();
     }
 
     public void Dispose()
